@@ -1,0 +1,81 @@
+    .virtual-keypad {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(20, 20, 20, 0.95);
+        color: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        z-index: 9999;
+        display: grid;
+        grid-template-columns: repeat(3, 80px);
+        gap: 10px;
+        font-family: sans-serif;
+        box-shadow: 0 0 20px #000;
+    }
+
+    .virtual-keypad .preview {
+        grid-column: span 3;
+        background: #222;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        font-size: 24px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        min-height: 40px;
+    }
+
+    .virtual-keypad .preview .text {
+        flex-grow: 1;
+        text-align: right;
+        padding-right: 10px;
+        word-break: break-all;
+    }
+
+    .virtual-keypad .preview .clear-btn {
+        background: #444;
+        border: none;
+        color: #fff;
+        font-size: 18px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .virtual-keypad .clear-btn:hover {
+        background: #666;
+    }
+
+    .virtual-keypad .key {
+        background: #333;
+        padding: 20px;
+        font-size: 24px;
+        text-align: center;
+        border-radius: 8px;
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.2s;
+    }
+
+    .virtual-keypad .key:hover {
+        background: #555;
+    }
+
+    .virtual-keypad .key.wide {
+        grid-column: span 3;
+        /* background: #d9534f; */
+        color: #fff;
+    }
+
+    .virtual-keypad .key.action {
+        background: #5cb85c;
+        color: #fff;
+    }
+
+    .virtual-keypad .key.danger {
+        background: #d9534f;
+        color: #fff;
+    }

@@ -1,0 +1,509 @@
+===================================
+PLC Side Data Type: Software side.
+===================================
+Real : Float
+LREAL : Double
+Int: Int16
+Bool: Boolean
+===================================
+
+
+Define Machine 
+Define PLC
+create Tag Groups
+Add Tags.
+Add Machine Operation: Like Punch, Drill, Marker, Cutter.
+
+itemRecipeMaster: store master item recipe.
+itemRecipeSteps: actual steps or list of operations for each recipe.
+
+prepare production plan like arrange multiple quantity of recipe(programs) in line for full bar production. and this entry will be stored in below tables befure user starts actual operation either manual or auto.
+
+productionBatch: Master record for each batch executed on a machine, like for one long baar.
+productionOperation: Every step (X, Y, head, action) that will be executed for this batch. Entry per operation.
+
+
+
+
+
+
+
+https://reference.opcfoundation.org/Core/Part6/v104/docs/5.1.2
+
+toggle button press and relase with colours.
+live read input, write on change.
+continues read tags.
+read once on load tags.
+read again after write operation tags.
+fix every minute reconnection issue.
+
+define wss message templates with alerts and notification.
+
+1. tagValues
+2. plcStatus
+3. error
+4. operation
+
+
+=====================================
+operation
+	A,B = side
+	DA = Head /Operation
+	DA-25 = size of operation, tool size.
+	HEAD Types = 
+		Both side: Punch, Drilling, Notching
+		No Side: Marking, Cutting (Shearing)
+	in receipie link Operation seperatly than with head, 
+		Operation = make 25 mm punch on left side (DA-25-punch) (can be in any head)
+		Head = master of head type, (punch).
+
+	Right now: only punching, marking, cutting.
+		Marking has total 4 cassets.
+
+steps
+align logic
+	ref: 
+	DX: positition of head in mm.
+	AX: position on bar where head operation required.
+	
+
+===================================
+
+Machine:
+	define Head Count, (physical details), based on this detailed configuration required, or think like one to many.
+
+Machine Master Settings Physical
+	Head: Punch:  x position only. Side (A/B), Name (DA1).
+	Marking: x position,  numbers of cassets
+	cutting: x position,
+Machie Setup Settings: Operational. (Store seperately)
+	Head wise tool size
+	Marking cassets details
+
+
+Before Each Production Operation.
+    select items with qnt. (from pending jobcards with suggested items)
+        Item | ReqQnt | Completed | Set Qnt
+        Button TO Add New Jobcard.
+    as per item program check for machine setup, 
+        display existing setup for confirmation and with validation error if any.
+    validate ok.
+    Create: Program Cycle Id: one alignment of multi items.
+        store programCycleMaster, programCycleDetails, programCycleOperations (alignment list)
+    Ready to start production.
+    ON start production.
+        create productionBars for each bar
+        update programCycleMaster for startedOn and executedBy.
+        create productionUnits after each cut operation (item finished)
+    ON finish production:
+        update programCycleMaster for completedOn and executedBy.
+    record all operation details with headId.
+    store mode (semi,auto), jobId, in each operation.
+    close the batch on bar complete.
+    align , start operation.
+
+
+
+=============================================================
+
+Machine:
+    machineId
+    tenantId
+    serialNo
+    machineCode
+    machineName
+    machineType ['SKIPPER', 'Other']
+    isActive
+
+
+machineDetails
+    machineDetailId
+    tenantId
+    serialNo
+    machineId
+    headName varchar 50
+    headType (ENUM: Punching, Marking, Cutting)
+    xPosition (decimal mm)
+    side (ENUM: N/A,A,B)
+    markingCassets (int)
+
+
+machineSetup
+    machineSetupId
+    tenantId
+    serialNo
+    machineDetailId
+    childId INT
+    value varchar
+
+itemRecipeMaster
+    itemRecipeId
+    tenantId
+    serialNo
+    itemCode
+    itemName
+    description
+    measurementType (enum: absolute,incremental)
+    isActive
+    updatedAt
+    updatedBy
+    createdAt
+    createdBy   
+
+itemRecipeSteps
+    itemRecipeStepId
+    tenantId
+    serialNo
+    itemRecipeId
+    opType (enum: Punching, Marking, Cutting)
+    opValue (tools size or marking name)
+    xPos
+    yPos  
+
+
+programCycleMaster (main production plan)
+    cycleId
+    tenantId
+    serialNo
+    startedOn
+    completedOn
+    executedBy
+    machineSetup (JSON snapshot of machine setup)
+    updatedAt
+    updatedBy
+    createdAt
+    createdBy
+
+programCycleDetails (list of programs with quantity added to main production plan)
+    cycleDetailsId
+    tenantId
+    serialNo
+    cycleId
+    itemRecipeId
+    quantity (int)
+
+
+programCycleOperations (operation queue stored after program allign, ready to start operation)
+    operationId
+    tenantId
+    serialNo
+    cycleDetailsId
+    machineDetailId
+    xPos
+    yPos
+    status (waiting, started, completed, error)
+
+productionJobCards
+    jobId
+    tenantId
+    serialNo
+    itemRecipeId
+    requiredQuantity
+    completedQuantity
+    status: enum (waiting, started, completed, cancelled, partiallyCompleted)
+    startedAt,
+    completedAt,
+    updatedAt,
+    updatedBy,
+    createdAt,
+    createdBy.
+
+productionBars    
+    barId
+    tenantId
+    serialNo
+    cycleId
+    barLength
+
+productionUnits
+	unitId
+	tenantId
+	serialNo
+	itemRecipeId
+	jobId	
+	mode (Semi, Auto)
+	producedAt
+	producedBy
+
+=========================
+next job.
+1. machine setup popup screen only in opMaster.
+2. in receipy master
+        set cutting radious value.
+        set bar width.
+
+	
+
+1. Production Planning.
+instead of jobcards, show item wise required quantity, allow user to order and enter plan quantity.
+store cycle and details only when user starts operation. till than in view only.
+once operation started... 
+    can not edit machine parameters.
+    can not initial new production planning/program align.
+    all controls during operation to stop, manual control, resume etc are available.
+Once operation completes or user cancels, navi ghodi navo daa.
+
+===============================
+
+ek program incremental and absolute hoy to final
+absolute ma j aavshe
+
+bar length = from plc
+Lead Scrap and Princher scrap: agal pachal vadharo ke damage part cut karava mate.
+Princher Default Scrap: pakadva mate nu margin fix in machine master configuration.
+
+Lead Scrap selected hoy to data ni screen ma lead scrap data lay levo. and bakinu princher scrap ma set thay jay.
+
+Princher scrap selected hoy tyare data ni screen ma je value rakhe  e pachal re and bakinu adjustment lead ma jatu rahe.
+
+alag thi button part list ma devu, zero lead scrap. Lead scrap selected logic execute karvu.
+
+hold down 4 ni position program allign ma display ma levi.??? need discussion.
+
+
+====================================================
+
+=======================================
+PLC UI Layer
+=======================================
+
+Alarms to be handled by ci4 when receive data from nodejs. send alarm notification to ui via nodejs->websocket, let js fetch fresh list of active or live alarms via ci4 api.
+
+In my scada system, I have plc Tag master and ui tag mager linked with plc tag master, in whole software ui, i will link everything with uit tag master by tagId (numeric), so we have option to remap particular tag to particular plc tag in case if we need to change. Below is the list of ui element and their attributes i have geathered from original Scada system. Lets plan accordingly, I will use hard coded html ui element with data attributes. Lets plan this way.
+
+Create function that i can call to initialise ui, single js object or layer will populate all ui elements available on dom based on their data attributes. add additional addtributes for colours as well. 
+
+Bind events like click/change etc with all ui elements.
+
+Bind data event to reflect the action outputs/results on ui. Like if tag value is changed than button colour or whatever ui change is required.
+
+so i think like this...
+UI Tag manager layer.
+Data read/write operation layer that works with above layer.
+Hope you got my idea.
+
+Tag types and their attributes geathered from original scada system as below.
+
+
+Button:
+    type: momentary: press to on, release to off.
+            maintain: press to toggle.
+            latched: press to on.
+
+    tag: plc tag to toggle (this tag only to send write commands)
+    indicator: plc tag to confirm if toggle/action done. (button color change effect on this tag change)
+
+    disable: condition tag=value if matches, than button is disabled.
+
+    label: ui title of button.
+
+
+combobox(dropdown):
+    label:
+    tag: to write
+    list: array with index value, on change write index to tag.
+    confirmation: confirm alert message if any.
+    disable: condition tag=value if matches, than button is disabled.
+
+output display:(text box) (only to display live tag value continues read)
+    tag:
+    label:
+
+Input Element:
+    tag: to read write plc.
+    lable:
+    disable: condition tag=value if matches, than write is disabled. 
+
+guageMeter:
+    min, 
+    max,
+    tag
+    label.
+
+longList (same as dropdown, but show full list like in multiselect html)
+
+
+=======================================
+Input & Output
+=======================================
+display screen to display status of boolean tags in both.
+
+=======================================
+Alarms.
+=======================================
+plan softwareside conditional alarms for tag values.
+Tag:
+Type: warning, critical both side.
+limit: start-end.
+message:
+
+
+Note: Display live alarm in auto screen.
+Store Historical Alarms. with time/message. Track alarm trigger and restore time.
+
+
+=======================================
+Recepi Lock:
+=======================================
+y position limit calculation based on bar width and thickness + punch dia.
+absolute/increment, line wise for each operation.
+marking/cutting compulsory in aboslute, should not abe able to select increment.
+once cutting operation added, should not abe able to add any more rows, means cutting operation should be last item to be added.
+
+If $DEV.Application.GVL.S_BAR_SIDE  > 50 Then
+        $P1_Y_SAFE_POS = 24 + $DEV.Application.GVL.S_BAR_THICKNESS
+        $P2_Y_SAFE_POS = 24 + $DEV.Application.GVL.S_BAR_THICKNESS
+        $P3_Y_SAFE_POS = 24 + $DEV.Application.GVL.S_BAR_THICKNESS
+        $P4_Y_SAFE_POS = 24 + $DEV.Application.GVL.S_BAR_THICKNESS
+
+ElseIf $DEV.Application.GVL.S_BAR_SIDE  <= 50 Then
+        $P1_Y_SAFE_POS = (($DEV.Application.GVL.S_PUNCH_1_DIA/2) + $DEV.Application.GVL.S_BAR_THICKNESS)
+        $P2_Y_SAFE_POS = (($DEV.Application.GVL.S_PUNCH_2_DIA/2) + $DEV.Application.GVL.S_BAR_THICKNESS)
+        $P3_Y_SAFE_POS = (($DEV.Application.GVL.S_PUNCH_3_DIA/2) + $DEV.Application.GVL.S_BAR_THICKNESS)
+        $P4_Y_SAFE_POS = (($DEV.Application.GVL.S_PUNCH_4_DIA/2) + $DEV.Application.GVL.S_BAR_THICKNESS)
+End If
+
+above is min range for Y, max Y = barsize (width)+5mm. apply this limit in recipe making.
+
+
+======================================================
+KPI - 26/08/2025
+======================================================
+Operator efficiency:
+Machine Efficiencey:
+
+actual time vs estimated time:
+
+
+
+Availability Time:
+Actual Run Time: (auto cycle production time)
+User Login Time:
+MTCE Time:
+MTCE Log Book:
+
+
+Pink Sleep:
+    Shift (Operator).
+        Hourly:
+            Mark No: (Bar Size).
+                Nos of Punches, Nos of Items.
+
+
+89:I_SS_A_M true=auto, false=manual.
+10:AUTO_ON_GO: Button of auto cycle start.
+
+
+
+(Full cycle princher zero to zero position.)
+Princher zero tag: S_PRINCHER_AT_ZERO_1 true = start timer.
+Production Time: 
+    First green dot = timer start. (Get last princher zero time)
+    .... if 10:AUTO_ON_GO false, 
+        if last operation done, cycle complete.
+        if not done, timer pause, resume on 10:AUTO_ON_GO True again.
+            if pause time is > x seconds, ask for reason with dropdown.
+
+    if start from first operation happens, close this cycle and start fresh cycle.
+    if start from current line, resume same cycle.
+    at the end get next princher zero time.
+
+
+
+(together with zero to zero, consider reference bit as well, if new cycle starts before going to zero position.)    
+reference bit: END_PROCESS_RUNNING: BOOL; 
+
+explain: if 10:AUTO_ON_GO true, means auto cycle start, if false, cycle stop, when again start and no princher zero bit received, than consider ref bit for timer
+
+
+Machine Idea Time: Observe These tags, if remains false for more than x seconds, consider ideal time and ask for reason.
+
+Ideal condition = 
+(168	Q_SV_LOW_PRESSURE = false, OR 2:ACCUMILATOR_CHARGE_SV=true) AND (157	Q_SV_HIGH_PRESSURE=false) AND (381	I_PRINCHER_HYD_MOTOR_RUN = false) AND (S_SERVO_RUNNING = false)
+
+
+
+weight logic: ( (da+db)*thickness*lenth*7861 )/1000000000, KG.
+
+Operator Efficiencey = operator login time, to logout time = operator time, v/s production time in that duration.
+
+Must Logout in browser close.
+
+
+Program Lock:
+    10:AUTO_ON_GO: True thay tyare program store kari ne screen buttons lock karva.
+                    false hoy tyarej program table clickable hoy, true hoy tyare disable hoy. all other buttons as well.
+
+    Light jay ne pachi ave to resume thay sakvu joy.
+
+    start from first, start from selected line software side na buttons, no plc tags, for resume only, new program should auto start from first operation, when 10:AUTO_ON_GO comes true.
+
+==============================================
+Pending points with HPT.    
+==============================================
+
+1. User rights managemange for production/plc part.
+2. recipe management with da/db width, thickness, absolute/increment. etc.. 
+3. min max value for all tags.
+4. mtce module.
+
+
+
+
+====================
+Pending WOrk
+====================
+DONE 1. absolute and incremental steps.
+DONE: 2. 75 limit for width and y position.
+DONE 3. seperate auto screen and part list screen.
+DONE 1. leadscrap princher scrap calculation issue: 
+ 
+DONE bar lenngh error and scrap:
+    in settings, lead/princher scrap are minimum settings only.
+    in auto screen, lead/princher are user input but can not be less than settings. 
+    if lead scrap selected, auto fill with setting, allow user to increase, show princher scrap = bar length - program - lead scrap.
+    if princher scrap selected, reset lead scrap to settings, allow user to increase princher scrap, show lead scrap =barLength - program - princher scrap.
+
+    bar length error:
+        if leadscrap selected, and princher scrap goes below settings.
+        if princher scrap selected, and lead scrap goes below settings.
+
+DONE: logout on browser close.
+DONE: session should not expire until logout or closed.
+
+DONE: Thickness = side A thickness, bey nai ekj karvi. recipe ma.
+
+S_BAR_B_SIDE = new tag
+
+===========================================
+
+DONE: 1. no cut operation option only when single item with qnt 1 selected, on no cut operation skipp cutting operations.
+2. remain and set quantity.
+DONE: 3. add line in program middle way.
+DONE: 4. option to produce bar in reverse side, left/right rotated.
+DONE: 5. option to copy program and option to swipe (A/B side)in program from manage program screen.
+6. width, thickness validation on program making and import file.
+    6-2. benchmark(Y) option to skip validation, validate on program align and give option to skip. on program making, give option to skip.
+DONE: 7. settings ma princher scrap can not be less than 45.
+8. in program steps, show ramaining DA/DB (distance from last punch each side to cut position (program length)), just to verify with program file, (if mistake done, distance will not match with drawing.)
+
+===========================
+create migration/seeder for
+	pauseReasons
+	idleReasons
+
+create settings for
+	pauseThresholdSec: 45,
+    idleThresholdSec: 20,
+
+apply reasons and settings to library.
+
+on program align, store program and auto load on main screen load.
+	log proper structred with all counters
+
+log timers seperately with program align id.
+log production seperately with program align id. on each item complete (consider cut/nocut).
+	update jobcards for completed quantity as well as status of jobcard.
+alert user on set quantity reached.
+
+===========================

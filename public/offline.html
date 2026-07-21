@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>You Are Offline!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        }
+
+        .offline-box {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 320px;
+        }
+
+        .offline-box h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .offline-box p {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .offline-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="offline-box">
+        <div class="offline-icon">📶❌</div>
+        <h1>You are offline</h1>
+        <p>Please check your internet connection and try again.</p>
+    </div>
+</body>
+
+</html>

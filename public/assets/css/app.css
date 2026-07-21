@@ -1,0 +1,195 @@
+/* for PWA install prompt */
+/* Initial hidden state */
+#installPrompt {
+    position: fixed;
+    bottom: -100px;
+    text-align: center;
+    /* Start offscreen */
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    transition: bottom 0.3s ease-in-out;
+    border-radius: 10px 10px 0 0;
+    /* Smooth slide-up effect */
+}
+
+/* Visible state */
+#installPrompt.show {
+    bottom: 0;
+    /* Slide up */
+}
+
+/* Content inside the prompt */
+.install-prompt-content {
+    padding: 15px;
+    /* display: flex; */
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Buttons */
+#installButton,
+#dismissButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#installButton {
+    background-color: #007bff;
+    color: white;
+}
+
+#dismissButton {
+    background-color: #ccc;
+    color: black;
+}
+
+/* for sidebard search input for menu search */
+
+.sidebar {
+    width: 100%;
+    max-width: 200px;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar-search {
+    padding: 10px;
+}
+
+.sidebar-menu {
+    padding: 10px;
+}
+
+.manageDataTable td {
+    vertical-align: middle;
+}
+
+/* Ensure the button looks correct */
+.select2-selection__choice__remove {
+    position: unset !important;
+    padding: 0 !important;
+    margin-left: -3px !important;
+    padding-right: 3px !important;
+}
+
+.select2-container {
+    display: inline-block;
+    min-width: 100px;
+}
+
+
+body .daterangepicker {
+    z-index: 9999 !important;
+}
+
+body .select2-dropdown,
+.dropdown-menu {
+    z-index: 9999 !important;
+}
+
+/* TIME LINE Modal Css */
+.timeline-with-icons {
+    border-left: 1px solid hsl(0, 0%, 90%);
+    position: relative;
+    list-style: none;
+}
+
+.timeline-with-icons .timeline-item {
+    position: relative;
+}
+
+.timeline-with-icons .timeline-item:after {
+    position: absolute;
+    display: block;
+    top: 0;
+}
+
+.timeline-with-icons .timeline-icon {
+    position: absolute;
+    left: -48px;
+    background-color: hsl(217, 88.2%, 90%);
+    color: hsl(217, 88.8%, 35.1%);
+    border-radius: 50%;
+    height: 31px;
+    width: 31px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iti {
+    display: inherit !important;
+    /* Override inline-block */
+}
+
+/* Reduce the spacing near the clear button */
+/* button.select2-selection__clear {
+    margin-right: 0 !important;
+    font-weight: bold;
+    cursor: pointer;
+} */
+
+/* Style for Select2 single select when invalid */
+.select2-selection--single.is-invalid {
+    border-color: #dc3545 !important;
+    /* box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, .25); */
+}
+
+/* Style for Select2 multi select when invalid */
+.select2-selection--multiple.is-invalid {
+    border-color: #dc3545 !important;
+    /* box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, .25); */
+}
+
+input[readonly] {
+    background-color: #e9ecef !important;
+    opacity: 0.7 !important;
+}
+
+
+/* Manage screen quick filters */
+.manageScreenQuickFilters .mobile-nav-scroll {
+    padding: 0.5rem 0.25rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.manageScreenQuickFilters .mobile-nav-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.manageScreenQuickFilters .tab-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0 0.25rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 20px;
+    background-color: #f0f0f0;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.3s;
+    position: relative;
+}
+
+.manageScreenQuickFilters .tab-label .badge {
+    background-color: #6c757d;
+    color: #fff;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+.manageScreenQuickFilters input[type="radio"]:checked+.tab-label {
+    background-color: #49b6d6;
+    color: #fff;
+    font-weight: 600;
+}

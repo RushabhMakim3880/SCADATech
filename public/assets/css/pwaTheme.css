@@ -1,0 +1,83 @@
+/* for footer space for bottom navigation */
+.app-content {
+    padding-bottom: 80px;
+}
+
+/* Bottom Nav Items */
+.pwa-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border-top: 1px solid #ddd;
+    overflow-x: auto;
+    white-space: nowrap;
+    display: flex;
+    padding: 0.5rem 0 0.3rem;
+    z-index: 1010;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.pwa-bottom-nav::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
+}
+
+.pwa-bottom-nav a,
+.pwa-bottom-dropdown {
+    display: inline-block;
+    width: 80px;
+    text-align: center;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.75rem;
+    padding: 0.25rem 0;
+    flex-shrink: 0;
+}
+
+.pwa-bottom-nav a i,
+.pwa-bottom-dropdown i {
+    font-size: 1.2rem;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.pwa-bottom-nav a.active {
+    color: #007bff;
+    font-weight: 600;
+}
+
+
+.pwa-global-dropup {
+    position: fixed;
+    bottom: 3.5rem;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    min-width: 160px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+}
+
+.pwa-global-dropup a {
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #eee;
+}
+
+.pwa-global-dropup a:last-child {
+    border-bottom: none;
+}
+
+.pwa-global-dropup.d-none {
+    display: none !important;
+}

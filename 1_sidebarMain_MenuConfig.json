@@ -1,0 +1,160 @@
+[
+  {
+    "id": "menuItem_43",
+    "label": "Plc Master",
+    "icon": "fas fa-network-wired",
+    "class": "",
+    "module": "PlcMaster",
+    "permissions": "view",
+    "attributes": "",
+    "isPopup": 0,
+    "url": "PlcMaster/managePlcMaster",
+    "children": [
+      {
+        "id": "menuItem_44",
+        "label": "Plc Master",
+        "icon": "fas fa-list",
+        "class": "",
+        "module": "PlcMaster",
+        "permissions": "view",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "PlcMaster/managePlcMaster",
+        "children": []
+      },
+      {
+        "id": "menuItem_45",
+        "label": "Tag Groups",
+        "icon": "fas fa-list",
+        "class": "",
+        "module": "PlcTagGroupMaster",
+        "permissions": "view",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "PlcTagGroupMaster/managePlcTag",
+        "children": []
+      }
+    ]
+  },
+  {
+    "id": "menuItem_46",
+    "label": "Ui Tag",
+    "icon": "fas fa-list",
+    "class": "",
+    "module": "UiTagMaster",
+    "permissions": "view",
+    "attributes": "",
+    "isPopup": 0,
+    "url": "UiTagMaster/manageUiTag",
+    "children": []
+  },
+  {
+    "id": "menuItem_47",
+    "label": "Item Recipe",
+    "icon": "fas fa-list",
+    "class": "",
+    "module": "ItemRecipeMaster",
+    "permissions": "view",
+    "attributes": "",
+    "isPopup": 1,
+    "url": "ItemRecipeMaster/manageItemrecipemaster",
+    "children": []
+  },
+  {
+    "id": "menuItem_48",
+    "label": "Job Cards",
+    "icon": "fas fa-align-justify",
+    "class": "",
+    "module": "jobCards",
+    "permissions": "add,edit,view,delete,manage",
+    "attributes": "",
+    "isPopup": 0,
+    "url": "jobCards/manageJobcard",
+    "children": []
+  },
+  {
+    "id": "menuItem_49",
+    "label": "Alarm Config",
+    "icon": "fas fa-list",
+    "class": "",
+    "module": "AalarmModules",
+    "permissions": "view",
+    "attributes": "",
+    "isPopup": 0,
+    "url": "AalarmModules/manageAlarmconfig",
+    "children": []
+  },
+  {
+    "id": "menuItem_50",
+    "label": "Alarm Log",
+    "icon": "fas fa-list",
+    "class": "",
+    "module": "AlarmLog",
+    "permissions": "view",
+    "attributes": "",
+    "isPopup": 0,
+    "url": "AlarmLog/manageAlarmlog",
+    "children": []
+  },
+  {
+    "id": "menuItem_51",
+    "label": "Profile",
+    "icon": "fas fa-user",
+    "class": "editProfile",
+    "module": "",
+    "permissions": "",
+    "attributes": "",
+    "isPopup": 0,
+    "url": "",
+    "children": []
+  },
+  {
+    "id": "menuItem_52",
+    "label": "Reports",
+    "icon": "fab fa-galactic-republic",
+    "class": "",
+    "module": "",
+    "permissions": "",
+    "attributes": "",
+    "isPopup": 0,
+    "url": "#",
+    "children": [
+      {
+        "id": "menuItem_53",
+        "label": "Manage Punch Counters",
+        "icon": "fas fa-hockey-puck",
+        "class": "",
+        "module": "punchCounters",
+        "permissions": "add,edit,view,delete,manage",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "punchCounters/managePunchcounters",
+        "children": []
+      },
+      {
+        "id": "menuItem_54",
+        "label": "Manage Program Align",
+        "icon": "fas fa-project-diagram",
+        "class": "",
+        "module": "programAlignMaster",
+        "permissions": "view,manage",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "programAlignMaster/manageProgramalignmaster",
+        "children": []
+      },
+      {
+        "id": "menuItem_55",
+        "label": "Manage Production",
+        "icon": "fab fa-product-hunt",
+        "class": "",
+        "module": "productionMasters",
+        "permissions": "add,edit,view,delete,manage",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "productionMasters/manageProductionmaster",
+        "children": []
+      }
+    ]
+  }
+]

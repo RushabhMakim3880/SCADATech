@@ -1,0 +1,122 @@
+hpt scada.
+
+================================================
+For Auto Cycle:
+================================================
+	Varify all tags ids 
+	consider Y calculation logic in hpt docs.
+	finish sending data to plc with error handling on write operations.
+
+	when S_LINE_READ_COMMAND received true, start auto operation either from first or selected row.
+
+	readyToSendOperation()
+	{
+		S_LINE_READ_COMMAND should be true 231
+		S_AUTO_RUN_CMD should be false.  208
+	}
+
+	start auto operation either from first or selected row.
+
+
+	check readyToSendOperation()
+	x,  
+	y,
+	autooperation number = master tag for which operation to do.
+	casset selection (if marking).
+	(S_AUTO_RUN_CMD) bit to tell plc, i am done, you start.
+
+	at the end.
+	set S_CYCLE_DONE=true after sending all operation and when readyToSendOperation() available.
+
+leadscrap:
+	input:leadscrap.
+	cut 50 mm, from start.
+
+princher scrap:
+	input: princher scrap
+	leadscrap = bar length - princher scrap	- program length
+
+================================================
+
+test alarm for boolean, for both lo and lolo, hi and hihi.
+delete alarm > 180 days.
+show all pending alarms on auto screen live.
+
+load active alarms
+plc ethernet disconnect error handling, 
+in readloop , stop if plc is not connected.
+
+live alarm screen
+
+
+
+
+
+
+
+
+===================================================
+
+programLogicTemplate = {
+    programLogic.isPrepared: false,
+    programLogic.isReady: false,
+    programLogic.nextLineNumber: 0,
+    programLogic.lastExecutedLineNumber: 0,
+    programLogic.isFinished: false,
+    programLogic.programData: null,
+    programLogic.programCycleMasterId: null,
+    programLogic.programCycleDetails: null,
+};
+
+
+{
+                "serialNo": 2,
+                "itemIndex": 1,
+                "recipeName": "TSPL:TSPL",
+                "headName": "DA2",
+                "headType": "Punching",
+                "headX": 12500,
+                "finalX": 12850,
+                "x": 350,
+                "y": 35,
+                "side": "A",
+                "value": "18"
+            },
+
+
+DA 1	
+	X POS	S_X_AUTO_MM 321
+	Y POS	S_Y3_AUTO_MM 339
+	OPERATION NO	S_AUTO_OPERATION_NUMBER	206 = 3 
+DA 2	
+	X POS	S_X_AUTO_MM 321
+	Y POS	S_Y4_AUTO_MM 345
+	OPERATION NO	S_AUTO_OPERATION_NUMBER	206 = 4 
+DB 1	
+	X POS	S_X_AUTO_MM 321
+	Y POS	S_Y1_AUTO_MM 327
+	OPERATION NO	S_AUTO_OPERATION_NUMBER	1 206
+DB 2	
+	X POS	S_X_AUTO_MM 321
+	Y POS	S_Y2_AUTO_MM 333
+	OPERATION NO	S_AUTO_OPERATION_NUMBER	2 206
+MARKING	
+	X POS	S_X_AUTO_MM 321
+	MARKING CASSET	S_AUTO_CASSET_SELECTION 203
+	OPERATION NO	S_AUTO_OPERATION_NUMBER	5 206
+CUTTING	
+	X POS	S_X_AUTO_MM 321
+	OPERATION NO	S_AUTO_OPERATION_NUMBER	6 206
+HOLD 4	
+	X POS	S_X_AUTO_MM 321
+	OPERATION NO	S_AUTO_OPERATION_NUMBER	7 206
+
+AUTO RUN CMD AFTER READING AND SENDING THE DATA	
+
+S_AUTO_RUN_CMD 208 = True
+S_LINE_READ_COMMAND = false
+
+CYCLE DONE	S_CYCLE_DONE 216
+
+
+===================================================
