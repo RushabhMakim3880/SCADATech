@@ -313,19 +313,19 @@
             </div>
             <div class="col-auto">
                 <div class="plc-gauge float-start" data-ui-type="gauge" data-tag-id="199" data-min="0" data-max="250"
-                    data-label="Accumulator" data-ranges='' style="width: 150px; height: 200px;">
+                    data-label="Accumulator" data-ranges='' style="width: 195px; height: 210px;">
                 </div>
                 <div class="plc-gauge float-start" data-ui-type="gauge" data-tag-id="200" data-min="0" data-max="400"
-                    data-label="Marking" data-ranges='' style="width: 150px; height: 200px;">
+                    data-label="Marking" data-ranges='' style="width: 195px; height: 210px;">
                 </div>
                 <div class="plc-gauge float-start" data-ui-type="Princher" data-tag-id="201" data-min="0" data-max="250"
-                    data-label="Princher" data-ranges='' style="width: 150px; height: 200px;">
+                    data-label="Princher" data-ranges='' style="width: 195px; height: 210px;">
                 </div>
                 <div class="plc-gauge float-start" data-ui-type="gauge" data-tag-id="227" data-min="0" data-max="250"
-                    data-label="TEMPRETURE" data-ranges='' style="width: 150px; height: 200px;">
+                    data-label="TEMPRETURE" data-ranges='' style="width: 195px; height: 210px;">
                 </div>
                 <div class="plc-gauge float-start" data-ui-type="gauge" data-tag-id="227" data-min="0" data-max="250"
-                    data-label="In Feed" data-ranges='' style="width: 150px; height: 200px;">
+                    data-label="In Feed" data-ranges='' style="width: 195px; height: 210px;">
                 </div>
             </div>
 
