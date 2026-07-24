@@ -395,7 +395,7 @@
 
     </div>
     <div class="col-auto">
-        <div class="row">
+        <div class="row flex-nowrap">
             <div class="col-auto">
                 <table class="table table-sm ">
                     <thead>
@@ -418,7 +418,7 @@
                             <td colspan="2" class="">
                                 <div class="plc-gauge" data-ui-type="gauge" data-tag-id="199" data-min="0"
                                     data-max="250" data-label="ACCUMULATOR" data-ranges=''
-                                    style="width: 200px; height: 200px;">
+                                    style="width: 170px; height: 170px;">
                                 </div>
                             </td>
                         </tr>
@@ -466,7 +466,7 @@
                             <td colspan="2" class="">
                                 <div class="plc-gauge" data-ui-type="gauge" data-tag-id="200" data-min="0"
                                     data-max="400" data-label="MARKING" data-ranges=''
-                                    style="width: 200px; height: 200px;">
+                                    style="width: 170px; height: 170px;">
                                 </div>
                             </td>
                         </tr>
@@ -495,7 +495,7 @@
                             <td colspan="2" class="">
                                 <div class="plc-gauge" data-ui-type="gauge" data-tag-id="201" data-min="0"
                                     data-max="250" data-label="PRINCHER" data-ranges=''
-                                    style="width: 200px; height: 200px;">
+                                    style="width: 170px; height: 170px;">
                                 </div>
                             </td>
                         </tr>
@@ -511,7 +511,7 @@
                 <table class="table table-sm ">
                     <thead>
                         <tr>
-                            <th class="text-center" colspan="2">IN FEED</th>
+                            <th class="text-center" colspan="2">TEMPRETURE</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -528,8 +528,8 @@
                         <tr>
                             <td colspan="2" class="">
                                 <div class="plc-gauge" data-ui-type="gauge" data-tag-id="227" data-min="0"
-                                    data-max="250" data-label="IN FEED" data-ranges=''
-                                    style="width: 200px; height: 200px;">
+                                    data-max="250" data-label="TEMPRETURE" data-ranges=''
+                                    style="width: 170px; height: 170px;">
                                 </div>
                             </td>
                         </tr>
@@ -563,7 +563,7 @@
                             <td colspan="2" class="">
                                 <div class="plc-gauge" data-ui-type="gauge" data-tag-id="227" data-min="0"
                                     data-max="250" data-label="IN FEED" data-ranges=''
-                                    style="width: 200px; height: 200px;">
+                                    style="width: 170px; height: 170px;">
                                 </div>
                             </td>
                         </tr>
