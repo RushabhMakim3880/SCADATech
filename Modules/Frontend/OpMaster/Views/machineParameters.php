@@ -183,35 +183,42 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>ZA SPEED</th>
+                        <th>HEAD1 SPEED</th>
                         <td>
                             <input class="plc-input virtualNumKeypad" data-tag-id="670" data-disable-color="#6c757d"
                                 data-disable-condition="" />
                         </td>
                     </tr>
                     <tr>
-                        <th>ZB SPEED</th>
+                        <th>HEAD2 SPEED</th>
                         <td>
                             <input class="plc-input virtualNumKeypad" data-tag-id="671" data-disable-color="#6c757d"
                                 data-disable-condition="" />
                         </td>
                     </tr>
                     <tr>
-                        <th>YA SPEED</th>
+                        <th>HEAD3 SPEED</th>
                         <td>
                             <input class="plc-input virtualNumKeypad" data-tag-id="666" data-disable-color="#6c757d"
                                 data-disable-condition="" />
                         </td>
                     </tr>
                     <tr>
-                        <th>YB SPEED</th>
+                        <th>HEAD4 SPEED</th>
                         <td>
                             <input class="plc-input virtualNumKeypad" data-tag-id="667" data-disable-color="#6c757d"
                                 data-disable-condition="" />
                         </td>
                     </tr>
                     <tr>
-                        <th>MARKING SPEED</th>
+                        <th>HEAD5 SPEED</th>
+                        <td>
+                            <input class="plc-input virtualNumKeypad" data-tag-id="567" data-disable-color="#6c757d"
+                                data-disable-condition="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>HEAD6 SPEED</th>
                         <td>
                             <input class="plc-input virtualNumKeypad" data-tag-id="567" data-disable-color="#6c757d"
                                 data-disable-condition="" />
@@ -291,29 +298,46 @@
                                 data-disable-condition='' /></td>
                     </tr>
                     <tr>
-                        <th>Y1 SPEED</th>
-                        <td><input class='plc-input virtualNumKeypad' data-tag-id='570' data-disable-color='#6c757d'
-                                data-disable-condition='' /></td>
+                        <th>HEAD1 SPEED</th>
+                        <td>
+                            <input class="plc-input virtualNumKeypad" data-tag-id="670" data-disable-color="#6c757d"
+                                data-disable-condition="" />
+                        </td>
                     </tr>
                     <tr>
-                        <th>Y2 SPEED</th>
-                        <td><input class='plc-input virtualNumKeypad' data-tag-id='571' data-disable-color='#6c757d'
-                                data-disable-condition='' /></td>
+                        <th>HEAD2 SPEED</th>
+                        <td>
+                            <input class="plc-input virtualNumKeypad" data-tag-id="671" data-disable-color="#6c757d"
+                                data-disable-condition="" />
+                        </td>
                     </tr>
                     <tr>
-                        <th>Z1 SPEED</th>
-                        <td><input class='plc-input virtualNumKeypad' data-tag-id='572' data-disable-color='#6c757d'
-                                data-disable-condition='' /></td>
+                        <th>HEAD3 SPEED</th>
+                        <td>
+                            <input class="plc-input virtualNumKeypad" data-tag-id="666" data-disable-color="#6c757d"
+                                data-disable-condition="" />
+                        </td>
                     </tr>
                     <tr>
-                        <th>Z2 SPEED</th>
-                        <td><input class='plc-input virtualNumKeypad' data-tag-id='573' data-disable-color='#6c757d'
-                                data-disable-condition='' /></td>
+                        <th>HEAD4 SPEED</th>
+                        <td>
+                            <input class="plc-input virtualNumKeypad" data-tag-id="667" data-disable-color="#6c757d"
+                                data-disable-condition="" />
+                        </td>
                     </tr>
                     <tr>
-                        <th>MARKING SPEED</th>
-                        <td><input class='plc-input virtualNumKeypad' data-tag-id='568' data-disable-color='#6c757d'
-                                data-disable-condition='' /></td>
+                        <th>HEAD5 SPEED</th>
+                        <td>
+                            <input class="plc-input virtualNumKeypad" data-tag-id="567" data-disable-color="#6c757d"
+                                data-disable-condition="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>HEAD6 SPEED</th>
+                        <td>
+                            <input class="plc-input virtualNumKeypad" data-tag-id="567" data-disable-color="#6c757d"
+                                data-disable-condition="" />
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -346,6 +370,16 @@
                     </tr>
                     <tr>
                         <th>PUNCH 4</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="418" data-disable-color="#6c757d"
+                                data-disable-condition="" /></td>
+                    </tr>
+                    <tr>
+                        <th>PUNCH 5</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="417" data-disable-color="#6c757d"
+                                data-disable-condition="" /></td>
+                    </tr>
+                    <tr>
+                        <th>PUNCH 6</th>
                         <td><input class="plc-input virtualNumKeypad" data-tag-id="418" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
@@ -507,6 +541,40 @@
                     </tbody>
                 </table>
             </div>
+            <div class="col-auto">
+                <table class="table table-sm ">
+                    <thead>
+                        <tr>
+                            <th class="text-center" colspan="2">IN FEED</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>TIME</th>
+                            <td><input class="plc-input virtualNumKeypad" data-tag-id="618" data-disable-color="#6c757d"
+                                    data-disable-condition="" /></td>
+                        </tr>
+                        <tr>
+                            <th>HIGH</th>
+                            <td><input class="plc-input virtualNumKeypad" data-tag-id="228" data-disable-color="#6c757d"
+                                    data-disable-condition="" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="">
+                                <div class="plc-gauge" data-ui-type="gauge" data-tag-id="227" data-min="0"
+                                    data-max="250" data-label="IN FEED" data-ranges=''
+                                    style="width: 200px; height: 200px;">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>LOW</th>
+                            <td><input class="plc-input virtualNumKeypad" data-tag-id="229" data-disable-color="#6c757d"
+                                    data-disable-condition="" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="row">
             <div class="col-auto">
@@ -550,6 +618,8 @@
 
                     </tbody>
                 </table>
+            </div>
+            <div class="col-auto">
                 <table class="table table-sm ">
                     <tbody>
                         <tr>
@@ -568,6 +638,7 @@
                                 <span title="351: TEMP_PV">
                                     <input class="plc-input virtualNumKeypad" data-tag-id="351"
                                         data-disable-color="#6c757d" data-disable-condition="" disabled />
+                                </span>
                             </td>
                         </tr>
                         <tr>
@@ -578,8 +649,47 @@
                     </tbody>
                 </table>
             </div>
-
-
+            <div class="col-auto">
+                <table class="table table-sm ">
+                    <thead>
+                        <tr>
+                            <th colspan="2">ENERGY DATA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>RY Vol.</th>
+                            <td><span class="plc-output" data-ui-type="output" data-tag-id="619" data-label="RY Vol.">
+                                </span></td>
+                        </tr>
+                        <tr>
+                            <th>YB Vol.</th>
+                            <td><span class="plc-output" data-ui-type="output" data-tag-id="620" data-label="YB Vol.">
+                                </span></td>
+                        </tr>
+                        <tr>
+                            <th>BR Vol.</th>
+                            <td><span class="plc-output" data-ui-type="output" data-tag-id="621" data-label="BR Vol.">
+                                </span></td>
+                        </tr>
+                        <tr>
+                            <th>R AMP.</th>
+                            <td><span class="plc-output" data-ui-type="output" data-tag-id="622" data-label="R AMP.">
+                                </span></td>
+                        </tr>
+                        <tr>
+                            <th>Y AMP.</th>
+                            <td><span class="plc-output" data-ui-type="output" data-tag-id="623" data-label="Y AMP.">
+                                </span></td>
+                        </tr>
+                        <tr>
+                            <th>B AMP.</th>
+                            <td><span class="plc-output" data-ui-type="output" data-tag-id="624" data-label="B AMP.">
+                                </span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
 
