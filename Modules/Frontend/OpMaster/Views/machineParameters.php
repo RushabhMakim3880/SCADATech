@@ -7,7 +7,7 @@
 
 
     <div class="row">
-        <div class="col-auto">
+        <div class="col-md-4">
             <table class="table table-sm ">
                 <thead>
                     <tr>
@@ -139,7 +139,7 @@
 
         </div>
 
-        <div class="col-auto">
+        <div class="col-md-4">
             <table class="table table-sm ">
                 <thead>
                     <tr>
@@ -283,7 +283,7 @@
             </table>
 
         </div>
-        <div class="col-auto">
+        <div class="col-md-4">
 
             <table class="table table-sm ">
                 <thead>
