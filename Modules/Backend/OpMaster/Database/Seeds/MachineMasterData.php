@@ -564,7 +564,36 @@ class MachineMasterData extends Seeder
 (464, 1, 464, 1, 'SET_Y5_AUTO_SPEED', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_Y5_AUTO_SPEED', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
 (465, 1, 465, 1, 'SET_Y5_MAX_SPEED', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_Y5_MAX_SPEED', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
 (466, 1, 466, 1, 'SET_Y6_AUTO_SPEED', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_Y6_AUTO_SPEED', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
-(467, 1, 467, 1, 'SET_Y6_MAX_SPEED', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_Y6_MAX_SPEED', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2)
+(467, 1, 467, 1, 'SET_Y6_MAX_SPEED', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_Y6_MAX_SPEED', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(468, 1, 468, 1, 'S_PUNCH1_DB1', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_PUNCH1_DB1', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(469, 1, 469, 1, 'S_PUNCH2_DB2', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_PUNCH2_DB2', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(470, 1, 470, 1, 'S_PUNCH3_DB3', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_PUNCH3_DB3', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(471, 1, 471, 1, 'S_PUNCH4_DA1', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_PUNCH4_DA1', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(472, 1, 472, 1, 'S_PUNCH5_DA2', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_PUNCH5_DA2', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(473, 1, 473, 1, 'S_PUNCH6_DA3', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_PUNCH6_DA3', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(474, 1, 474, 1, 'S_PRINCHER_RETURN_SPEED', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_PRINCHER_RETURN_SPEED', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(475, 1, 475, 1, 'S_RETURN_LINE_HIGH_PRESSURE', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_RETURN_LINE_HIGH_PRESSURE', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(476, 1, 476, 1, 'SET_HIGH_PRESSURE_LOW_OFF', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_HIGH_PRESSURE_LOW_OFF', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(477, 1, 477, 1, 'SD_RY_VOLTAGE', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_RY_VOLTAGE', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(478, 1, 478, 1, 'SD_YB_VOLTAGE', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_YB_VOLTAGE', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(479, 1, 479, 1, 'SD_BR_VOLTAGE', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_BR_VOLTAGE', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(480, 1, 480, 1, 'SD_RL_AMP', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_RL_AMP', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(481, 1, 481, 1, 'SD_YL_AMP', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_YL_AMP', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(482, 1, 482, 1, 'SD_BL_AMP', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_BL_AMP', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(483, 1, 483, 1, 'SD_X_WORK_POS', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_X_WORK_POS', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(484, 1, 484, 1, 'SD_Y1_WORK_POS', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_Y1_WORK_POS', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(485, 1, 485, 1, 'SD_Y2_WORK_POS', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_Y2_WORK_POS', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(486, 1, 486, 1, 'SD_Y3_WORK_POS', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_Y3_WORK_POS', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(487, 1, 487, 1, 'SD_Y4_WORK_POS', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_Y4_WORK_POS', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(488, 1, 488, 1, 'SD_Y5_WORK_POS', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_Y5_WORK_POS', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(489, 1, 489, 1, 'SD_Y6_WORK_POS', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_Y6_WORK_POS', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(490, 1, 490, 1, 'SET_CUT_GAP', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_CUT_GAP', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(491, 1, 491, 1, 'SD_CYC_TIME', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SD_CYC_TIME', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(492, 1, 492, 1, 'S_LEAD_SCRAP', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_LEAD_SCRAP', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(493, 1, 493, 1, 'S_PRINCHER_SCRAP', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_PRINCHER_SCRAP', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(494, 1, 494, 1, 'S_PRINCHER_MIN_SCRAP', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_PRINCHER_MIN_SCRAP', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(495, 1, 495, 1, 'S_RM_THICKNESS', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_RM_THICKNESS', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2)
+
 
                             ;");
 
