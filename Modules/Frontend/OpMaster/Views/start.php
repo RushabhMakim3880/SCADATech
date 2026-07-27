@@ -169,7 +169,8 @@
     </div>
 
     <div class="">
-        <img src="<?= base_url('assets/img/DetanicsLogo.png') ?>" alt="OpMaster Image" class="centerLogo" style="max-height: 150px; width: auto;">
+        <img src="<?= base_url('assets/img/DetanicsLogo.png') ?>" alt="OpMaster Image" class="centerLogo"
+            style="max-height: 150px; width: auto;">
     </div>
 
     <?php
@@ -182,40 +183,48 @@
 
     <?php
     if ($isIpc) {
-    ?>
+        ?>
 
         <div class="position-fixed bottom-0 w-100 text-center pb-2" style="pointer-events: none;left:0px;">
             <div class="d-inline-flex flex-wrap gap-3" style="pointer-events: auto;">
-                <button data-route="homing" class="btn btn-primary btn-lg loadRoutes" style="font-size: large; min-width: 150px;">
+                <button data-route="homing" class="btn btn-primary btn-lg loadRoutes"
+                    style="font-size: large; min-width: 150px;">
                     <i class="fa fa-home-alt fa-2x"></i> <br>
                     Homing
                 </button>
-                <button data-route="machineParameters" class="btn btn-primary btn-lg loadRoutes" style="font-size: large; min-width: 150px;">
+                <button data-route="machineParameters" class="btn btn-primary btn-lg loadRoutes"
+                    style="font-size: large; min-width: 150px;">
                     <i class="fa fa-cogs fa-2x"></i> <br>
                     Settings
                 </button>
 
-                <button data-route="manualControl" class="btn btn-primary btn-lg loadRoutes" style="font-size: large; min-width: 150px;">
+                <button data-route="manualControl" class="btn btn-primary btn-lg loadRoutes"
+                    style="font-size: large; min-width: 150px;">
                     <i class="fa fa-user-gear fa-2x"></i> <br>
                     Manual Control
                 </button>
-                <button data-route="programPrepare" class="btn btn-primary btn-lg loadRoutes" style="font-size: large; min-width: 150px;">
+                <button data-route="programPrepare" class="btn btn-primary btn-lg loadRoutes"
+                    style="font-size: large; min-width: 150px;">
                     <i class="fa fa-file fa-2x"></i> <br>
                     Program
                 </button>
-                <button data-route="autoControl" class="btn btn-primary btn-lg loadRoutes" style="font-size: large; min-width: 150px;">
+                <button data-route="autoControl" class="btn btn-primary btn-lg loadRoutes"
+                    style="font-size: large; min-width: 150px;">
                     <i class="fa fa-gears fa-2x"></i> <br>
                     Auto Control
                 </button>
-                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal" href="#inputList">
+                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal"
+                    href="#inputList">
                     <i class="fa fa-rotate-270 fa-arrow-right-to-bracket fa-2x"></i> <br>
                     Input List
                 </a>
-                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal" href="#outputList">
+                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal"
+                    href="#outputList">
                     <i class="fa fa-rotate-90 fa-arrow-right-from-bracket fa-2x"></i> <br>
                     Output List
                 </a>
-                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal" href="#debugLog">
+                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal"
+                    href="#debugLog">
                     <i class="fa fa-list fa-2x"></i> <br>
                     Log
                 </a>
@@ -229,24 +238,33 @@
                     Log Out
                 </button>
 
-                <button class="btn btn-primary btn-lg exitBtn nativeChannelBtns" style="font-size: large; min-width: 150px;">
+                <button class="btn btn-primary btn-lg exitBtn nativeChannelBtns"
+                    style="font-size: large; min-width: 150px;">
                     <i class="fa fa-times fa-2x"></i> <br>
                     Exit
                 </button>
 
                 <div class="dropdown nativeChannelBtns">
-                    <button class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown" style="font-size: large; min-width: 150px;">
+                    <button class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown"
+                        style="font-size: large; min-width: 150px;">
                         <i class="fa fa-list fa-2x"></i> <br>
                         ...
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="status" href="javascript:;"><i class="fa fa-check-circle"></i> Check Status</a></li>
-                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="start" href="javascript:;"><i class="fa fa-play-circle"></i> Start Process</a></li>
-                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="stop" href="javascript:;"><i class="fa fa-stop-circle"></i> Stop Process</a></li>
-                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="restart" href="javascript:;"><i class="fa fa-rotate"></i> Restart Process</a></li>
-                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="logs" href="javascript:;"><i class="fa fa-list"></i> Process Log</a></li>
-                        <li><a class="dropdown-item h3 blueTitle shutdownBtn" href="javascript:;"><i class="fa fa-power-off"></i> Shutdown System</a></li>
-                        <li><a class="dropdown-item h3 blueTitle restartBtn" href="javascript:;"><i class="fa fa-rotate"></i> Restart System</a></li>
+                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="status"
+                                href="javascript:;"><i class="fa fa-check-circle"></i> Check Status</a></li>
+                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="start"
+                                href="javascript:;"><i class="fa fa-play-circle"></i> Start Process</a></li>
+                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="stop" href="javascript:;"><i
+                                    class="fa fa-stop-circle"></i> Stop Process</a></li>
+                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="restart"
+                                href="javascript:;"><i class="fa fa-rotate"></i> Restart Process</a></li>
+                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="logs" href="javascript:;"><i
+                                    class="fa fa-list"></i> Process Log</a></li>
+                        <li><a class="dropdown-item h3 blueTitle shutdownBtn" href="javascript:;"><i
+                                    class="fa fa-power-off"></i> Shutdown System</a></li>
+                        <li><a class="dropdown-item h3 blueTitle restartBtn" href="javascript:;"><i
+                                    class="fa fa-rotate"></i> Restart System</a></li>
                     </ul>
                 </div>
 
@@ -266,7 +284,7 @@
 
 
 
-    <?php
+        <?php
     }
     ?>
 
@@ -277,7 +295,7 @@
 
 <?php
 if ($isIpc) {
-?>
+    ?>
 
     <!-- #modal-dialog -->
     <div class="modal fade" id="princherSafeScreen">
@@ -291,41 +309,30 @@ if ($isIpc) {
                     <div class="row">
                         <?php
                         $list = [
-                            '32' => ['value' => 'E STOP OPERATING PANEL', 'isReverse' => false],
-                            '33' => ['value' => 'E stop princher remote', 'isReverse' => false],
-                            '34' => ['value' => 'E stop outfeed remote', 'isReverse' => false],
-                            '39' => ['value' => 'Phase protector', 'isReverse' => false],
-                            '13' => ['value' => 'Barrier proxy', 'isReverse' => false],
-                            '355' => ['value' => 'X servo error', 'isReverse' => true],
-                            '359' => ['value' => 'Y1 servo error', 'isReverse' => true],
-                            '364' => ['value' => 'Y2 servo error', 'isReverse' => true],
-                            '369' => ['value' => 'Y3 servo error', 'isReverse' => true],
-                            '374' => ['value' => 'Y4 servo error', 'isReverse' => true],
-                            '65' => ['value' => 'Marking body up proxy', 'isReverse' => false],
-                            '42' => ['value' => 'Princher down proxy', 'isReverse' => false],
-                            '24' => ['value' => 'Main hyd motor run', 'isReverse' => false], //ok
-                            '495' => ['value' => 'Edge finder declamp proxy', 'isReverse' => false],
-                            '496' => ['value' => 'Punch 1 cmd', 'isReverse' => true],
-                            '497' => ['value' => 'Punch 2 cmd', 'isReverse' => true],
-                            '498' => ['value' => 'Punch 3 cmd', 'isReverse' => true],
-                            '499' => ['value' => 'Punch 4 cmd', 'isReverse' => true],
-                            '500' => ['value' => 'Marking cmd', 'isReverse' => true],
-                            '501' => ['value' => 'Cutting cmd', 'isReverse' => true],
-                            '502' => ['value' => 'Punch 1 safety stop', 'isReverse' => true],
-                            '503' => ['value' => 'Punch 2 safety stop', 'isReverse' => true],
-                            '504' => ['value' => 'Punch 3 safety stop', 'isReverse' => true],
-                            '505' => ['value' => 'Punch 4 safety stop', 'isReverse' => true],
-                            '67' => ['value' => 'Marking cylinder up proxy', 'isReverse' => false],
-                            '53' => ['value' => 'Marking casset 1 proxy', 'isReverse' => false],
-                            '71' => ['value' => 'Punch 1 up proxy', 'isReverse' => false],
-                            '73' => ['value' => 'Punch 2 up proxy', 'isReverse' => false],
-                            '75' => ['value' => 'Punch 3 up proxy', 'isReverse' => false],
-                            '77' => ['value' => 'Punch 4 up proxy', 'isReverse' => false],
-                            '58' => ['value' => 'Cutting cylinder up proxy', 'isReverse' => false],
-                            '92' => ['value' => 'In feed 90 pressure ok', 'isReverse' => false],
-                            '506' => ['value' => 'In feed 90 proxy', 'isReverse' => false],
-                            '136' => ['value' => 'Princher clamp pressure ok', 'isReverse' => false],
-                            '59' => ['value' => 'Proxy cut hold down up', 'isReverse' => false],
+                            '32' => ['value' => 'P1_SAFETY_STOP', 'isReverse' => true],
+                            '33' => ['value' => 'P2_SAFETY_STOP', 'isReverse' => true],
+                            '34' => ['value' => 'P3_SAFETY_STOP', 'isReverse' => true],
+                            '39' => ['value' => 'P4_SAFETY_STOP', 'isReverse' => true],
+                            '13' => ['value' => 'P5_SAFETY_STOP', 'isReverse' => true],
+                            '355' => ['value' => 'P6_SAFETY_STOP', 'isReverse' => true],
+                            '359' => ['value' => 'I_PROXY_PUNCH_1_U', 'isReverse' => false],
+                            '364' => ['value' => 'I_PROXY_PUNCH_2_U', 'isReverse' => false],
+                            '369' => ['value' => 'I_PROXY_PUNCH_3_U', 'isReverse' => false],
+                            '374' => ['value' => 'I_PROXY_PUNCH_4_U', 'isReverse' => false],
+                            '65' => ['value' => 'I_PROXY_PUNCH_5_U', 'isReverse' => false],
+                            '42' => ['value' => 'I_PROXY_PUNCH_6_U', 'isReverse' => false],
+                            '24' => ['value' => 'I_PROXY_MARKING_CYL_U', 'isReverse' => false], //ok
+                            '495' => ['value' => 'I_PROXY_CASSATE_1', 'isReverse' => false],
+                            '496' => ['value' => 'I_PROXY_CUTCYL_U', 'isReverse' => false],
+                            '497' => ['value' => 'I_PROXY_CUTHOLD_U', 'isReverse' => false],
+                            '498' => ['value' => 'I_PROXY_MARKING_BODY_U', 'isReverse' => false],
+                            '499' => ['value' => 'MARKING_SAFETY_STOP', 'isReverse' => true],
+                            '500' => ['value' => 'I_PROXY_PRINCHER_D', 'isReverse' => false],
+                            '501' => ['value' => 'I_MAIN_MOTOR_RUN', 'isReverse' => false],
+                            '502' => ['value' => 'IN_FEED_90_OK', 'isReverse' => false],
+                            '503' => ['value' => 'MARKING_CMD', 'isReverse' => true],
+                            '504' => ['value' => 'CUTTING_CMD', 'isReverse' => true],
+                            '505' => ['value' => 'PRINCHER_CLAMP_PRESSURE_OK', 'isReverse' => false],
                         ];
 
                         $half = ceil(count($list) / 2);
@@ -677,9 +684,12 @@ if ($isIpc) {
                 </div>
                 <div class="modal-body">
                     <ul class="nav nav-pills">
-                        <li class="nav-item"><a href="#autoCycleLog" data-bs-toggle="tab" class="nav-link active">Auto Cycle Log</a></li>
-                        <li class="nav-item"><a href="#tagWriteLog" data-bs-toggle="tab" class="nav-link">Tag Write Log</a></li>
-                        <li class="nav-item"><a href="#liveTagView" data-bs-toggle="tab" class="nav-link">Live Tag View</a></li>
+                        <li class="nav-item"><a href="#autoCycleLog" data-bs-toggle="tab" class="nav-link active">Auto Cycle
+                                Log</a></li>
+                        <li class="nav-item"><a href="#tagWriteLog" data-bs-toggle="tab" class="nav-link">Tag Write Log</a>
+                        </li>
+                        <li class="nav-item"><a href="#liveTagView" data-bs-toggle="tab" class="nav-link">Live Tag View</a>
+                        </li>
                     </ul>
 
                     <div class="tab-content panel p-3 rounded">
@@ -702,7 +712,7 @@ if ($isIpc) {
         </div>
     </div>
 
-<?php
+    <?php
 }
 ?>
 
