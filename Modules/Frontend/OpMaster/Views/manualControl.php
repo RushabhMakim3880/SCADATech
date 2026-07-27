@@ -268,23 +268,18 @@
                                     data-disable-color="#ccc" data-disable-condition="" data-confirm="" <?php
                                     if (getenv('isCuttingOperationEnabled') === 'true') {
                                         ?>
-                                        data-list='[1:PRINCHER FWD/REV,2:A SIDE Y-AXIS UP/DOWN,3:A SIDE Z-AXIS UP/DOWN,4:B SIDE Y-AXIS UP/DOWN,5:B SIDE Z-AXIS UP/DOWN,6:MARKING FWD/REV,7:CHAIN FEEDER FWD/REV,8:SWING ARM FWD/REV,9:A SIDE ATC HOME POS/ TOOL POS,10:A SIDE TOOL CLAMP/ DECLAMP,11:B SIDE ATC HOME POS/ TOOL POS,12:B SIDE TOOL CLAMP/DECLAMP,13:MARKING BODY UP/DOWN,14:MARKING CYL UP/DOWN,15:FRONT HOLD UP/DOWN,16:MIDDLE1 HOLD UP/DOWN,17:MIDDLE2 HOLD UP/DOWN,18:EXIT HOLD UP/DOWN,19:PRINCHER UP/DOWN,20:PRINCHER CLAMP/DECLAMP,21:OUTFEED UP/DOWN,22:CHIP CONVEYOR FWD/REV,23:CUTTING HOLD UP/DOWN,24:CUTTING CYL UP/DOWN]'>
+                                        data-list='[1:PRINCHER FWD/REV,2:HEAD1 UP/DOWN,3:HEAD2 UP/DOWN,4:HEAD3 UP/DOWN,5:HEAD4 UP/DOWN,6:HEAD5 UP/DOWN,7:HEAD6 UP/DOWN,8:HOLD1 UP/DOWN,9:PUNCH1 UP/DOWN,10:HOLD2 UP/DOWN,11:PUNCH2 UP/DOWN,12:HOLD3 UP/DOWN,13:PUNCH3 UP/DOWN,14:HOLD4 UP/DOWN,15:PUNCH4 UP/DOWN,16:HOLD5 UP/DOWN,17:PUNCH5 UP/DOWN,18:HOLD6 UP/DOWN,19:PUNCH6 UP/DOWN,20:MARKING BODY UP/DOWN,21:MARKING CYL UP/DOWN,22:MARKING CASSATE UP/DOWN,23:PRINCHER UP/DOWN,24:PRINCHER CLAMP/DECLAMP,25:CUT HOLD UP/DOWN,26:CUTTING CYL UP/DOWN,27:INFEED UP/DOWN,28:OUTFEED UP/DOWN,29:CHAIN FEEDER FWD/REV]'>
                                         <?php
                                     } else {
                                         ?>
-                                        data-list='[1:PRINCHER FWD/REV,2:A SIDE Y-AXIS UP/DOWN,3:A SIDE Z-AXIS UP/DOWN,4:B
-                                        SIDE
-                                        Y-AXIS UP/DOWN,5:B SIDE Z-AXIS UP/DOWN,6:MARKING FWD/REV,7:CHAIN FEEDER
-                                        FWD/REV,8:SWING
-                                        ARM FWD/REV,9:A SIDE ATC HOME POS/ TOOL POS,10:A SIDE TOOL CLAMP/ DECLAMP,11:B SIDE
-                                        ATC
-                                        HOME POS/ TOOL POS,12:B SIDE TOOL CLAMP/DECLAMP,13:MARKING BODY UP/DOWN,14:MARKING
-                                        CYL
-                                        UP/DOWN,15:FRONT HOLD UP/DOWN,16:MIDDLE1 HOLD UP/DOWN,17:MIDDLE2 HOLD
-                                        UP/DOWN,18:EXIT
-                                        HOLD UP/DOWN,19:PRINCHER
-                                        UP/DOWN,20:PRINCHER CLAMP/DECLAMP,21:OUTFEED UP/DOWN,22:CHIP
-                                        CONVEYOR FWD/REV'>
+                                        data-list='[1:PRINCHER FWD/REV,2:HEAD1 UP/DOWN,3:HEAD2 UP/DOWN,4:HEAD3
+                                        UP/DOWN,5:HEAD4 UP/DOWN,6:HEAD5 UP/DOWN,7:HEAD6 UP/DOWN,8:HOLD1 UP/DOWN,9:PUNCH1
+                                        UP/DOWN,10:HOLD2 UP/DOWN,11:PUNCH2 UP/DOWN,12:HOLD3 UP/DOWN,13:PUNCH3
+                                        UP/DOWN,14:HOLD4 UP/DOWN,15:PUNCH4 UP/DOWN,16:HOLD5 UP/DOWN,17:PUNCH5
+                                        UP/DOWN,18:HOLD6 UP/DOWN,19:PUNCH6 UP/DOWN,20:MARKING BODY UP/DOWN,21:MARKING CYL
+                                        UP/DOWN,22:MARKING CASSATE UP/DOWN,23:PRINCHER UP/DOWN,24:PRINCHER
+                                        CLAMP/DECLAMP,25:CUT HOLD UP/DOWN,26:CUTTING CYL UP/DOWN,27:INFEED
+                                        UP/DOWN,28:OUTFEED UP/DOWN,29:CHAIN FEEDER FWD/REV'>
                                         <?php
                                     }
                                     ?>
