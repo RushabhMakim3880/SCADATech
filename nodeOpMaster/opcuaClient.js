@@ -221,7 +221,7 @@ class OPCUAService {
         }
     }
 
-    async scanAllTags(startNode = "ns=4;s=|var|LicOS-PAC-MC512.Application.GVL") {
+    async scanAllTags(startNode = "ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE") {
         const tags = [];
 
         const typeCache = {};
