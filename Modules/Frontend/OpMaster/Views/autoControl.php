@@ -350,114 +350,101 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        <button class="plc-btn btn btn-sm w-100" data-tag-id="425"
-                                            data-behavior="maintain" data-indicator-id="425" data-on-color="#82c779"
+                                        <button class="plc-btn btn btn-sm w-100" data-tag-id="316"
+                                            data-behavior="maintain" data-indicator-id="316" data-on-color="#82c779"
                                             data-off-color="#f59c1a" data-disable-color="#6c757d"
                                             data-on-label="AUTO START<br>FROM FIRST"
                                             data-off-label="AUTO START<br>FROM FIRST" data-on-confirm=""
                                             data-off-confirm=""></button>
                                     </td>
                                     <td>
-                                        <button class="plc-btn btn btn-sm w-100" data-tag-id="426"
-                                            data-behavior="maintain" data-indicator-id="426" data-on-color="#82c779"
+                                        <button class="plc-btn btn btn-sm w-100" data-tag-id="317"
+                                            data-behavior="maintain" data-indicator-id="317" data-on-color="#82c779"
                                             data-off-color="#f59c1a" data-disable-color="#6c757d"
                                             data-on-label="AUTO START<br>FROM SELECTED"
                                             data-off-label="AUTO START<br>FROM SELECTED" data-on-confirm=""
                                             data-off-confirm=""></button>
                                     </td>
                                     <td>
-                                        <button class="plc-btn btn btn-sm w-100 autoLoadingBypass" data-tag-id="436"
-                                            data-behavior="maintain" data-indicator-id="436" data-on-color="#82c779"
+                                        <button class="plc-btn btn btn-sm w-100 autoLoadingBypass" data-tag-id="320"
+                                            data-behavior="maintain" data-indicator-id="320" data-on-color="#82c779"
                                             data-off-color="#0f75bc" data-disable-color="#6c757d"
                                             data-on-label="CYCLE<br>FULLY AUTO" data-off-label="CYCLE<br>SEMI AUTO"
                                             data-on-confirm="" data-off-confirm=""></button>
-                                    </td>
-                                    <td>
-                                        <button class="plc-btn btn btn-sm w-100 autoLoadingBypass" data-tag-id="423"
-                                            data-behavior="momentary" data-indicator-id="423" data-on-color="#82c779"
-                                            data-off-color="#0a4c7a" data-disable-color="#6c757d"
-                                            data-on-label="AUTO<br>LOADING" data-off-label="AUTO<br>LOADING"
-                                            data-on-confirm="" data-off-confirm=""
-                                            data-disable-condition="424=true"></button>
                                     </td>
                                     <td>
                                         <button class="btn btn-sm w-100 btn-primary plcLikeBtn"
                                             onclick="loadProgramAlign();">PROGRAM<br>ALIGN</button>
                                     </td>
                                     <td>
-                                        <button class="plc-btn btn btn-sm" data-tag-id="419" data-behavior="momentary"
-                                            data-indicator-id="109" data-on-color="#82c779" data-off-color="#0a4c7a"
+                                        <button class="plc-btn btn btn-sm w-100" data-tag-id="313" data-behavior="momentary"
+                                            data-indicator-id="313" data-on-color="#82c779" data-off-color="#0a4c7a"
                                             data-disable-color="#6c757d" data-on-label="ALL<br>HOME"
                                             data-off-label="ALL<br>HOME" data-on-confirm=""
                                             data-off-confirm=""></button>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>
-                                        <button class="plc-btn btn btn-sm w-100" data-tag-id="432"
-                                            data-behavior="maintain" data-indicator-id="432" data-on-color="#82c779"
-                                            data-off-color="#0f75bc" data-disable-color="#6c757d"
-                                            data-on-label="DRILL CHIP<br>BREAKS CYCLE"
-                                            data-off-label="DRILL NORMAL<br>CYCLE" data-on-confirm=""
-                                            data-off-confirm=""></button>
-                                    </td>
-                                    <td colspan="4">
-                                        <a class="plc-btn btn btn-primary btn-sm" data-bs-toggle="modal"
-                                            href="#dataTags">
-                                            CHIP BREAK<br>CYCLE DATA
-                                        </a>
-
-                                        <a class="plc-btn btn btn-sm" data-tag-id="285" data-indicator-only="true"
+                                        <a class="plc-btn btn btn-sm w-100" data-tag-id="285" data-indicator-only="true"
                                             data-behavior="maintain" data-indicator-id="285" data-on-color="#82c779"
                                             data-off-color="#ff5b57" data-disable-color="#6c757d"
                                             data-on-label="PRINCHER<br>SAFE" data-off-label="PRINCHER<br>NOT SAFE"
                                             data-on-confirm="" data-off-confirm="" data-bs-toggle="modal"
                                             href="#princherSafeScreen"></a>
-
-
-                                        <button class="plc-btn btn btn-sm" data-tag-id="437" data-behavior="maintain"
-                                            data-indicator-id="437" data-on-color="#82c779" data-off-color="#0f75bc"
-                                            data-disable-color="#6c757d" data-on-label="DECLAMP AT<br>LOADING SIDE"
-                                            data-off-label="DECLAMP AT<br>UNLOAD SIDE" data-on-confirm=""
-                                            data-off-confirm=""></button>                                        
-                                            <button class="plc-btn btn btn-sm" data-tag-id="422" data-behavior="maintain"
-                                            data-indicator-id="422" data-on-color="#82c779" data-off-color="#0f75bc"
-                                            data-disable-color="#6c757d" data-on-label="AUTO<br>COOLENT ON" 
-                                            data-off-label="AUTO<br>COOLENT OFF" data-on-confirm=""
-                                            data-off-confirm=""></button>
-                                                                                    
-                                            <button class="plc-btn btn btn-sm" data-tag-id="421" data-behavior="maintain"
-                                            data-indicator-id="421" data-on-color="#82c779" data-off-color="#0f75bc"
-                                            data-disable-color="#6c757d" data-on-label="AUTO CHIP<br>CONV ON" 
-                                            data-off-label="AUTO CHIP<br>CONV OFF" data-on-confirm=""
-                                            data-off-confirm=""></button>
-                                    <!-- <button class="plc-btn btn btn-sm w-100" data-tag-id="421" data-behavior="maintain"
-                                        data-indicator-id="421" data-on-color="#82c779" data-off-color="#0a4c7a"
-                                        data-disable-color="#6c757d" data-on-label="AUTO CHIP<br>CONV ON"
-                                        data-off-label="AUTO CHIP<br>CONV OFF" data-on-confirm=""
-                                        data-off-confirm=""></button> -->
-                                        <!-- <button class="plc-btn btn btn-sm" data-tag-id="439" data-behavior="momentary"
-                                            data-indicator-id="439" data-on-color="#82c779" data-off-color="#0f75bc"
-                                            data-disable-color="#6c757d" data-on-label="DECLAMP<br>CYCLE ON"
-                                            data-off-label="DECLAMP<br>CYCLE OFF" data-on-confirm=""
-                                            data-off-confirm=""></button> -->
+                                    </td>
                                 </tr>
-
                                 <tr>
                                     <td>
+                                        <button class="plc-btn btn btn-sm w-100" data-tag-id="319" data-behavior="maintain"
+                                            data-indicator-id="319" data-on-color="#82c779" data-off-color="#0f75bc"
+                                            data-disable-color="#6c757d" data-on-label="DECLAMP AT<br>LOADING SIDE"
+                                            data-off-label="DECLAMP AT<br>UNLOAD SIDE" data-on-confirm=""
+                                            data-off-confirm=""></button>
+                                    </td>
+                                    <td>
+                                        <button class="plc-btn btn btn-sm w-100" data-tag-id="329" data-behavior="momentary"
+                                            data-indicator-id="329" data-on-color="#82c779" data-off-color="#0f75bc"
+                                            data-disable-color="#6c757d" data-on-label="PRINCHER<br>@ HOME"
+                                            data-off-label="PRINCHER<br>@ HOME" data-on-confirm=""
+                                            data-off-confirm=""></button>
+                                    </td>
+                                    <td>
+                                        <button class="plc-btn btn btn-sm w-100" data-tag-id="315" data-behavior="maintain"
+                                            data-indicator-id="315" data-on-color="#82c779" data-off-color="#0f75bc"
+                                            data-disable-color="#6c757d" data-on-label="AUTO LOADING<br>ON"
+                                            data-off-label="AUTO LOADING<br>OFF" data-on-confirm=""
+                                            data-off-confirm=""></button>
+                                    </td>
+                                    <td>
+                                        <button class="plc-btn btn btn-sm w-100 autoLoadingBypass" data-tag-id="314"
+                                            data-behavior="momentary" data-indicator-id="314" data-on-color="#82c779"
+                                            data-off-color="#0a4c7a" data-disable-color="#6c757d"
+                                            data-on-label="LOADING<br>PB" data-off-label="LOADING<br>PB"
+                                            data-on-confirm="" data-off-confirm=""></button>
+                                    </td>
+                                    <td>
+                                        <button class="plc-btn btn btn-sm w-100" data-tag-id="326" data-behavior="maintain"
+                                            data-indicator-id="326" data-on-color="#82c779" data-off-color="#0f75bc"
+                                            data-disable-color="#6c757d" data-on-label="REFERENCE<br>PB"
+                                            data-off-label="REFERENCE<br>PB" data-on-confirm=""
+                                            data-off-confirm=""></button>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
                                         <button class="plc-btn btn btn-sm w-100 scrapTypeToggle" data-tag-id="1"
                                             data-local-flag="true" data-on-color="#82c779" data-off-color="#0a4c7a"
                                             data-on-label="PRINCHER SCRAP<br>SELECTED"
                                             data-off-label="LEAD SCRAP<br>SELECTED"></button>
                                     </td>
-                                    <td>
+                                    <td colspan="4">
                                         <table class="w-100 table-xs">
                                             <tr>
                                                 <td>
                                                     LEAD SCRAP(MM):
                                                 </td>
                                                 <td>
-                                                    <input class=" virtualNumKeypad leadScrapInput"
+                                                    <input class="virtualNumKeypad leadScrapInput"
                                                         style="width:80px;" />
                                                 </td>
                                             </tr>
@@ -472,18 +459,16 @@
                                             </tr>
                                         </table>
                                     </td>
-
                                 </tr>
-
                                 <tr>
-                                    <td>
-                                        <button class="plc-btn btn btn-sm w-100" data-tag-id="457"
-                                            data-behavior="maintain" data-indicator-id="457" data-on-color="#82c779"
+                                    <td colspan="2">
+                                        <button class="plc-btn btn btn-sm w-100" data-tag-id="326"
+                                            data-behavior="maintain" data-indicator-id="326" data-on-color="#82c779"
                                             data-off-color="#0f75bc" data-disable-color="#6c757d"
-                                            data-on-label="FIXED LENGTH<br>CYCLE" data-off-label="REFERENCE<br>CYCLE"
+                                            data-on-label="AUTO<br>REFERENCE" data-off-label="AUTO<br>REFERENCE"
                                             data-on-confirm="" data-off-confirm=""></button>
                                     </td>
-                                    <td>
+                                    <td colspan="4">
                                         <table class="w-100 table-xs">
                                             <tr>
                                                 <td>
@@ -491,8 +476,7 @@
                                                 </td>
                                                 <td>
                                                     <input class="plc-input virtualNumKeypad" style="width:80px;"
-                                                        data-tag-id="532" data-disable-color="#6c757d"
-                                                        data-disable-condition="457=false" />
+                                                        data-tag-id="296" data-disable-color="#6c757d" />
                                                 </td>
                                             </tr>
                                             <tr>
@@ -503,39 +487,13 @@
                                                     <span title="394:S_BAR_THICKNESS">
                                                         <input class="plc-input virtualNumKeypad" style="width:80px;"
                                                             data-tag-id="394" data-disable-color="#6c757d"
-                                                            data-disable-condition="" disabled />
+                                                            disabled />
                                                     </span>
                                                 </td>
                                             </tr>
                                         </table>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <button class="plc-btn btn btn-sm w-100" data-tag-id="456"
-                                            data-behavior="maintain" data-indicator-id="456" data-on-color="#82c779"
-                                            data-off-color="#0f75bc" data-disable-color="#6c757d"
-                                            data-on-label="CUSTOMIZE<br>DISTANCE" data-off-label="PRINCHER <br>@ HOME"
-                                            data-on-confirm="" data-off-confirm=""></button>
-                                    </td>
-                                    <td>
-                                        <table class="w-100 table-xs">
-                                            <tr>
-                                                <td>
-                                                    RETURN X POS:
-                                                </td>
-                                                <td>
-                                                    <input class="plc-input virtualNumKeypad text-center"
-                                                        style="width:80px;" data-tag-id="580"
-                                                        data-disable-color="#6c757d"
-                                                        data-disable-condition="456=false" />
-                                                </td>
-                                            </tr>
-                                        </table>
-
-                                    </td>
-                                </tr>
-
                             </tbody>
                         </table>
                     </div>
