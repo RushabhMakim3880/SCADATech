@@ -5,6 +5,7 @@ let debugRun = false;
 let autoStartMode = "first";
 const passwordCheckInterval = 10 * 1000;
 let isCycleMonitorEnabled = false;
+let isSendingNextLine = false;
 
 programLogicTemplate = {
     programId: 0,
@@ -1568,6 +1569,11 @@ function clearAlarms() {
 }
 
 function sendNextLine() {
+    if (isSendingNextLine) {
+        console.log("sendNextLine already in progress, ignoring duplicate call.");
+        return;
+    }
+    isSendingNextLine = true;
 
     storeProgramState();
 
@@ -1576,16 +1582,19 @@ function sendNextLine() {
 
     if (programLogic.programData == null || programLogic.programData == undefined) {
         mtplAlerts.show("error", "Program data not loaded yet. Please start a jobcard first.");
+        isSendingNextLine = false;
         return;
     }
 
     //verify if program align status is ready.
     if (!programLogic.isReady) {
         mtplAlerts.show("error", "Program alignment is not ready.");
+        isSendingNextLine = false;
         return;
     }
 
     if (!checkBarLength()) {
+        isSendingNextLine = false;
         return;
     }
 
@@ -1610,10 +1619,12 @@ function sendNextLine() {
             // mtplAlerts.show("success", "All operations completed and reset.");
             addLog("autoCycleLog", "================All operations completed and reset.================");
             // addLog("autoCycleLog", "All operations completed and reset.");
+            isSendingNextLine = false;
         }).catch(error => {
             console.error("Error resetting operations:", error);
             mtplAlerts.show("error", "Failed to reset operations: " + error.message);
             addLog("autoCycleLog", "Failed to reset operations: " + error.message);
+            isSendingNextLine = false;
         });
 
         mtplAlerts.show("info", "All operations completed.");
@@ -1626,6 +1637,7 @@ function sendNextLine() {
         mtplAlerts.show("error", "No operation found for line number " + programLogic.nextLineNumber);
 
         addLog("autoCycleLog", "No operation found for line number " + programLogic.nextLineNumber);
+        isSendingNextLine = false;
         return;
     }
 
@@ -1635,6 +1647,7 @@ function sendNextLine() {
 
     if (barLength <= 0 && !debugRun) {
         mtplAlerts.show("error", "Bar length error");
+        isSendingNextLine = false;
         return;
     }
 
@@ -1697,7 +1710,7 @@ function sendNextLine() {
             if (item.itemRecipeId) {
                 recordItemCompletion(item.itemRecipeId);
             }
-
+            isSendingNextLine = false;
             sendNextLine();
             return;
         }
@@ -1724,6 +1737,7 @@ function sendNextLine() {
     }
     else {
         mtplAlerts.show("error", "Unknown operation type: " + item.headName);
+        isSendingNextLine = false;
         return;
     }
 
@@ -1771,16 +1785,19 @@ function sendNextLine() {
 
 
             addLog("autoCycleLog", "Ready Command sent to plc");
+            isSendingNextLine = false;
         }).catch(error => {
             addLog("autoCycleLog", "Failed to Send Ready Command sent to plc: " + error.message);
             // console.error("Error resetting ready state:", error);
             mtplAlerts.show("error", "Failed to reset ready state: " + error.message);
+            isSendingNextLine = false;
         });
 
     }).catch(error => {
         console.error("Error sending next operation:", error);
         addLog("autoCycleLog", "Failed to send next operation: " + error.message);
         mtplAlerts.show("error", "Failed to send next operation: " + error.message);
+        isSendingNextLine = false;
     });
 
     // jQuery(".autoStartMode").removeClass("btn-success").addClass("btn-primary");
@@ -2114,6 +2131,7 @@ function updateProgramCounters(item) {
 
 function resetProgram() {
     programLogic = JSON.parse(JSON.stringify(programLogicTemplate));
+    isSendingNextLine = false;
     if (isCycleMonitorEnabled)
         CycleMonitor.bindProgramLogic();         // reattach references
 }
