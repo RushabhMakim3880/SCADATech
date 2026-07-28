@@ -2,7 +2,7 @@
 
 # Config
 APP_NAME="scada-node"
-NODE_APP_PATH="/var/www/html/plcscada/nodeOpMaster"
+NODE_APP_PATH="/var/www/html/hptinnovanceanglepunchinghead6/nodeOpMaster"
 NODE_EXEC="/usr/bin/node"
 USER="www-data"
 SERVICE_FILE="/etc/systemd/system/$APP_NAME.service"
