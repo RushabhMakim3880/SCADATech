@@ -18,51 +18,41 @@
                         <tbody>
                             <tr>
                                 <td colspan="3">
-                                    <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="243"
-                                        data-behavior="momentary" data-indicator-id="24" data-on-color="#82c779"
+                                    <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="324"
+                                        data-behavior="momentary" data-indicator-id="220" data-on-color="#82c779"
                                         data-off-color="#0a4c7a" data-disable-color="#6c757d"
-                                        data-on-label="MAIN HYD MOTOR" data-off-label="MAIN HYD MOTOR"
+                                        data-on-label="MAIN HYD<br>MOTOR" data-off-label="MAIN HYD<br>MOTOR"
                                         data-on-confirm="" data-off-confirm=""></button>
 
-                                    <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="380"
-                                        data-behavior="momentary" data-indicator-id="381" data-on-color="#82c779"
-                                        data-off-color="#0a4c7a" data-disable-color="#6c757d"
-                                        data-on-label="PRINCHER HYD MOTOR" data-off-label="PRINCHER HYD MOTOR"
-                                        data-on-confirm="" data-off-confirm=""></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="240"
-                                        data-behavior="momentary" data-indicator-id="22" data-on-color="#82c779"
+                                    <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="322"
+                                        data-behavior="momentary" data-indicator-id="218" data-on-color="#82c779"
                                         data-off-color="#0a4c7a" data-disable-color="#6c757d"
                                         data-on-label="HEAD LUB<br>MOTOR" data-off-label="HEAD LUB<br>MOTOR"
                                         data-on-confirm="" data-off-confirm=""></button>
-                                </td>
-                                <td>
-                                    <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="251"
-                                        data-behavior="momentary" data-indicator-id="26" data-on-color="#82c779"
+
+                                    <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="325"
+                                        data-behavior="maintain" data-indicator-id="221" data-on-color="#82c779"
                                         data-off-color="#0a4c7a" data-disable-color="#6c757d"
                                         data-on-label="OIL CIRC.<br>MOTOR" data-off-label="OIL CIRC.<br>MOTOR"
-                                        data-on-confirm="" data-off-confirm=""></button>
-                                </td>
-                                <td>
-                                    <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="233"
-                                        data-behavior="momentary" data-indicator-id="16" data-on-color="#82c779"
+                                        data-on-confirm="" data-off-confirm=""></button><!-- <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="380"
+                                        data-behavior="momentary" data-indicator-id="381" data-on-color="#82c779"
                                         data-off-color="#0a4c7a" data-disable-color="#6c757d"
-                                        data-on-label="CHAIN<br>FEEDER FWD" data-off-label="CHAIN<br>FEEDER FWD"
-                                        data-on-confirm="" data-off-confirm=""></button>
+                                        data-on-label="PRINCHER HYD MOTOR" data-off-label="PRINCHER HYD MOTOR"
+                                        data-on-confirm="" data-off-confirm=""></button> -->
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="254"
-                                        data-behavior="momentary" data-indicator-id="45" data-on-color="#82c779"
+                                    <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="328"
+                                        data-behavior="momentary" data-indicator-id="223" data-on-color="#82c779"
                                         data-off-color="#0a4c7a" data-disable-color="#6c757d"
                                         data-on-label="PRINCHER LUB<br>MOTOR" data-off-label="PRINCHER LUB<br>MOTOR"
                                         data-on-confirm="" data-off-confirm=""></button>
                                 </td>
-                                <td>
+                                <td>MANUAL SPEED</td>
+                                <td><input class="plc-input virtualNumKeypad" data-tag-id="417"
+                                        data-disable-color="#6c757d" data-disable-condition="" /></td>
+                                <!-- <td>
                                     <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="235"
                                         data-behavior="momentary" data-indicator-id="20" data-on-color="#82c779"
                                         data-off-color="#0a4c7a" data-disable-color="#6c757d"
@@ -75,15 +65,15 @@
                                         data-off-color="#0a4c7a" data-disable-color="#6c757d"
                                         data-on-label="CHAIN<br>FEEDER REV" data-off-label="CHAIN<br>FEEDER REV"
                                         data-on-confirm="" data-off-confirm=""></button>
-                                </td>
+                                </td> -->
                             </tr>
                             <tr>
                                 <td>PRINCHER GO MM</td>
-                                <td><input class="plc-input virtualNumKeypad" data-tag-id="656"
+                                <td><input class="plc-input virtualNumKeypad" data-tag-id="344"
                                         data-disable-color="#6c757d" data-disable-condition="" /></td>
                                 <td>
-                                    <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="657"
-                                        data-behavior="momentary" data-indicator-id="657" data-on-color="#82c779"
+                                    <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="327"
+                                        data-behavior="momentary" data-indicator-id="327" data-on-color="#82c779"
                                         data-off-color="#0a4c7a" data-disable-color="#6c757d"
                                         data-on-label="PRINCHER GO" data-off-label="PRINCHER GO" data-on-confirm=""
                                         data-off-confirm=""></button>
@@ -138,107 +128,151 @@
                                     <th>PRINCHER</th>
                                     <td>
                                         <span title="503:SD_X_ACT_POS">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="503"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="384"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
                                     <td>
                                         <span title="505:SD_X_WORK_POS">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="505"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="483"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
                                     <td>
                                         <span title="504:SD_X_ACT_VELOCITY">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="504"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="372"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
 
                                 </tr>
                                 <tr>
-                                    <th>YA</th>
+                                    <th>Y1</th>
                                     <td>
                                         <span title="506:SD_Y1_ACT_POS">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="506"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="385"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
                                     <td>
                                         <span title="508:SD_Y1_WORK_POS">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="508"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="484"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
                                     <td>
                                         <span title="507:SD_Y1_ACT_velocity">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="507"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="373"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
 
                                 </tr>
                                 <tr>
-                                    <th>YB</th>
+                                    <th>Y2</th>
                                     <td>
                                         <span title="509:SD_Y2_ACT_POS">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="509"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="386"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
                                     <td>
                                         <span title="511:SD_Y2_WORK_POS">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="511"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="485"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
                                     <td>
                                         <span title="510:SD_Y2_ACT_VELOCITY">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="510"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="374"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
 
                                 </tr>
                                 <tr>
-                                    <th>ZA</th>
+                                    <th>Y3</th>
                                     <td>
                                         <span title="512:SD_Z1_ACT_POS">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="512"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="387"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
                                     <td>
                                         <span title="514:SD_Z1_WORK_POS">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="514"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="486"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
                                     <td>
                                         <span title="513:SD_Z1_ACT_velocity">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="513"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="375"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
 
                                 </tr>
                                 <tr>
-                                    <th>ZB</th>
+                                    <th>Y4</th>
                                     <td>
                                         <span title="515:SD_Z2_ACT_POS">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="515"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="388"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
                                     <td>
                                         <span title="517:SD_Z2_WORK_POS">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="517"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="487"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
                                     <td>
                                         <span title="516:SD_Z2_ACT_VELOCITY">
-                                            <input class="plc-input virtualNumKeypad" data-tag-id="516"
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="376"
+                                                data-disable-color="#6c757d" data-disable-condition="" disabled />
+                                        </span>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <th>Y5</th>
+                                    <td>
+                                        <span title="515:SD_Z2_ACT_POS">
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="389"
+                                                data-disable-color="#6c757d" data-disable-condition="" disabled />
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span title="517:SD_Z2_WORK_POS">
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="488"
+                                                data-disable-color="#6c757d" data-disable-condition="" disabled />
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span title="516:SD_Z2_ACT_VELOCITY">
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="377"
+                                                data-disable-color="#6c757d" data-disable-condition="" disabled />
+                                        </span>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <th>Y6</th>
+                                    <td>
+                                        <span title="515:SD_Z2_ACT_POS">
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="390"
+                                                data-disable-color="#6c757d" data-disable-condition="" disabled />
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span title="517:SD_Z2_WORK_POS">
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="489"
+                                                data-disable-color="#6c757d" data-disable-condition="" disabled />
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span title="516:SD_Z2_ACT_VELOCITY">
+                                            <input class="plc-input virtualNumKeypad" data-tag-id="378"
                                                 data-disable-color="#6c757d" data-disable-condition="" disabled />
                                         </span>
                                     </td>
@@ -264,7 +298,7 @@
                    grid-auto-flow:column;
                    grid-template-rows:repeat(8,auto);
                    gap:5px;
-                   font-size:21px; /* 👈 Font size added here */" data-ui-type="listbox" data-tag-id="272"
+                   font-size:21px; /* 👈 Font size added here */" data-ui-type="listbox" data-tag-id="310"
                                     data-disable-color="#ccc" data-disable-condition="" data-confirm="" <?php
                                     if (getenv('isCuttingOperationEnabled') === 'true') {
                                         ?>
@@ -289,14 +323,14 @@
                             </td>
                             <td class="align-middle px-3">
                                 <div class="d-flex flex-column gap-3 justify-content-center h-100">
-                                    <button class="plc-btn btn btn-md w-100" data-ui-type="button" data-tag-id="459"
-                                        data-behavior="momentary" data-indicator-id="459" data-on-color="#82c779"
+                                    <button class="plc-btn btn btn-md w-100" data-ui-type="button" data-tag-id="321"
+                                        data-behavior="momentary" data-indicator-id="321" data-on-color="#82c779"
                                         data-off-color="#0a4c7a" data-disable-color="#6c757d"
                                         data-on-label="UP/FORWARD<br>PB" data-off-label="UP/FORWARD<br>PB"
                                         data-on-confirm="" data-off-confirm=""></button>
 
-                                    <button class="plc-btn btn btn-md w-100" data-ui-type="button" data-tag-id="438"
-                                        data-behavior="momentary" data-indicator-id="438" data-on-color="#82c779"
+                                    <button class="plc-btn btn btn-md w-100" data-ui-type="button" data-tag-id="330"
+                                        data-behavior="momentary" data-indicator-id="330" data-on-color="#82c779"
                                         data-off-color="#0a4c7a" data-disable-color="#6c757d"
                                         data-on-label="DOWN/REV<br>PB" data-off-label="DOWN/REV<br>PB"
                                         data-on-confirm="" data-off-confirm=""></button>
@@ -307,19 +341,19 @@
                 </table>
             </div>
             <div class="col-auto">
-                <div class="plc-gauge float-start" data-ui-type="gauge" data-tag-id="199" data-min="0" data-max="250"
+                <div class="plc-gauge float-start" data-ui-type="gauge" data-tag-id="367" data-min="0" data-max="250"
                     data-label="Accumulator" data-ranges='' style="width: 195px; height: 210px;">
                 </div>
-                <div class="plc-gauge float-start" data-ui-type="gauge" data-tag-id="200" data-min="0" data-max="400"
+                <div class="plc-gauge float-start" data-ui-type="gauge" data-tag-id="369" data-min="0" data-max="400"
                     data-label="Marking" data-ranges='' style="width: 195px; height: 210px;">
                 </div>
-                <div class="plc-gauge float-start" data-ui-type="Princher" data-tag-id="201" data-min="0" data-max="250"
+                <div class="plc-gauge float-start" data-ui-type="Princher" data-tag-id="370" data-min="0" data-max="250"
                     data-label="Princher" data-ranges='' style="width: 195px; height: 210px;">
                 </div>
-                <div class="plc-gauge float-start" data-ui-type="gauge" data-tag-id="227" data-min="0" data-max="250"
+                <div class="plc-gauge float-start" data-ui-type="gauge" data-tag-id="371" data-min="0" data-max="250"
                     data-label="TEMPRETURE" data-ranges='' style="width: 195px; height: 210px;">
                 </div>
-                <div class="plc-gauge float-start" data-ui-type="gauge" data-tag-id="227" data-min="0" data-max="250"
+                <div class="plc-gauge float-start" data-ui-type="gauge" data-tag-id="368" data-min="0" data-max="250"
                     data-label="In Feed" data-ranges='' style="width: 195px; height: 210px;">
                 </div>
             </div>
