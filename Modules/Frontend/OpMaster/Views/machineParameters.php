@@ -738,193 +738,196 @@
                 <h4 class="modal-title">TIMING TAGS</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
             </div>
-            <div class="col-auto">
-                <table class="table table-sm ">
-                    <thead>
-                        <tr>
-                            <th class="text-center" colspan="8">PROXY DELAY TIME</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>MARKING PUNCH DELAY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='641' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>PRINCHER UP PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='624' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>PRINCHER DOWN PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='623' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>PRINCHER CLAMP PS TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='622' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>MARKING CYL UP PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='617' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>MARKING CYL DOWN PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='616' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>MARKING BODY UP PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='615' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>MARKING BODY DOWN PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='614' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>A SIDE TOOL CLAMP OK TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='625' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>A TOOL CLAMP PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='608' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>A TOOL DECLAMP PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='609' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>A TOOL ARM HOME PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='606' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-
-                        <tr>
-                            <th>A TOOL ARM TOOL PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='607' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>B SIDE TOOL CLAMP OK TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='627' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>B TOOL CLAMP PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='612' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>B TOOL DECLAMP PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='613' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>B TOOL ARM HOME PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='610' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>B TOOL ARM TOOL PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='611' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>CUT CYL UP PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='599' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>CUT CYL DOWN PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='598' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>CUT HOLD UP PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='601' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>CUT HOLD DOWN PS TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='600' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>CHAIN FEEDER PROXY TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='647' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>A SIDE SPINDLE OVER LOAD ALARM</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='625' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>B SIDE SPINDLE OVER LOAD ALARM</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='628' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-auto">
-                <table class="table table-sm ">
-                    <thead>
-                        <tr>
-                            <th class="text-center" colspan="8">SERVO TIME</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>X ACC TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='652' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>X DEC TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='653' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>Y ACC TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='654' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>Y DEC TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='655' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>Z ACC TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='658' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>Z DEC TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='659' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>M ACC TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='639' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                        <tr>
-                            <th>M DEC TIME</th>
-                            <td><input class='plc-input virtualNumKeypad' data-tag-id='642' data-disable-color='#6c757d'
-                                    data-disable-condition='' /></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-6">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" colspan="2">PROXY DELAY TIME</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>MARKING PUNCH DELAY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='641' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>PRINCHER UP PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='624' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>PRINCHER DOWN PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='623' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>PRINCHER CLAMP PS TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='622' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>MARKING CYL UP PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='617' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>MARKING CYL DOWN PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='616' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>MARKING BODY UP PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='615' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>MARKING BODY DOWN PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='614' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>A SIDE TOOL CLAMP OK TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='625' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>A TOOL CLAMP PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='608' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>A TOOL DECLAMP PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='609' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>A TOOL ARM HOME PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='606' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>A TOOL ARM TOOL PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='607' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>B SIDE TOOL CLAMP OK TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='627' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>B TOOL CLAMP PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='612' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>B TOOL DECLAMP PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='613' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>B TOOL ARM HOME PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='610' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>B TOOL ARM TOOL PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='611' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>CUT CYL UP PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='599' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>CUT CYL DOWN PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='598' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>CUT HOLD UP PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='601' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>CUT HOLD DOWN PS TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='600' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>CHAIN FEEDER PROXY TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='647' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>A SIDE SPINDLE OVER LOAD ALARM</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='625' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>B SIDE SPINDLE OVER LOAD ALARM</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='628' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-6">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" colspan="2">SERVO TIME</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>X ACC TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='652' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>X DEC TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='653' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>Y ACC TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='654' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>Y DEC TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='655' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>Z ACC TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='658' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>Z DEC TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='659' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>M ACC TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='639' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>M DEC TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='642' data-disable-color='#6c757d'
+                                            data-disable-condition='' /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
