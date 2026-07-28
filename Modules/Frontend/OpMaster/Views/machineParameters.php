@@ -595,7 +595,10 @@
                         <tr>
                             <th>HEAD LUB OFF TIME</th>
                             <td><input class="plc-input virtualNumKeypad" data-tag-id="452" data-disable-color="#6c757d"
-                                    data-disable-condition="" /></td>
+                                    data-disable-condition="" />
+                                <input class="plc-input virtualNumKeypad" data-tag-id="380" data-disable-color="#6c757d"
+                                    data-disable-condition="" disabled />
+                            </td>
                         </tr>
                         <tr>
                             <th>PRINCHER LUB OFF TIME</th>
@@ -605,12 +608,20 @@
                         <tr>
                             <th>PRICHER LUB ON TIME</th>
                             <td><input class="plc-input virtualNumKeypad" data-tag-id="455" data-disable-color="#6c757d"
-                                    data-disable-condition="" /></td>
+                                    data-disable-condition="" />
+
+                                <input class="plc-input virtualNumKeypad" data-tag-id="383" data-disable-color="#6c757d"
+                                    data-disable-condition="" disabled />
+                            </td>
                         </tr>
                         <tr>
                             <th>MAIN HYD NO OPERATION TIME</th>
                             <td><input class="plc-input virtualNumKeypad" data-tag-id="453" data-disable-color="#6c757d"
-                                    data-disable-condition="" /></td>
+                                    data-disable-condition="" />
+
+                                <input class="plc-input virtualNumKeypad" data-tag-id="381" data-disable-color="#6c757d"
+                                    data-disable-condition="" disabled />
+                            </td>
                         </tr>
                         <tr>
                             <th>RETURN LINE HIGH PRESSURE</th>
@@ -631,7 +642,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="col-auto">
+            <!-- <div class="col-auto">
                 <table class="table table-sm ">
                     <tbody>
                         <tr>
@@ -660,7 +671,7 @@
                         </tr>
                     </tbody>
                 </table>
-            </div>
+            </div> -->
             <div class="col-auto">
                 <table class="table table-sm ">
                     <thead>
