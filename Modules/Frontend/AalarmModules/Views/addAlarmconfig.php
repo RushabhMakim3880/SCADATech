@@ -56,6 +56,12 @@ $config = config('AppConfig');
                 <option value="0">In Active</option>
             </select>
         </div>
+        <div class='col-md-6 form-group mt-1'>
+            <div class='form-group'>
+                <label for='solution'>Solution</label>
+                <textarea class='form-control' name='solution' id='solution' rows='3'></textarea>
+            </div>
+        </div>
     </div>
 
 </form>

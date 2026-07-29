@@ -18,6 +18,7 @@ class AalarmModulesModel extends Model
         'hiTheresold',
         'hihiTheresold',
         'message',
+        'solution',
         'isActive',
         'updatedAt',
         'updatedBy',

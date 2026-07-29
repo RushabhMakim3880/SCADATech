@@ -69,10 +69,15 @@ class AalarmModules extends ApiBaseController
             $jsonInput['createdAt'] = date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $jsonInput['createdAt'])));
         }
 
-        if ($jsonInput['message'] and trim($jsonInput['message']) != "")
+        if (isset($jsonInput['message']) && $jsonInput['message'] && trim($jsonInput['message']) != "")
             $jsonInput['message'] = (string)$jsonInput['message'];
         else
             $jsonInput['message'] = null;
+
+        if (isset($jsonInput['solution']) && $jsonInput['solution'] && trim($jsonInput['solution']) != "")
+            $jsonInput['solution'] = (string)$jsonInput['solution'];
+        else
+            $jsonInput['solution'] = null;
 
 
         $successMsg = 'Saved Successfully';
@@ -146,6 +151,7 @@ class AalarmModules extends ApiBaseController
         $defaultColumns['AlarmConfig_hiTheresold'] = ['title' => 'Hi Theresold', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
         $defaultColumns['AlarmConfig_hihiTheresold'] = ['title' => 'Hihi Theresold', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
         $defaultColumns['AlarmConfig_message'] = ['title' => 'Message', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['AlarmConfig_solution'] = ['title' => 'Solution', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
         $defaultColumns['AlarmConfig_isActive'] = ['title' => 'Is Active', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
         $defaultColumns['AlarmConfig_createdAt'] = ['title' => 'Created At', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
 
