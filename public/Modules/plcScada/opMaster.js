@@ -2464,7 +2464,7 @@ function updateLeadPrincherScrapeByType() {
 }
 function updateDateInPLC() {
     const date = getCurrentDateInfo();
-    writeTags({ 667: date.date, 666: date.month, 665: date.year });
+    writeTags({ 292: date.date, 293: date.month, 294: date.year });
 }
 
 function getCurrentDateInfo() {
