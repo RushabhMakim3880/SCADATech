@@ -255,7 +255,7 @@ class OpMasterFront extends ApiBaseController
     public function activeAlarms()
     {
 
-        $alarms = $this->db->query("SELECT AL.*,AC.message, UT.tagName FROM AlarmLog AL 
+        $alarms = $this->db->query("SELECT AL.*, AC.message, AC.solution, UT.tagName FROM AlarmLog AL 
                         LEFT JOIN AlarmConfig AC ON AL.alarmId = AC.alarmId
                         LEFT JOIN uiTagMaster UT ON AC.uiTagId = UT.uiTagId
                         WHERE UT.isActive = 1 AND AC.isActive = 1 AND AL.isResolved = 0 AND AL.tenantId = " . $this->user->tenantId . "

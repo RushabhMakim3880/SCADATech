@@ -1480,7 +1480,7 @@ function startFirst() {
     displayProgramSummary();
 }
 
-function addAlarmNotification(message, type = 'danger', time = null) {
+function addAlarmNotification(message, type = 'danger', time = null, solution = null) {
     const $list = $('#notificationList');
     let timestamp = new Date().toLocaleString(); // Format: "DD/MM/YYYY, HH:MM:SS"
     if (time) {
@@ -1490,11 +1490,60 @@ function addAlarmNotification(message, type = 'danger', time = null) {
     // Remove "No notifications yet." if present
     $list.find('li:contains("No notifications yet.")').remove();
 
+    const solutionText = (solution && typeof solution === 'string' && solution.trim() !== '')
+        ? solution.trim()
+        : 'No solution available.';
+
+    const safeSolution = escapeHtml(solutionText);
+
     const $li = $('<li>')
-        .addClass(`text-${type}`)
-        .html(`<small>[${timestamp}]</small> <strong>${message}</strong>`);
+        .addClass(`text-${type} d-flex align-items-center justify-content-between my-1 py-1 border-bottom border-secondary border-opacity-25`)
+        .html(`
+            <div class="pe-2 flex-grow-1">
+                <small>[${timestamp}]</small> <strong>${message}</strong>
+            </div>
+            <button type="button" class="btn btn-sm btn-link p-0 ms-2 text-${type} alarm-info-btn text-decoration-none"
+                style="font-size: 14px; cursor: pointer;"
+                data-bs-toggle="popover"
+                data-bs-trigger="hover focus click"
+                data-bs-placement="top"
+                data-bs-title="Solution"
+                data-bs-content="${safeSolution}"
+                title="Solution Information">
+                <i class="fa fa-info-circle"></i>
+            </button>
+        `);
 
     $list.prepend($li);
+
+    const infoBtn = $li.find('.alarm-info-btn')[0];
+    if (infoBtn) {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Popover) {
+            try {
+                new bootstrap.Popover(infoBtn, {
+                    trigger: 'hover focus click',
+                    placement: 'top',
+                    title: 'Solution',
+                    content: solutionText,
+                    container: 'body'
+                });
+            } catch (e) {
+                console.log("Bootstrap Popover init note:", e);
+            }
+        } else if (typeof $.fn.popover === 'function') {
+            try {
+                $(infoBtn).popover({
+                    trigger: 'hover focus click',
+                    placement: 'top',
+                    title: 'Solution',
+                    content: solutionText,
+                    container: 'body'
+                });
+            } catch (e) {
+                console.log("jQuery Popover init note:", e);
+            }
+        }
+    }
 }
 
 function updateLeadScrap(val) {
@@ -1863,7 +1912,7 @@ function loadActiveAlarms() {
                     message = `${alarm.tagName}: Alarm Triggered: ${alarm.triggerValue}`;
                 }
 
-                addAlarmNotification(message, alarmType, alarm.triggerTime);
+                addAlarmNotification(message, alarmType, alarm.triggerTime, alarm.solution);
             });
         } else {
             mtplAlerts.show("error", "Failed to load active alarms: " + (response.message || "Unknown error"));
