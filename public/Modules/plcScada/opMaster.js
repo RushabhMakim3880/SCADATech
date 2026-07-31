@@ -22,8 +22,10 @@ programLogicTemplate = {
         "totalOperations": 0,
         "DA1": 0,
         "DA2": 0,
+        "DA3": 0,
         "DB1": 0,
         "DB2": 0,
+        "DB3": 0,
         "Marking1": 0,
         "Marking2": 0,
         "Marking3": 0,
@@ -1716,6 +1718,13 @@ function sendNextLine() {
             206: 4 // DA2 operation code
         };
     }
+    else if (item.headName === 'DA3') {
+        tagsToWrite = {
+            321: finalX,
+            345: item.y,
+            206: 4 // DA2 operation code
+        };
+    }
     else if (item.headName === 'DB1') {
         tagsToWrite = {
             321: finalX,
@@ -1724,6 +1733,13 @@ function sendNextLine() {
         };
     }
     else if (item.headName === 'DB2') {
+        tagsToWrite = {
+            321: finalX,
+            333: item.y,
+            206: 2 // DB2 operation code
+        };
+    }
+    else if (item.headName === 'DB3') {
         tagsToWrite = {
             321: finalX,
             333: item.y,
@@ -2117,8 +2133,10 @@ function displayProgramSummary() {
     // punchCounters
     str = formatValue(programLogic.counters.DA1, 'number', null, 'IN');
     str += "-" + formatValue(programLogic.counters.DA2, 'number', null, 'IN');
+    str += "-" + formatValue(programLogic.counters.DA3, 'number', null, 'IN');
     str += "-" + formatValue(programLogic.counters.DB1, 'number', null, 'IN');
     str += "-" + formatValue(programLogic.counters.DB2, 'number', null, 'IN');
+    str += "-" + formatValue(programLogic.counters.DB3, 'number', null, 'IN');
 
     jQuery("#punchCounters").text(str);
 
@@ -2150,11 +2168,17 @@ function updateProgramCounters(item) {
         else if (item.headName == "DA2") {
             programLogic.counters.DA2++;
         }
+        else if (item.headName == "DA3") {
+            programLogic.counters.DA3++;
+        }
         else if (item.headName == "DB1") {
             programLogic.counters.DB1++;
         }
         else if (item.headName == "DB2") {
             programLogic.counters.DB2++;
+        }
+        else if (item.headName == "DB3") {
+            programLogic.counters.DB3++;
         }
 
         programLogic.counters.totalOperations++;

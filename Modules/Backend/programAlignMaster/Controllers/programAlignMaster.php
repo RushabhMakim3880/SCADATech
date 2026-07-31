@@ -17,62 +17,64 @@ class programAlignMaster extends ApiBaseController
 
         /*****************************************
                 EDIT 1: Define default columns here  
-        *****************************************/
+         *****************************************/
         $defaultColumns = [];
 
         $defaultColumns['programAlignMaster_programId'] = ['title' => 'Sr.', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => false];
-$defaultColumns['programAlignMaster_completedCycles'] = ['title' => 'Completed Cycles', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_totalItems'] = ['title' => 'Total Items', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_totalOperations'] = ['title' => 'Total Operations', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_DA1'] = ['title' => 'DA1', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_DA2'] = ['title' => 'DA2', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_DB1'] = ['title' => 'DB1', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_DB2'] = ['title' => 'DB2', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_Marking1'] = ['title' => 'Marking1', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_Marking2'] = ['title' => 'Marking2', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_Marking3'] = ['title' => 'Marking3', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_Marking4'] = ['title' => 'Marking4', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_cuttings'] = ['title' => 'Cuttings', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_updatedBy'] = ['title' => 'Updated By', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_createdBy'] = ['title' => 'Created By', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_updatedAt'] = ['title' => 'Updated At', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
-$defaultColumns['programAlignMaster_createdAt'] = ['title' => 'Created At', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_completedCycles'] = ['title' => 'Completed Cycles', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_totalItems'] = ['title' => 'Total Items', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_totalOperations'] = ['title' => 'Total Operations', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_DA1'] = ['title' => 'DA1', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_DA2'] = ['title' => 'DA2', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_DA3'] = ['title' => 'DA3', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_DB1'] = ['title' => 'DB1', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_DB2'] = ['title' => 'DB2', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_DB3'] = ['title' => 'DB3', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_Marking1'] = ['title' => 'Marking1', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_Marking2'] = ['title' => 'Marking2', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_Marking3'] = ['title' => 'Marking3', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_Marking4'] = ['title' => 'Marking4', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_cuttings'] = ['title' => 'Cuttings', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_updatedBy'] = ['title' => 'Updated By', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_createdBy'] = ['title' => 'Created By', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_updatedAt'] = ['title' => 'Updated At', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
+        $defaultColumns['programAlignMaster_createdAt'] = ['title' => 'Created At', 'visible' => true, 'orderable' => true, 'searchable' => false, 'visibleControl' => true];
 
 
-        
+
 
         /*****************************************
                 EDIT 2: Define required columns filter and type with options here
-        *****************************************/
+         *****************************************/
 
-$defaultColumns['programAlignMaster_updatedAt']['filterType'] = 'date';
-$defaultColumns['programAlignMaster_updatedAt']['filterOptions'] = dateFilterOptions('past');
-
-
-$defaultColumns['programAlignMaster_createdAt']['filterType'] = 'date';
-$defaultColumns['programAlignMaster_createdAt']['filterOptions'] = dateFilterOptions('past');
-
-$temp = $this->db->query("SELECT GROUP_CONCAT(CONCAT(userId, ':', firstName, ' ', lastName) SEPARATOR '__') as `filterData` FROM userMaster WHERE tenantId = '" . $this->user->tenantId . "'")->getRow()->filterData;
-$userFilters = explode('__', $temp);
-$defaultColumns['programAlignMaster_updatedBy']['filterType'] = 'custom';
-$defaultColumns['programAlignMaster_updatedBy']['filterOptions'] = $userFilters;
-
-$defaultColumns['programAlignMaster_createdBy']['filterType'] = 'custom';
-$defaultColumns['programAlignMaster_createdBy']['filterOptions'] = $userFilters;
+        $defaultColumns['programAlignMaster_updatedAt']['filterType'] = 'date';
+        $defaultColumns['programAlignMaster_updatedAt']['filterOptions'] = dateFilterOptions('past');
 
 
+        $defaultColumns['programAlignMaster_createdAt']['filterType'] = 'date';
+        $defaultColumns['programAlignMaster_createdAt']['filterOptions'] = dateFilterOptions('past');
 
-        
+        $temp = $this->db->query("SELECT GROUP_CONCAT(CONCAT(userId, ':', firstName, ' ', lastName) SEPARATOR '__') as `filterData` FROM userMaster WHERE tenantId = '" . $this->user->tenantId . "'")->getRow()->filterData;
+        $userFilters = explode('__', $temp);
+        $defaultColumns['programAlignMaster_updatedBy']['filterType'] = 'custom';
+        $defaultColumns['programAlignMaster_updatedBy']['filterOptions'] = $userFilters;
+
+        $defaultColumns['programAlignMaster_createdBy']['filterType'] = 'custom';
+        $defaultColumns['programAlignMaster_createdBy']['filterOptions'] = $userFilters;
+
+
+
+
 
         /*****************************************
                 EDIT 3: Define default columns here  
-        *****************************************/
+         *****************************************/
         $configData['defaultOrderColumn'] = 'programAlignMaster_programId';
         $configData['defaultOrderDirection'] = 'desc';
 
         /********************************************
                 WARNING:: DO NOT EDIT BELOW THIS LINE
-        ********************************************/
+         ********************************************/
 
         // add index as array item "name" and converted to normal array.
         foreach ($defaultColumns as $key => &$column) {
@@ -132,12 +134,12 @@ $defaultColumns['programAlignMaster_createdBy']['filterOptions'] = $userFilters;
     {
         /*****************************************
                 EDIT 1: Define default select and where conditions here  
-        *****************************************/
+         *****************************************/
         $select = ["programAlignMaster.serialNo as programAlignMaster_serialNo", "programAlignMaster.updatedBy as programAlignMaster_updatedBy", "programAlignMaster.createdBy as programAlignMaster_createdBy"]; // Add the fields you need compulsary irrespective of the user settings, or leave empty []
 
         $where = ["1"];
-$where[] = "programAlignMaster.tenantId = '".$this->user->tenantId."'";
- // Add the where clause you need compulsary irrespective of the user settings, or leave [1]
+        $where[] = "programAlignMaster.tenantId = '" . $this->user->tenantId . "'";
+        // Add the where clause you need compulsary irrespective of the user settings, or leave [1]
 
         // prepare db join table part.
         // $dbTable = 'newSampleTable NS ';
@@ -147,11 +149,11 @@ LEFT JOIN userMaster updatedByUser ON updatedByUser.userId = programAlignMaster.
 LEFT JOIN tenantMaster tenantMaster ON tenantMaster.tenantId = programAlignMaster.tenantId 
 ';
 
-        
+
 
         /********************************************
                 WARNING:: DO NOT EDIT BELOW THIS LINE
-        ********************************************/
+         ********************************************/
         $input = $this->getInputData();
         $jsonInput = $input['jsonInput'];
 
@@ -220,10 +222,10 @@ LEFT JOIN tenantMaster tenantMaster ON tenantMaster.tenantId = programAlignMaste
                         $where[] = "$dbField = :" . $columnName . "_filter:";
                         $queryParameters[$columnName . '_filter'] = $userId;
                     }
-                    
+
                     /********************************************
                             WARNING:: DO NOT EDIT BELOW THIS LINE
-                    ********************************************/
+                     ********************************************/
                 } else {
                     $where[] = "$dbField = :" . $columnName . "_filter:";
                     $queryParameters[$columnName . '_filter'] = $filters[$columnName];
@@ -267,21 +269,21 @@ LEFT JOIN tenantMaster tenantMaster ON tenantMaster.tenantId = programAlignMaste
 
         /****************************************************************
                 EDIT 3: Add column totals data here if required, else leave empty
-        ****************************************************************/
+         ****************************************************************/
         $columnTotalsData = [];
 
         $mobileView = [];
 
-        foreach ($data as $k=>&$row) {
+        foreach ($data as $k => &$row) {
 
             if (!$isDownload) {
                 /********************************************
                     EDIT 4: Process data here only for screen view
-                ********************************************/
+                 ********************************************/
 
                 $row->programAlignMaster_programId = $row->programAlignMaster_serialNo;
 
-                
+
 
                 $mobileView[$k] = [
                     "titleBox1" => "",
@@ -292,24 +294,23 @@ LEFT JOIN tenantMaster tenantMaster ON tenantMaster.tenantId = programAlignMaste
                     "statusBox" => "",
                     "dateBox" => "",
                 ];
-
             }
 
-/*******************************************************
+            /*******************************************************
                  EDIT 5: general data for screen,printing,export will go here.
-              *******************************************************/
+             *******************************************************/
 
             $row->programAlignMaster_updatedAt = myDateTimeFormat($row->programAlignMaster_updatedAt);
             $row->programAlignMaster_createdAt = myDateTimeFormat($row->programAlignMaster_createdAt);
-            
+
             $row->programAlignMaster_updatedBy = username($row->programAlignMaster_updatedBy);
             $row->programAlignMaster_createdBy = username($row->programAlignMaster_createdBy);
- 
-            
+
+
 
             /********************************************
                 WARNING:: DO NOT EDIT BELOW THIS LINE
-            ********************************************/
+             ********************************************/
 
             // unset item that does not exists in $columns, to avoid required select items like userId as we want to use it in data prepearation but not in the response
             foreach ($row as $key => $value) {
@@ -429,7 +430,7 @@ LEFT JOIN tenantMaster tenantMaster ON tenantMaster.tenantId = programAlignMaste
             "SELECT
                 COALESCE(SUM(COALESCE(completedCycles, 0)), 0) as totalCycleTime,
                 COALESCE(SUM(COALESCE(totalItems, 0)), 0) as totalItems,
-                COALESCE(SUM(COALESCE(DA1, 0) + COALESCE(DA2, 0) + COALESCE(DB1, 0) + COALESCE(DB2, 0)), 0) as totalPunches,
+                COALESCE(SUM(COALESCE(DA1, 0) + COALESCE(DA2, 0) + COALESCE(DA3, 0) + COALESCE(DB1, 0) + COALESCE(DB2, 0) + COALESCE(DB3, 0)), 0) as totalPunches,
                 COALESCE(SUM(COALESCE(Marking1, 0) + COALESCE(Marking2, 0) + COALESCE(Marking3, 0) + COALESCE(Marking4, 0)), 0) as totalMarking
             FROM programAlignMaster $whereClause",
             $queryParameters

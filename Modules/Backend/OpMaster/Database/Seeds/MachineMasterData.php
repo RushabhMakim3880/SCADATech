@@ -27,22 +27,26 @@ class MachineMasterData extends Seeder
         $this->db->query("INSERT INTO `machineDetails` (`machineDetailId`, `tenantId`, `serialNo`, `machineId`, `headName`, `headType`, `xPosition`, `side`, `markingCassets`) VALUES
                         (1, 1, 1, 1, 'DA1', 'Punching', 14564.00, 'A', 0),
                         (2, 1, 2, 1, 'DA2', 'Punching', 14272.00, 'A', 0),
-                        (3, 1, 3, 1, 'DB1', 'Punching', 15226.00, 'B', 0),
-                        (4, 1, 4, 1, 'DB2', 'Punching', 14935.00, 'B', 0),
-                        (5, 1, 5, 1, 'Marking', 'Marking', 13820.70, 'N/A', 4),
-                        (6, 1, 6, 1, 'Cutting', 'Cutting', 15535.50, 'N/A', 0);");
+                        (3, 1, 3, 1, 'DA3', 'Punching', 14272.00, 'A', 0),
+                        (4, 1, 4, 1, 'DB1', 'Punching', 15226.00, 'B', 0),
+                        (5, 1, 5, 1, 'DB2', 'Punching', 14935.00, 'B', 0),
+                        (6, 1, 6, 1, 'DB3', 'Punching', 14935.00, 'B', 0),
+                        (7, 1, 7, 1, 'Marking', 'Marking', 13820.70, 'N/A', 4),
+                        (8, 1, 8, 1, 'Cutting', 'Cutting', 15535.50, 'N/A', 0);");
 
 
         $this->db->query("INSERT INTO `machineSetup` (`machineSetupId`, `tenantId`, `serialNo`, `machineDetailId`, `childId`, `value`) VALUES
                         (1, 1, 0, 1, 0, '14'),
                         (2, 1, 0, 2, 0, '18'),
-                        (3, 1, 0, 3, 0, '14'),
-                        (4, 1, 0, 4, 0, '18'),
-                        (5, 1, 0, 5, 1, 'HPT'),
-                        (6, 1, 0, 5, 2, ''),
-                        (7, 1, 0, 5, 3, ''),
-                        (8, 1, 0, 5, 4, ''),
-                        (9, 1, 0, 6, 0, '50');");
+                        (3, 1, 0, 3, 0, '18'),
+                        (4, 1, 0, 4, 0, '14'),
+                        (5, 1, 0, 5, 0, '18'),
+                        (6, 1, 0, 6, 0, '18'),
+                        (7, 1, 0, 7, 1, 'HPT'),
+                        (8, 1, 0, 7, 2, ''),
+                        (9, 1, 0, 7, 3, ''),
+                        (10, 1, 0, 7, 4, ''),
+                        (11, 1, 0, 8, 0, '50');");
 
         $this->db->query("INSERT INTO `plcMaster` (`plcId`, `tenantId`, `serialNo`, `machineId`, `plcName`, `protocol`, `ipAddress`, `port`, `modbusDeviceId`, `description`, `status`, `createdAt`, `updatedAt`) VALUES
                         (1, 1, 1, 1, 'PLC', 'opc-ua', '192.168.20.80', 4840, 0, '', 1, '2025-07-23 18:49:04', '0000-00-00 00:00:00');");

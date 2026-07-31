@@ -59,12 +59,22 @@ class CreateProgramAlignMaster extends Migration
                 'unsigned' => true,
                 'default' => 0,
             ],
+            'DA3' => [
+                'type' => 'INT',
+                'unsigned' => true,
+                'default' => 0,
+            ],
             'DB1' => [
                 'type' => 'INT',
                 'unsigned' => true,
                 'default' => 0,
             ],
             'DB2' => [
+                'type' => 'INT',
+                'unsigned' => true,
+                'default' => 0,
+            ],
+            'DB3' => [
                 'type' => 'INT',
                 'unsigned' => true,
                 'default' => 0,
