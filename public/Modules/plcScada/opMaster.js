@@ -624,6 +624,7 @@ function loadPendingJobcards() {
                        <td>${jobcard.material}</td>
                        <td>${jobcard.programLength}</td>
                        <td>${jobcard.requiredQuantity}</td>
+                       <td>${jobcard.completedQuantity}</td>
                        <td> ${jobcard.previewButton}  ${jobcard.detailsButton}  ${jobcard.selectButton}</td>
                    </tr>
                `);
@@ -631,7 +632,7 @@ function loadPendingJobcards() {
             });
 
             if (jobcards.length === 0) {
-                $tableBody.append('<tr><td colspan="4" class="text-center">No pending jobcards</td></tr>');
+                $tableBody.append('<tr><td colspan="8" class="text-center">No pending jobcards</td></tr>');
             }
 
             setTimeout(() => {

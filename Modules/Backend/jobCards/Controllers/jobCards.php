@@ -77,20 +77,42 @@ class jobCards extends ApiBaseController
                 return $this->fail('Failed to update', 500);
             }
         } else {
+            // Check if an uncompleted jobcard already exists for this itemRecipeId
+            $existingJob = $this->db->table('productionJobCards')
+                ->where('tenantId', $this->user->tenantId)
+                ->where('itemRecipeId', $jsonInput['itemRecipeId'])
+                ->whereIn('status', ['waiting', 'started', 'partiallyCompleted'])
+                ->get()
+                ->getRow();
 
-            $jsonInput['tenantId'] = $this->user->tenantId;
+            if ($existingJob) {
+                // Increment requiredQuantity on existing uncompleted jobcard
+                $newRequiredQty = (int)$existingJob->requiredQuantity + (int)$jsonInput['requiredQuantity'];
+                $updateData = [
+                    'requiredQuantity' => $newRequiredQty,
+                    'updatedAt'        => timenow(),
+                    'updatedBy'        => $this->user->userId
+                ];
 
+                $this->db->table('productionJobCards')
+                    ->where('jobId', $existingJob->jobId)
+                    ->update($updateData);
 
-            // $jsonInput['userId'] = $this->user->id;
-            $jsonInput['createdAt'] = timenow();
-            $jsonInput['createdBy'] = $this->user->userId;
-            $jobId = $this->jobCardsModel->insert($jsonInput);
+                $jobId = $existingJob->jobId;
+                $successMsg = 'Required quantity added to existing pending Jobcard';
+            } else {
+                $jsonInput['tenantId'] = $this->user->tenantId;
+                $jsonInput['createdAt'] = timenow();
+                $jsonInput['createdBy'] = $this->user->userId;
+                $jsonInput['status']    = 'waiting';
+                $jobId = $this->jobCardsModel->insert($jsonInput);
 
-            if (!$jobId) {
-                return $this->fail('Failed to Save', 500);
+                if (!$jobId) {
+                    return $this->fail('Failed to Save', 500);
+                }
+
+                assignSerialNumber($this->user->tenantId, "productionJobCards", "jobId", $jobId);
             }
-
-            assignSerialNumber($this->user->tenantId, "productionJobCards", "jobId", $jobId);
         }
 
         $data = $this->jobCardsModel->find($jobId);

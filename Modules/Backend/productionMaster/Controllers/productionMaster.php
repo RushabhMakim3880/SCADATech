@@ -20,7 +20,7 @@ class productionMaster extends ApiBaseController
     {
         $jobcards = $this->db->query("SELECT JC.*, IRM.itemCode,IRM.sideAWidth,IRM.sideBWidth,IRM.sideAThickness,IRM.sideBThickness,IRM.material,IRM.programLength FROM `productionJobCards` JC
             LEFT JOIN itemRecipeMaster IRM ON JC.itemRecipeId = IRM.itemRecipeId
-         WHERE `status` = 'waiting'")->getResult();
+         WHERE JC.status IN ('waiting','started','partiallyCompleted') AND JC.tenantId = '" . $this->user->tenantId . "'")->getResult();
 
         $myJobcards = [];
         foreach ($jobcards as $jobcard) {
@@ -57,20 +57,19 @@ class productionMaster extends ApiBaseController
                     'thickness' => $jobcard->sideAThickness,
                     'material' => $jobcard->material,
                     'programLength' => $jobcard->programLength,
-                    'requiredQuantity' => $jobcard->requiredQuantity - $jobcard->completedQuantity,
-                    'quantity' => $jobcard->requiredQuantity - $jobcard->completedQuantity,
+                    'requiredQuantity' => $jobcard->requiredQuantity,
+                    'completedQuantity' => $jobcard->completedQuantity,
                     'previewButton' => $previewButton,
                     'detailsButton' => $detailsButton,
                     'selectButton' => $selectButton,
                 ];
             } else {
-                $myJobcards[$jobcard->itemRecipeId]['requiredQuantity'] += ($jobcard->requiredQuantity - $jobcard->completedQuantity);
-                $myJobcards[$jobcard->itemRecipeId]['quantity'] += ($jobcard->requiredQuantity - $jobcard->completedQuantity);
+                $myJobcards[$jobcard->itemRecipeId]['requiredQuantity'] += ($jobcard->requiredQuantity);
+                $myJobcards[$jobcard->itemRecipeId]['completedQuantity'] += ($jobcard->completedQuantity);
             }
         }
 
         return $this->respond(['status' => true, 'data' => array_values($myJobcards)], 200);
-        // return $this->respond(['status' => true, 'data' => $jobcards], 200);
     }
 
     public function programAlign()

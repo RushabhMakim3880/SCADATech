@@ -42,6 +42,7 @@
                                 <th>Material</th>
                                 <th>Program Length</th>
                                 <th>Required Quantity</th>
+                                <th>Completed Quantity</th>
                                 <th></th>
                             </tr>
                         </thead>
