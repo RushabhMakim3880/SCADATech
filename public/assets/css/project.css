@@ -94,8 +94,40 @@ body,
     box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
 }
 
+.modal-xxl {
+    --bs-modal-width: 95vw;
+    max-width: 95vw;
+    width: 95vw;
+}
+
+@media (min-width: 576px) {
+    .modal-xxl {
+        --bs-modal-width: 92vw;
+        max-width: 92vw;
+        width: 92vw;
+    }
+}
+
+@media (min-width: 992px) {
+    .modal-xxl {
+        --bs-modal-width: 90vw;
+        max-width: 90vw;
+        width: 90vw;
+    }
+}
+
+@media (min-width: 1400px) {
+    .modal-xxl {
+        --bs-modal-width: 85vw;
+        max-width: 1350px;
+        width: 85vw;
+    }
+}
+
 @media (min-width: 1860px) {
     .modal-xxl {
         --bs-modal-width: 1800px;
+        max-width: 1800px;
+        width: 1800px;
     }
 }
