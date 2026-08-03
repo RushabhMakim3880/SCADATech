@@ -1483,6 +1483,35 @@ function startFirst() {
     displayProgramSummary();
 }
 
+function hideAlarmPopover(btn) {
+    if (typeof bootstrap !== 'undefined' && bootstrap.Popover) {
+        const pop = bootstrap.Popover.getInstance(btn);
+        if (pop) {
+            pop.hide();
+        }
+    } else if (typeof $.fn.popover === 'function') {
+        try {
+            $(btn).popover('hide');
+        } catch (e) {}
+    }
+}
+
+jQuery(document).on('click', function (e) {
+    const $target = jQuery(e.target);
+    if (!$target.closest('.alarm-info-btn, .popover').length) {
+        jQuery('.alarm-info-btn').each(function () {
+            hideAlarmPopover(this);
+        });
+    } else if ($target.closest('.alarm-info-btn').length) {
+        const clickedBtn = $target.closest('.alarm-info-btn')[0];
+        jQuery('.alarm-info-btn').each(function () {
+            if (this !== clickedBtn) {
+                hideAlarmPopover(this);
+            }
+        });
+    }
+});
+
 function addAlarmNotification(message, type = 'danger', time = null, solution = null) {
     const $list = $('#notificationList');
     let timestamp = new Date().toLocaleString(); // Format: "DD/MM/YYYY, HH:MM:SS"
@@ -1508,11 +1537,10 @@ function addAlarmNotification(message, type = 'danger', time = null, solution = 
             <button type="button" class="btn btn-sm btn-link p-0 ms-2 text-${type} alarm-info-btn text-decoration-none"
                 style="font-size: 14px; cursor: pointer;"
                 data-bs-toggle="popover"
-                data-bs-trigger="hover focus click"
+                data-bs-trigger="click"
                 data-bs-placement="top"
                 data-bs-title="Solution"
-                data-bs-content="${safeSolution}"
-                title="Solution Information">
+                data-bs-content="${safeSolution}">
                 <i class="fa fa-info-circle"></i>
             </button>
         `);
@@ -1524,7 +1552,7 @@ function addAlarmNotification(message, type = 'danger', time = null, solution = 
         if (typeof bootstrap !== 'undefined' && bootstrap.Popover) {
             try {
                 new bootstrap.Popover(infoBtn, {
-                    trigger: 'hover focus click',
+                    trigger: 'click',
                     placement: 'top',
                     title: 'Solution',
                     content: solutionText,
@@ -1536,7 +1564,7 @@ function addAlarmNotification(message, type = 'danger', time = null, solution = 
         } else if (typeof $.fn.popover === 'function') {
             try {
                 $(infoBtn).popover({
-                    trigger: 'hover focus click',
+                    trigger: 'click',
                     placement: 'top',
                     title: 'Solution',
                     content: solutionText,
@@ -1615,6 +1643,19 @@ function updatePrincherScrap(val) {
 }
 
 function clearAlarms() {
+    jQuery('.alarm-info-btn').each(function () {
+        hideAlarmPopover(this);
+        if (typeof bootstrap !== 'undefined' && bootstrap.Popover) {
+            const pop = bootstrap.Popover.getInstance(this);
+            if (pop) {
+                pop.dispose();
+            }
+        } else if (typeof $.fn.popover === 'function') {
+            try {
+                jQuery(this).popover('dispose');
+            } catch (e) {}
+        }
+    });
     $('#notificationList').empty();
     // $('#notificationList').append('<li class="text-muted">No notifications yet.</li>');
     // mtplAlerts.show("info", "All alarms cleared.");
