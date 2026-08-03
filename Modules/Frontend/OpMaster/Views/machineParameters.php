@@ -243,51 +243,53 @@
             <table class="table table-sm ">
                 <thead>
                     <tr>
-                        <th class="text-center" colspan="2">PUNCH SELECTION</th>
+                        <th class="text-center" colspan="2">SAFETY DISTANCES</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <th>PUNCH 1 (DB-1)</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="468" data-disable-color="#6c757d"
+                        <th>MARKING</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="431" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <th>PUNCH 2 (DB-2)</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="469" data-disable-color="#6c757d"
+                        <th>PUNCH 1</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="432" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <th>PUNCH 3 (DA-3)</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="470" data-disable-color="#6c757d"
+                        <th>PUNCH 2</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="433" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <th>PUNCH 4 (DA-1)</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="471" data-disable-color="#6c757d"
+                        <th>PUNCH 3</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="434" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <th>PUNCH 5 (DA-2)</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="472" data-disable-color="#6c757d"
+                        <th>PUNCH 4</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="435" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <th>PUNCH 6 (DA-3)</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="473" data-disable-color="#6c757d"
+                        <th>PUNCH 5</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="436" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <td>
-                            <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="318"
-                                data-behavior="maintain" data-indicator-id="318" data-on-color="#82c779"
-                                data-off-color="#0a4c7a" data-disable-color="#6c757d"
-                                data-on-label="SAFETY BYPASS<br>ON" data-off-label="SAFETY BYPASS<br>OFF"
-                                data-on-confirm="" data-off-confirm=""></button>
-                        </td>
+                        <th>PUNCH 6</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="437" data-disable-color="#6c757d"
+                                data-disable-condition="" /></td>
+                    </tr>
+                    <tr>
+                        <th>CUTTING</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="430" data-disable-color="#6c757d"
+                                data-disable-condition="" /></td>
                     </tr>
                 </tbody>
             </table>
+
 
         </div>
         <div class="col-md-4">
@@ -351,49 +353,68 @@
             <table class="table table-sm ">
                 <thead>
                     <tr>
-                        <th class="text-center" colspan="2">SAFETY DISTANCES</th>
+                        <th class="text-center" colspan="2">PUNCH SELECTION</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <th>MARKING</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="431" data-disable-color="#6c757d"
+                        <th>PUNCH 1 (DB-1)</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="468" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <th>PUNCH 1</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="432" data-disable-color="#6c757d"
+                        <th>PUNCH 2 (DB-2)</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="469" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <th>PUNCH 2</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="433" data-disable-color="#6c757d"
+                        <th>PUNCH 3 (DA-3)</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="470" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <th>PUNCH 3</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="434" data-disable-color="#6c757d"
+                        <th>PUNCH 4 (DA-1)</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="471" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <th>PUNCH 4</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="435" data-disable-color="#6c757d"
+                        <th>PUNCH 5 (DA-2)</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="472" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <th>PUNCH 5</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="436" data-disable-color="#6c757d"
+                        <th>PUNCH 6 (DA-3)</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="473" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <th>PUNCH 6</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="437" data-disable-color="#6c757d"
+                        <th>MARK 1</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="579" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <th>CUTTING</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="430" data-disable-color="#6c757d"
+                        <th>MARK 2</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="580" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
+                    </tr>
+                    <tr>
+                        <th>MARK 3</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="581" data-disable-color="#6c757d"
+                                data-disable-condition="" /></td>
+                    </tr>
+                    <tr>
+                        <th>MARK 4</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="582" data-disable-color="#6c757d"
+                                data-disable-condition="" /></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button class="plc-btn btn btn-sm" data-ui-type="button" data-tag-id="318"
+                                data-behavior="maintain" data-indicator-id="318" data-on-color="#82c779"
+                                data-off-color="#0a4c7a" data-disable-color="#6c757d"
+                                data-on-label="SAFETY BYPASS<br>ON" data-off-label="SAFETY BYPASS<br>OFF"
+                                data-on-confirm="" data-off-confirm=""></button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
