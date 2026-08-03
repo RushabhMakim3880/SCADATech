@@ -389,22 +389,22 @@
                     </tr>
                     <tr>
                         <th>MARK 1</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="579" data-disable-color="#6c757d"
+                        <td><input class="plc-input" data-tag-id="579" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
                         <th>MARK 2</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="580" data-disable-color="#6c757d"
+                        <td><input class="plc-input" data-tag-id="579" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
                         <th>MARK 3</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="581" data-disable-color="#6c757d"
+                        <td><input class="plc-input" data-tag-id="579" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
                         <th>MARK 4</th>
-                        <td><input class="plc-input virtualNumKeypad" data-tag-id="582" data-disable-color="#6c757d"
+                        <td><input class="plc-input" data-tag-id="579" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
