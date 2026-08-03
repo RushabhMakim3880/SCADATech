@@ -169,17 +169,17 @@
     }
 
     .ipc-nav-btn {
-        font-size: 15px !important;
-        font-weight: 600;
-        min-width: 105px;
-        padding: 7px 12px !important;
-        line-height: 1.25;
+        font-size: 13.5px !important;
+        font-weight: 500;
+        min-width: 95px;
+        padding: 5px 10px !important;
+        line-height: 1.2;
         white-space: nowrap;
     }
 
     .ipc-nav-btn i {
-        font-size: 1.4rem;
-        margin-bottom: 3px;
+        font-size: 1.25rem;
+        margin-bottom: 2px;
     }
 </style>
 <!-- BEGIN #content -->
