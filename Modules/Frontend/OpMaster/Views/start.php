@@ -160,6 +160,27 @@
     .sortable-ghost {
         opacity: .6;
     }
+
+    .ipc-nav-container {
+        pointer-events: auto;
+        max-width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .ipc-nav-btn {
+        font-size: 15px !important;
+        font-weight: 600;
+        min-width: 105px;
+        padding: 7px 12px !important;
+        line-height: 1.25;
+        white-space: nowrap;
+    }
+
+    .ipc-nav-btn i {
+        font-size: 1.4rem;
+        margin-bottom: 3px;
+    }
 </style>
 <!-- BEGIN #content -->
 <div id="content" class="app-content">
@@ -185,69 +206,62 @@
     if ($isIpc) {
         ?>
 
-        <div class="position-fixed bottom-0 w-100 text-center pb-2" style="pointer-events: none;left:0px;">
-            <div class="d-inline-flex flex-wrap gap-3" style="pointer-events: auto;">
-                <button data-route="homing" class="btn btn-primary btn-lg loadRoutes"
-                    style="font-size: large; min-width: 150px;">
-                    <i class="fa fa-home-alt fa-2x"></i> <br>
+        <div class="position-fixed bottom-0 w-100 text-center pb-2" style="pointer-events: none;left:0px; z-index: 1050;">
+            <div class="d-inline-flex flex-nowrap gap-2 justify-content-center ipc-nav-container px-2">
+                <button data-route="homing" class="btn btn-primary loadRoutes ipc-nav-btn">
+                    <i class="fa fa-home-alt"></i> <br>
                     Homing
                 </button>
-                <button data-route="machineParameters" class="btn btn-primary btn-lg loadRoutes"
-                    style="font-size: large; min-width: 150px;">
-                    <i class="fa fa-cogs fa-2x"></i> <br>
+                <button data-route="machineParameters" class="btn btn-primary loadRoutes ipc-nav-btn">
+                    <i class="fa fa-cogs"></i> <br>
                     Settings
                 </button>
 
-                <button data-route="manualControl" class="btn btn-primary btn-lg loadRoutes"
-                    style="font-size: large; min-width: 150px;">
-                    <i class="fa fa-user-gear fa-2x"></i> <br>
+                <button data-route="manualControl" class="btn btn-primary loadRoutes ipc-nav-btn">
+                    <i class="fa fa-user-gear"></i> <br>
                     Manual Control
                 </button>
-                <button data-route="programPrepare" class="btn btn-primary btn-lg loadRoutes"
-                    style="font-size: large; min-width: 150px;">
-                    <i class="fa fa-file fa-2x"></i> <br>
+                <button data-route="programPrepare" class="btn btn-primary loadRoutes ipc-nav-btn">
+                    <i class="fa fa-file"></i> <br>
                     Program
                 </button>
-                <button data-route="autoControl" class="btn btn-primary btn-lg loadRoutes"
-                    style="font-size: large; min-width: 150px;">
-                    <i class="fa fa-gears fa-2x"></i> <br>
+                <button data-route="autoControl" class="btn btn-primary loadRoutes ipc-nav-btn">
+                    <i class="fa fa-gears"></i> <br>
                     Auto Control
                 </button>
-                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal"
+                <a class="btn btn-primary ipc-nav-btn" data-bs-toggle="modal"
                     href="#inputList">
-                    <i class="fa fa-rotate-270 fa-arrow-right-to-bracket fa-2x"></i> <br>
+                    <i class="fa fa-rotate-270 fa-arrow-right-to-bracket"></i> <br>
                     Input List
                 </a>
-                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal"
+                <a class="btn btn-primary ipc-nav-btn" data-bs-toggle="modal"
                     href="#outputList">
-                    <i class="fa fa-rotate-90 fa-arrow-right-from-bracket fa-2x"></i> <br>
+                    <i class="fa fa-rotate-90 fa-arrow-right-from-bracket"></i> <br>
                     Output List
                 </a>
-                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal"
+                <a class="btn btn-primary ipc-nav-btn" data-bs-toggle="modal"
                     href="#debugLog">
-                    <i class="fa fa-list fa-2x"></i> <br>
+                    <i class="fa fa-list"></i> <br>
                     Log
                 </a>
 
-                <!-- <button data-route="log" class="btn btn-primary btn-lg loadRoutes" style="font-size: large; min-width: 150px;">
-                    <i class="fa fa-list fa-2x"></i> <br>
+                <!-- <button data-route="log" class="btn btn-primary loadRoutes ipc-nav-btn">
+                    <i class="fa fa-list"></i> <br>
                     Log
                 </button> -->
-                <button class="btn btn-primary btn-lg appLogOut" style="font-size: large; min-width: 150px;">
-                    <i class="fa fa-sign-out fa-2x"></i> <br>
+                <button class="btn btn-primary appLogOut ipc-nav-btn">
+                    <i class="fa fa-sign-out"></i> <br>
                     Log Out
                 </button>
 
-                <button class="btn btn-primary btn-lg exitBtn nativeChannelBtns"
-                    style="font-size: large; min-width: 150px;">
-                    <i class="fa fa-times fa-2x"></i> <br>
+                <button class="btn btn-primary exitBtn nativeChannelBtns ipc-nav-btn">
+                    <i class="fa fa-times"></i> <br>
                     Exit
                 </button>
 
                 <div class="dropdown nativeChannelBtns">
-                    <button class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown"
-                        style="font-size: large; min-width: 150px;">
-                        <i class="fa fa-list fa-2x"></i> <br>
+                    <button class="btn btn-primary dropdown-toggle ipc-nav-btn" data-bs-toggle="dropdown">
+                        <i class="fa fa-list"></i> <br>
                         ...
                     </button>
                     <ul class="dropdown-menu">
@@ -269,14 +283,14 @@
                 </div>
 
                 <!-- shutdownBtn -->
-                <!-- <button class="btn btn-primary btn-lg shutdownBtn nativeChannelBtns" style="font-size: large; min-width: 150px;">
-                <i class="fa fa-power-off fa-2x"></i> <br>
+                <!-- <button class="btn btn-primary shutdownBtn nativeChannelBtns ipc-nav-btn">
+                <i class="fa fa-power-off"></i> <br>
                 Shutdown
             </button> -->
 
                 <!-- restartBtn -->
-                <!-- <button class="btn btn-primary btn-lg restartBtn nativeChannelBtns" style="font-size: large; min-width: 150px;">
-                <i class="fa fa-rotate fa-2x"></i> <br>
+                <!-- <button class="btn btn-primary restartBtn nativeChannelBtns ipc-nav-btn">
+                <i class="fa fa-rotate"></i> <br>
                 Restart
             </button> -->
             </div>
