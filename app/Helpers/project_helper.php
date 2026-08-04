@@ -62,8 +62,8 @@ function nodejsApi($method, $url, $data = null)
 
     return [
         'statusCode' => $response->getStatusCode(),
-        'body'       => $response->getBody(),
-        'json'       => json_decode($response->getBody(), true)
+        'body' => $response->getBody(),
+        'json' => json_decode($response->getBody(), true)
     ];
 }
 
@@ -87,59 +87,59 @@ function updateTagValuesToDb($tags)
 
     foreach ($tags as $tagId => $value) {
 
-        if ($tagId == 292) {
+        if ($tagId == 579) {
             // Mark 1
             $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 5]);
-        } elseif ($tagId == 293) {
+        } elseif ($tagId == 580) {
             // Mark 2
             $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 6]);
-        } elseif ($tagId == 294) {
+        } elseif ($tagId == 581) {
             // Mark 3
             $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 7]);
-        } elseif ($tagId == 295) {
+        } elseif ($tagId == 582) {
             // Mark 4
             $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 8]);
-        } elseif ($tagId == 307) {
+        } elseif ($tagId == 468) {
             // Head 1
             $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 3]);
-        } elseif ($tagId == 309) {
+        } elseif ($tagId == 469) {
             // Head 2
             $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 4]);
-        } elseif ($tagId == 311) {
+        } elseif ($tagId == 470) {
             // Head 3
             $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 1]);
-        } elseif ($tagId == 313) {
+        } elseif ($tagId == 471) {
             // Head 4
             $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 2]);
-        } elseif ($tagId == 318) {
+        } elseif ($tagId == 393) {
             // Cutting Position
             $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 6]);
-        } elseif ($tagId == 215) {
+        } elseif ($tagId == 392) {
             // Cutting Hold Down
             $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 6]);
-        } elseif ($tagId == 308) {
-            // Punch 1 position 308
+        } elseif ($tagId == 404) {
+            // Punch 1 position 404
             $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 3]);
-        } elseif ($tagId == 218) {
-            // Punch 1 Hold Down. 218
+        } elseif ($tagId == 395) {
+            // Punch 1 Hold Down. 395
             $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 3]);
-        } elseif ($tagId == 310) {
-            // Punch 2 position 310
+        } elseif ($tagId == 405) {
+            // Punch 2 position 405
             $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 4]);
-        } elseif ($tagId == 219) {
-            // Punch 2 Hold Down. 219
+        } elseif ($tagId == 396) {
+            // Punch 2 Hold Down. 396
             $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 4]);
-        } elseif ($tagId == 312) {
-            // Punch 3 position 312
+        } elseif ($tagId == 406) {
+            // Punch 3 position 406
             $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 1]);
-        } elseif ($tagId == 220) {
-            // Punch 3 Hold Down. 220
+        } elseif ($tagId == 397) {
+            // Punch 3 Hold Down. 397
             $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 1]);
-        } elseif ($tagId == 314) {
-            // Punch 4 position 314
+        } elseif ($tagId == 407) {
+            // Punch 4 position 407
             $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 2]);
-        } elseif ($tagId == 221) {
-            // Punch 4 Hold Down. 221
+        } elseif ($tagId == 398) {
+            // Punch 4 Hold Down. 398
             $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 2]);
         } elseif ($tagId == 296) {
             // Marking Position. 296
@@ -159,8 +159,8 @@ function tagPermisionGroups()
             'homePosition' => [322, 328, 334, 340, 346, 387],
         ],
         "OpSettings" => [
-            'distance' => [232, 296, 221, 314, 220, 312, 219, 310, 218, 308, 215, 318],
-            'punchSelection' => [307, 309, 311, 313, 292, 293, 294, 295],
+            'distance' => [232, 296, 398, 407, 397, 406, 396, 405, 395, 404, 392, 393],
+            'punchSelection' => [468, 469, 470, 471, 579, 580, 581, 582],
             'barDetails' => [],
             'scrapDetails' => [230, 305],
             'princherSpeed' => [315, 317, 303, 306, 204, 397, 302, 607],

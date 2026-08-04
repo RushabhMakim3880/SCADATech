@@ -1357,57 +1357,57 @@ function plcToCi4Binding() {
 
     // Machine Setup
     //head1
-    PlcDataLayer.onTagChange(307, (val) => pushTagToCi4(307, val));
+    PlcDataLayer.onTagChange(468, (val) => pushTagToCi4(468, val));
     //head2
-    PlcDataLayer.onTagChange(309, (val) => pushTagToCi4(309, val));
+    PlcDataLayer.onTagChange(469, (val) => pushTagToCi4(469, val));
     //head3
-    PlcDataLayer.onTagChange(311, (val) => pushTagToCi4(311, val));
+    PlcDataLayer.onTagChange(470, (val) => pushTagToCi4(470, val));
     //head4
-    PlcDataLayer.onTagChange(313, (val) => pushTagToCi4(313, val));
+    PlcDataLayer.onTagChange(471, (val) => pushTagToCi4(471, val));
 
     //mark1
-    PlcDataLayer.onTagChange(292, (val) => pushTagToCi4(292, val));
+    PlcDataLayer.onTagChange(579, (val) => pushTagToCi4(579, val));
     //mark2
-    PlcDataLayer.onTagChange(293, (val) => pushTagToCi4(293, val));
+    PlcDataLayer.onTagChange(580, (val) => pushTagToCi4(580, val));
     //mark3
-    PlcDataLayer.onTagChange(294, (val) => pushTagToCi4(294, val));
+    PlcDataLayer.onTagChange(581, (val) => pushTagToCi4(581, val));
     //mark4
-    PlcDataLayer.onTagChange(295, (val) => pushTagToCi4(295, val));
+    PlcDataLayer.onTagChange(582, (val) => pushTagToCi4(582, val));
 
     // machine configuration
 
     // Cutting Position. 318
-    PlcDataLayer.onTagChange(318, (val) => pushTagToCi4(318, val));
+    PlcDataLayer.onTagChange(393, (val) => pushTagToCi4(393, val));
 
     // Cutting Hold Down. 215
-    PlcDataLayer.onTagChange(215, (val) => pushTagToCi4(215, val));
+    PlcDataLayer.onTagChange(392, (val) => pushTagToCi4(392, val));
 
     //Punch 1 position 308
-    PlcDataLayer.onTagChange(308, (val) => pushTagToCi4(308, val));
+    PlcDataLayer.onTagChange(404, (val) => pushTagToCi4(404, val));
 
     // Punch 1 Hold Down. 218
-    PlcDataLayer.onTagChange(218, (val) => pushTagToCi4(218, val));
+    PlcDataLayer.onTagChange(395, (val) => pushTagToCi4(395, val));
 
     // Punch 2 position 310
-    PlcDataLayer.onTagChange(310, (val) => pushTagToCi4(310, val));
+    PlcDataLayer.onTagChange(405, (val) => pushTagToCi4(405, val));
 
     // Punch 2 Hold Down. 219
-    PlcDataLayer.onTagChange(219, (val) => pushTagToCi4(219, val));
+    PlcDataLayer.onTagChange(396, (val) => pushTagToCi4(396, val));
 
     // Punch 3 position 312
-    PlcDataLayer.onTagChange(312, (val) => pushTagToCi4(312, val));
+    PlcDataLayer.onTagChange(406, (val) => pushTagToCi4(406, val));
 
     // Punch 3 Hold Down. 220
-    PlcDataLayer.onTagChange(220, (val) => pushTagToCi4(220, val));
+    PlcDataLayer.onTagChange(397, (val) => pushTagToCi4(397, val));
 
     // Punch 4 position 314
-    PlcDataLayer.onTagChange(314, (val) => pushTagToCi4(314, val));
+    PlcDataLayer.onTagChange(407, (val) => pushTagToCi4(407, val));
 
     // Punch 4 Hold Down. 221
-    PlcDataLayer.onTagChange(221, (val) => pushTagToCi4(221, val));
+    PlcDataLayer.onTagChange(398, (val) => pushTagToCi4(398, val));
 
     // Marking Position. 296
-    PlcDataLayer.onTagChange(296, (val) => pushTagToCi4(296, val));
+    PlcDataLayer.onTagChange(402, (val) => pushTagToCi4(402, val));
 
 };
 
@@ -1492,7 +1492,7 @@ function hideAlarmPopover(btn) {
     } else if (typeof $.fn.popover === 'function') {
         try {
             $(btn).popover('hide');
-        } catch (e) {}
+        } catch (e) { }
     }
 }
 
@@ -1653,7 +1653,7 @@ function clearAlarms() {
         } else if (typeof $.fn.popover === 'function') {
             try {
                 jQuery(this).popover('dispose');
-            } catch (e) {}
+            } catch (e) { }
         }
     });
     $('#notificationList').empty();
