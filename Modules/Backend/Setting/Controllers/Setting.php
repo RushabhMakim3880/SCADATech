@@ -78,4 +78,64 @@ class Setting extends ApiBaseController
 
         return $this->respondCreated(['message' => 'Data saved successfully']);
     }
+
+    public function getCompanyMasterSetting()
+    {
+        if (!UserPermissionLib::userCanDo("setting", 'view')) {
+            return redirect()->to('');
+        }
+        $companyMasterSettingsModel = new \Modules\Backend\Setting\Models\CompanyMasterSettingsModel();
+        $settings = $companyMasterSettingsModel->where("tenantId", $this->user->tenantId)->findAll();
+
+        $settingsArray = [];
+        foreach ($settings as $setting) {
+            $settingsArray[$setting->key] = $setting->value;
+        }
+        return $this->respond(['status' => true, 'message' => '', 'data' => $settingsArray]);
+    }
+
+    public function saveCompanyMasterSetting()
+    {
+        if (!UserPermissionLib::userCanDo("setting", 'view')) {
+            return redirect()->to('');
+        }
+
+        $input = $this->getInputData();
+        $jsonInput = $input['jsonInput'];
+
+        foreach ($jsonInput as $key => $value) {
+            if (is_array($value)) {
+                continue;
+            }
+
+            $existingSetting = $this->db->table('companyMasterSettings')
+                ->where('key', $key)
+                ->where('tenantId', $this->user->tenantId)
+                ->get()
+                ->getRow();
+
+            if (is_null($existingSetting)) {
+                $this->db->table('companyMasterSettings')->insert([
+                    'key'       => $key,
+                    'value'     => $value,
+                    'tenantId'  => $this->user->tenantId,
+                    'companyId' => 1,
+                ]);
+                $newId = $this->db->insertID();
+                if (function_exists('assignSerialNumber')) {
+                    assignSerialNumber($this->user->tenantId, "companyMasterSettings", "companySettingsId", $newId);
+                }
+            } else {
+                $this->db->table('companyMasterSettings')->update([
+                    'value' => $value
+                ], [
+                    'key'      => $key,
+                    'tenantId' => $this->user->tenantId
+                ]);
+            }
+        }
+
+        return $this->respondCreated(['message' => 'Data saved successfully']);
+    }
 }
+

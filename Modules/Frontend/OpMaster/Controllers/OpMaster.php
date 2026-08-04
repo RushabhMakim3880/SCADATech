@@ -111,4 +111,10 @@ class OpMaster extends BaseController
         $data =  view('Modules\Frontend\OpMaster\Views\log');
         return $this->respond(['status' => true, 'htmlContent' => $data]);
     }
+
+    public function companySetting()
+    {
+        $data =  view('Modules\Frontend\Setting\Views\companySetting');
+        return $this->respond(['status' => true, 'htmlContent' => $data]);
+    }
 }

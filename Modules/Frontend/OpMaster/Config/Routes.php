@@ -19,4 +19,7 @@ $routes->group("OpMaster", ["namespace" => '\Modules\Frontend\OpMaster\Controlle
 
     // programPrepare
     $routes->get("programPrepare", "OpMaster::programPrepare");
+
+    // companySetting
+    $routes->get("companySetting", "OpMaster::companySetting");
 });

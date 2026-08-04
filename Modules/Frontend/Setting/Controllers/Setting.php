@@ -25,4 +25,18 @@ class Setting extends BaseController
 
         return view('viewLoader', $data);
     }
+
+    public function companySetting($settingId = 0)
+    {
+        if (!UserPermissionLib::userCanDo("setting", 'view')) {
+            return redirect()->to('');
+        }
+
+        $data['pageTitle'] = 'Company Setting';
+        $data['settingId'] = $settingId;
+
+        $data["view"] =  'Modules\Frontend\Setting\Views\companySetting';
+
+        return view('viewLoader', $data);
+    }
 }

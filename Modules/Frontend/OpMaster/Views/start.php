@@ -212,6 +212,10 @@
                     <i class="fa fa-home-alt"></i> <br>
                     Homing
                 </button>
+                <button data-route="companySetting" class="btn btn-primary loadRoutes ipc-nav-btn">
+                    <i class="fa fa-sliders"></i> <br>
+                    Screen Setting
+                </button>
                 <button data-route="machineParameters" class="btn btn-primary loadRoutes ipc-nav-btn">
                     <i class="fa fa-cogs"></i> <br>
                     Settings
