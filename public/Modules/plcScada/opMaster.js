@@ -1364,6 +1364,10 @@ function plcToCi4Binding() {
     PlcDataLayer.onTagChange(470, (val) => pushTagToCi4(470, val));
     //head4
     PlcDataLayer.onTagChange(471, (val) => pushTagToCi4(471, val));
+    //head5
+    PlcDataLayer.onTagChange(472, (val) => pushTagToCi4(472, val));
+    //head6
+    PlcDataLayer.onTagChange(473, (val) => pushTagToCi4(473, val));
 
     //mark1
     PlcDataLayer.onTagChange(579, (val) => pushTagToCi4(579, val));
@@ -1383,29 +1387,39 @@ function plcToCi4Binding() {
     PlcDataLayer.onTagChange(392, (val) => pushTagToCi4(392, val));
 
     //Punch 1 position 308
-    PlcDataLayer.onTagChange(404, (val) => pushTagToCi4(404, val));
+    PlcDataLayer.onTagChange(403, (val) => pushTagToCi4(403, val));
 
     // Punch 1 Hold Down. 218
     PlcDataLayer.onTagChange(395, (val) => pushTagToCi4(395, val));
 
     // Punch 2 position 310
-    PlcDataLayer.onTagChange(405, (val) => pushTagToCi4(405, val));
+    PlcDataLayer.onTagChange(404, (val) => pushTagToCi4(404, val));
 
     // Punch 2 Hold Down. 219
     PlcDataLayer.onTagChange(396, (val) => pushTagToCi4(396, val));
 
     // Punch 3 position 312
-    PlcDataLayer.onTagChange(406, (val) => pushTagToCi4(406, val));
+    PlcDataLayer.onTagChange(405, (val) => pushTagToCi4(405, val));
 
     // Punch 3 Hold Down. 220
     PlcDataLayer.onTagChange(397, (val) => pushTagToCi4(397, val));
 
     // Punch 4 position 314
-    PlcDataLayer.onTagChange(407, (val) => pushTagToCi4(407, val));
+    PlcDataLayer.onTagChange(406, (val) => pushTagToCi4(406, val));
 
     // Punch 4 Hold Down. 221
     PlcDataLayer.onTagChange(398, (val) => pushTagToCi4(398, val));
 
+    // Punch 5 position 314
+    PlcDataLayer.onTagChange(407, (val) => pushTagToCi4(407, val));
+
+    // Punch 5 Hold Down. 221
+    PlcDataLayer.onTagChange(399, (val) => pushTagToCi4(399, val));
+    // Punch 6 position 314
+    PlcDataLayer.onTagChange(408, (val) => pushTagToCi4(408, val));
+
+    // Punch 6 Hold Down. 221
+    PlcDataLayer.onTagChange(400, (val) => pushTagToCi4(400, val));
     // Marking Position. 296
     PlcDataLayer.onTagChange(402, (val) => pushTagToCi4(402, val));
 
