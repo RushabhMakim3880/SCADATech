@@ -427,7 +427,7 @@ if ($isIpc) {
     </div>
 
     <div class="modal fade" id="inputList">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-xl" style="max-width: 98%;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">INPUT LIST</h4>
@@ -537,14 +537,13 @@ if ($isIpc) {
                             '103' => ['value' => 'IX35.2, I_EDGE_DECLAMP_PROXY', 'isReverse' => false],
                         ];
 
-                        $third = ceil(count($list) / 3);
+                        $half = ceil(count($list) / 2);
                         $finalList = [];
-                        $finalList[] = array_slice($list, 0, $third, true);
-                        $finalList[] = array_slice($list, $third, $third, true);
-                        $finalList[] = array_slice($list, $third * 2, null, true);
+                        $finalList[] = array_slice($list, 0, $half, true);
+                        $finalList[] = array_slice($list, $half, null, true);
 
                         foreach ($finalList as $list) {
-                            echo "<div class='col-4'>";
+                            echo "<div class='col-6'>";
                             foreach ($list as $id => $item) {
                                 $name = $item['value'];
                                 $onColor = "#82c779";
@@ -555,8 +554,8 @@ if ($isIpc) {
                                     $offColor = "#82c779";
                                 }
 
-                                echo "<div class='mt-1'>
-                                    <button class='plc-btn btn btn-sm'
+                                echo "<div class='mt-1 d-flex align-items-center text-nowrap'>
+                                    <button class='plc-btn btn btn-sm flex-shrink-0 me-1'
                                         data-ui-type='button'
                                         data-tag-id='$id'
                                         data-behavior='momentary'
@@ -569,7 +568,7 @@ if ($isIpc) {
                                         data-on-confirm=''
                                         indicator-only='true'
                                         data-off-confirm=''></button>
-                                    $name
+                                    <span class='ms-1' style='font-size: 13px;'>$name</span>
                                 </div>";
                             }
                             echo "</div>";
@@ -586,7 +585,7 @@ if ($isIpc) {
     </div>
 
     <div class="modal fade" id="outputList">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-xl" style="max-width: 98%;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">OUTPUT LIST</h4>
@@ -664,14 +663,13 @@ if ($isIpc) {
                             '231' => ['value' => 'QX7.1, Q_SV_EDGE_FIND_DECLAMP', 'isReverse' => false],
                         ];
 
-                        $third = ceil(count($list) / 3);
+                        $half = ceil(count($list) / 2);
                         $finalList = [];
-                        $finalList[] = array_slice($list, 0, $third, true);
-                        $finalList[] = array_slice($list, $third, $third, true);
-                        $finalList[] = array_slice($list, $third * 2, null, true);
+                        $finalList[] = array_slice($list, 0, $half, true);
+                        $finalList[] = array_slice($list, $half, null, true);
 
                         foreach ($finalList as $list) {
-                            echo "<div class='col-4'>";
+                            echo "<div class='col-6'>";
                             foreach ($list as $id => $item) {
                                 $name = $item['value'];
                                 $onColor = "#82c779";
@@ -682,8 +680,8 @@ if ($isIpc) {
                                     $offColor = "#82c779";
                                 }
 
-                                echo "<div class='mt-1'>
-                                    <button class='plc-btn btn btn-sm'
+                                echo "<div class='mt-1 d-flex align-items-center text-nowrap'>
+                                    <button class='plc-btn btn btn-sm flex-shrink-0 me-1'
                                         data-ui-type='button'
                                         data-tag-id='$id'
                                         data-behavior='momentary'
@@ -696,7 +694,7 @@ if ($isIpc) {
                                         data-on-confirm=''
                                         indicator-only='true'
                                         data-off-confirm=''></button>
-                                    $name
+                                    <span class='ms-1' style='font-size: 13px;'>$name</span>
                                 </div>";
                             }
                             echo "</div>";
