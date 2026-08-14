@@ -212,10 +212,10 @@
                     <i class="fa fa-home-alt"></i> <br>
                     Homing
                 </button>
-                <button data-route="companySetting" class="btn btn-primary loadRoutes ipc-nav-btn">
+                <!-- <button data-route="companySetting" class="btn btn-primary loadRoutes ipc-nav-btn">
                     <i class="fa fa-sliders"></i> <br>
                     Screen Setting
-                </button>
+                </button> -->
                 <button data-route="machineParameters" class="btn btn-primary loadRoutes ipc-nav-btn">
                     <i class="fa fa-cogs"></i> <br>
                     Settings
@@ -223,7 +223,7 @@
 
                 <button data-route="manualControl" class="btn btn-primary loadRoutes ipc-nav-btn">
                     <i class="fa fa-user-gear"></i> <br>
-                    Manual Control
+                    Manual
                 </button>
                 <button data-route="programPrepare" class="btn btn-primary loadRoutes ipc-nav-btn">
                     <i class="fa fa-file"></i> <br>
@@ -231,17 +231,17 @@
                 </button>
                 <button data-route="autoControl" class="btn btn-primary loadRoutes ipc-nav-btn">
                     <i class="fa fa-gears"></i> <br>
-                    Auto Control
+                    Auto
                 </button>
                 <a class="btn btn-primary ipc-nav-btn" data-bs-toggle="modal"
                     href="#inputList">
                     <i class="fa fa-rotate-270 fa-arrow-right-to-bracket"></i> <br>
-                    Input List
+                    Input
                 </a>
                 <a class="btn btn-primary ipc-nav-btn" data-bs-toggle="modal"
                     href="#outputList">
                     <i class="fa fa-rotate-90 fa-arrow-right-from-bracket"></i> <br>
-                    Output List
+                    Output
                 </a>
                 <a class="btn btn-primary ipc-nav-btn" data-bs-toggle="modal"
                     href="#debugLog">
@@ -253,10 +253,10 @@
                     <i class="fa fa-list"></i> <br>
                     Log
                 </button> -->
-                <button class="btn btn-primary appLogOut ipc-nav-btn">
+                <!-- <button class="btn btn-primary appLogOut ipc-nav-btn">
                     <i class="fa fa-sign-out"></i> <br>
                     Log Out
-                </button>
+                </button> -->
 
                 <button class="btn btn-primary exitBtn nativeChannelBtns ipc-nav-btn">
                     <i class="fa fa-times"></i> <br>
