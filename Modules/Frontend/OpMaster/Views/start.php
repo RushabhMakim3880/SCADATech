@@ -204,7 +204,7 @@
 
     <?php
     if ($isIpc) {
-        ?>
+    ?>
 
         <div class="position-fixed bottom-0 w-100 text-center pb-2" style="pointer-events: none;left:0px; z-index: 1050;">
             <div class="d-inline-flex flex-nowrap gap-2 justify-content-center ipc-nav-container px-2">
@@ -302,7 +302,7 @@
 
 
 
-        <?php
+    <?php
     }
     ?>
 
@@ -313,7 +313,7 @@
 
 <?php
 if ($isIpc) {
-    ?>
+?>
 
     <!-- #modal-dialog -->
     <div class="modal fade" id="princherSafeScreen">
@@ -327,30 +327,30 @@ if ($isIpc) {
                     <div class="row">
                         <?php
                         $list = [
-                            '32' => ['value' => 'P1_SAFETY_STOP', 'isReverse' => true],
-                            '33' => ['value' => 'P2_SAFETY_STOP', 'isReverse' => true],
-                            '34' => ['value' => 'P3_SAFETY_STOP', 'isReverse' => true],
-                            '39' => ['value' => 'P4_SAFETY_STOP', 'isReverse' => true],
-                            '13' => ['value' => 'P5_SAFETY_STOP', 'isReverse' => true],
-                            '355' => ['value' => 'P6_SAFETY_STOP', 'isReverse' => true],
-                            '359' => ['value' => 'I_PROXY_PUNCH_1_U', 'isReverse' => false],
-                            '364' => ['value' => 'I_PROXY_PUNCH_2_U', 'isReverse' => false],
-                            '369' => ['value' => 'I_PROXY_PUNCH_3_U', 'isReverse' => false],
-                            '374' => ['value' => 'I_PROXY_PUNCH_4_U', 'isReverse' => false],
-                            '65' => ['value' => 'I_PROXY_PUNCH_5_U', 'isReverse' => false],
-                            '42' => ['value' => 'I_PROXY_PUNCH_6_U', 'isReverse' => false],
-                            '24' => ['value' => 'I_PROXY_MARKING_CYL_U', 'isReverse' => false], //ok
-                            '495' => ['value' => 'I_PROXY_CASSATE_1', 'isReverse' => false],
-                            '496' => ['value' => 'I_PROXY_CUTCYL_U', 'isReverse' => false],
-                            '497' => ['value' => 'I_PROXY_CUTHOLD_U', 'isReverse' => false],
-                            '498' => ['value' => 'I_PROXY_MARKING_BODY_U', 'isReverse' => false],
-                            '499' => ['value' => 'MARKING_SAFETY_STOP', 'isReverse' => true],
-                            '500' => ['value' => 'I_PROXY_PRINCHER_D', 'isReverse' => false],
-                            '501' => ['value' => 'I_MAIN_MOTOR_RUN', 'isReverse' => false],
-                            '502' => ['value' => 'IN_FEED_90_OK', 'isReverse' => false],
-                            '503' => ['value' => 'MARKING_CMD', 'isReverse' => true],
-                            '504' => ['value' => 'CUTTING_CMD', 'isReverse' => true],
-                            '505' => ['value' => 'PRINCHER_CLAMP_PRESSURE_OK', 'isReverse' => false],
+                            '206' => ['value' => 'P1_SAFETY_STOP', 'isReverse' => true],
+                            '207' => ['value' => 'P2_SAFETY_STOP', 'isReverse' => true],
+                            '208' => ['value' => 'P3_SAFETY_STOP', 'isReverse' => true],
+                            '209' => ['value' => 'P4_SAFETY_STOP', 'isReverse' => true],
+                            '210' => ['value' => 'P5_SAFETY_STOP', 'isReverse' => true],
+                            '211' => ['value' => 'P6_SAFETY_STOP', 'isReverse' => true],
+                            '167' => ['value' => 'I_PROXY_PUNCH_1_U', 'isReverse' => false],
+                            '169' => ['value' => 'I_PROXY_PUNCH_2_U', 'isReverse' => false],
+                            '171' => ['value' => 'I_PROXY_PUNCH_3_U', 'isReverse' => false],
+                            '173' => ['value' => 'I_PROXY_PUNCH_4_U', 'isReverse' => false],
+                            '175' => ['value' => 'I_PROXY_PUNCH_5_U', 'isReverse' => false],
+                            '177' => ['value' => 'I_PROXY_PUNCH_6_U', 'isReverse' => false],
+                            '159' => ['value' => 'I_PROXY_MARKING_CYL_U', 'isReverse' => false], //ok
+                            '137' => ['value' => 'I_PROXY_CASSATE_1', 'isReverse' => false],
+                            '144' => ['value' => 'I_PROXY_CUTCYL_U', 'isReverse' => false],
+                            '145' => ['value' => 'I_PROXY_CUTHOLD_U', 'isReverse' => false],
+                            '157' => ['value' => 'I_PROXY_MARKING_BODY_U', 'isReverse' => false],
+                            '205' => ['value' => 'MARKING_SAFETY_STOP', 'isReverse' => true],
+                            '162' => ['value' => 'I_PROXY_PRINCHER_D', 'isReverse' => false],
+                            '107' => ['value' => 'I_MAIN_MOTOR_RUN', 'isReverse' => false],
+                            '200' => ['value' => 'IN_FEED_90_OK', 'isReverse' => false],
+                            // '503' => ['value' => 'MARKING_CMD', 'isReverse' => true],
+                            // '504' => ['value' => 'CUTTING_CMD', 'isReverse' => true],
+                            '212' => ['value' => 'PRINCHER_CLAMP_PRESSURE_OK', 'isReverse' => false],
                         ];
 
                         $half = ceil(count($list) / 2);
@@ -747,7 +747,7 @@ if ($isIpc) {
         </div>
     </div>
 
-    <?php
+<?php
 }
 ?>
 

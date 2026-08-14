@@ -332,7 +332,7 @@ function loadRoute(viewName, forceLoad = false) {
             }
 
 
-            PlcDataLayer.onTagChange(231, () => ifReadySendNextLine());
+            PlcDataLayer.onTagChange(309, () => ifReadySendNextLine());
             PlcDataLayer.onTagChange(208, () => ifReadySendNextLine());
 
             PlcDataLayer.onTagChange(643, () => ifNeedToAskPassword());
@@ -1461,7 +1461,7 @@ function plcToCi4BindingAuto() {
     // PlcDataLayer.onTagChange(230, (val) => updatePrincherScrap(val));
 
     // callback for auto program cycle
-    // PlcDataLayer.onTagChange(231, () => ifReadySendNextLine());
+    // PlcDataLayer.onTagChange(309, () => ifReadySendNextLine());
     // PlcDataLayer.onTagChange(208, () => ifReadySendNextLine());
 
     //AUTO START FROM SELECTED
@@ -1928,7 +1928,7 @@ function sendNextLine() {
 function ifReadySendNextLine() {
 
 
-    if (PlcDataLayer.tagValues[231] == true) {
+    if (PlcDataLayer.tagValues[309] == true) {
         setDotColor("debugDot1", "green");
     }
     else {
@@ -1950,7 +1950,7 @@ function ifReadySendNextLine() {
         return false;
     }
 
-    if ((debugRun && autoRunStepEnabled) || (PlcDataLayer.tagValues[231] == true && PlcDataLayer.tagValues[208] == false)) {
+    if ((debugRun && autoRunStepEnabled) || (PlcDataLayer.tagValues[309] == true && PlcDataLayer.tagValues[208] == false)) {
         // If ready, proceed with sending next line
         sendNextLine();
 

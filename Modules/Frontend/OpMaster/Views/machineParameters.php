@@ -822,7 +822,7 @@
                                 </tr>
                                 <tr>
                                     <th>HOLD2 UP PROXY</th>
-                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='532'
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='552'
                                             data-disable-color='#6c757d' data-disable-condition='' /></td>
                                 </tr>
                                 <tr>
@@ -882,7 +882,7 @@
                                 </tr>
                                 <tr>
                                     <th>HOLD5 UP PROXY</th>
-                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='535'
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='555'
                                             data-disable-color='#6c757d' data-disable-condition='' /></td>
                                 </tr>
                                 <tr>
@@ -1074,6 +1074,16 @@
                                 <tr>
                                     <th>Y6 DEC TIME</th>
                                     <td><input class='plc-input virtualNumKeypad' data-tag-id='366'
+                                            data-disable-color='#6c757d' data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>PRINCHER SV DELAY</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='352'
+                                            data-disable-color='#6c757d' data-disable-condition='' /></td>
+                                </tr>
+                                <tr>
+                                    <th>PRINCHER DECLAMP TIME</th>
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='351'
                                             data-disable-color='#6c757d' data-disable-condition='' /></td>
                                 </tr>
                             </tbody>

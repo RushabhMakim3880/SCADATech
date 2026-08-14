@@ -675,7 +675,7 @@ class MachineMasterData extends Seeder
 (564, 1, 564, 1, 'SET_TIME_AL_PUNCH3_UP_PROXY', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_TIME_AL_PUNCH3_UP_PROXY', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
 (565, 1, 565, 1, 'SET_TIME_AL_PUNCH4_UP_PROXY', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_TIME_AL_PUNCH4_UP_PROXY', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
 (566, 1, 566, 1, 'SET_TIME_AL_PUNCH5_UP_PROXY', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_TIME_AL_PUNCH5_UP_PROXY', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
-(567, 1, 567, 1, 'SET_TIME_AL_PUNCH1_DWN_PROXY', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_TIME_AL_PUNCH1_DWN_PROXY', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(567, 1, 567, 1, 'SET_TIME_AL_PUNCH1_UP_PROXY', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_TIME_AL_PUNCH1_UP_PROXY', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
 
 (568, 1, 568, 1, 'SET_TIME_AL_CHAIN_FEEDER_FWD_PROXY', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_TIME_AL_CHAIN_FEEDER_FWD_PROXY', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
 (569, 1, 569, 1, 'SET_TIME_AL_PRINCHER_DWN_PROXY', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_TIME_AL_PRINCHER_DWN_PROXY', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
