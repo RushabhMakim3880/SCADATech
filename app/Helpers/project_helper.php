@@ -89,61 +89,79 @@ function updateTagValuesToDb($tags)
 
         if ($tagId == 579) {
             // Mark 1
-            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 5]);
+            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 7]);
         } elseif ($tagId == 580) {
             // Mark 2
-            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 6]);
+            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 8]);
         } elseif ($tagId == 581) {
             // Mark 3
-            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 7]);
+            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 9]);
         } elseif ($tagId == 582) {
             // Mark 4
-            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 8]);
-        } elseif ($tagId == 468) {
-            // Head 1
-            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 3]);
-        } elseif ($tagId == 469) {
-            // Head 2
-            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 4]);
-        } elseif ($tagId == 470) {
-            // Head 3
-            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 1]);
+            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 10]);
         } elseif ($tagId == 471) {
+            // Head 1
+            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 4]);
+        } elseif ($tagId == 472) {
+            // Head 2
+            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 5]);
+        } elseif ($tagId == 473) {
+            // Head 3
+            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 6]);
+        } elseif ($tagId == 468) {
             // Head 4
+            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 1]);
+        } elseif ($tagId == 469) {
+            // Head 5
             $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 2]);
+        } elseif ($tagId == 470) {
+            // Head 6
+            $db->query("UPDATE machineSetup SET value = ? WHERE machineSetupId = ?", [$value, 3]);
         } elseif ($tagId == 393) {
             // Cutting Position
-            $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 6]);
+            $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 8]);
         } elseif ($tagId == 392) {
             // Cutting Hold Down
-            $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 6]);
-        } elseif ($tagId == 404) {
-            // Punch 1 position 404
-            $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 3]);
-        } elseif ($tagId == 395) {
-            // Punch 1 Hold Down. 395
-            $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 3]);
-        } elseif ($tagId == 405) {
-            // Punch 2 position 405
+            $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 8]);
+        } elseif ($tagId == 403) {
+            // Punch 1 position 
             $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 4]);
-        } elseif ($tagId == 396) {
-            // Punch 2 Hold Down. 396
+        } elseif ($tagId == 395) {
+            // Punch 1 Hold Down. 
             $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 4]);
-        } elseif ($tagId == 406) {
-            // Punch 3 position 406
-            $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 1]);
+        } elseif ($tagId == 404) {
+            // Punch 2 position 
+            $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 5]);
+        } elseif ($tagId == 396) {
+            // Punch 2 Hold Down. 
+            $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 5]);
+        } elseif ($tagId == 405) {
+            // Punch 3 position 
+            $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 6]);
         } elseif ($tagId == 397) {
-            // Punch 3 Hold Down. 397
+            // Punch 3 Hold Down.
+            $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 6]);
+        } elseif ($tagId == 406) {
+            // Punch 4 position 
+            $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 1]);
+        } elseif ($tagId == 398) {
+            // Punch 4 Hold Down. 
             $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 1]);
         } elseif ($tagId == 407) {
-            // Punch 4 position 407
+            // Punch 5 position 
             $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 2]);
-        } elseif ($tagId == 398) {
-            // Punch 4 Hold Down. 398
+        } elseif ($tagId == 399) {
+            // Punch 5 Hold Down. 
             $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 2]);
-        } elseif ($tagId == 296) {
-            // Marking Position. 296
-            $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 5]);
+        } elseif ($tagId == 408) {
+            // Punch 6 position 
+            $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 3]);
+        } elseif ($tagId == 400) {
+            // Punch 6 Hold Down. 
+            $db->query("UPDATE machineDetails SET holdDownX = ? WHERE machineDetailId = ?", [$value, 3]);
+        } elseif ($tagId == 402) {
+            // Marking Position. 
+            $db->query("UPDATE machineDetails SET xPosition = ? WHERE machineDetailId = ?", [$value, 7]);
         }
     }
 }

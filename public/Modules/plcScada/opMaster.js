@@ -213,7 +213,7 @@ jQuery(document).ready(function () {
         sendNextLine();
 
         // send command to PLC to reset ready state
-        writeTags({ 208: true }).then(() => {
+        writeTags({ 300: true }).then(() => {
             addLog("autoCycleLog", "Ready Command sent to plc");
         }).catch(error => {
             addLog("autoCycleLog", "Failed to Send Ready Command sent to plc: " + error.message);
@@ -286,8 +286,8 @@ function loadRoute(viewName, forceLoad = false) {
             }
 
             if (viewName === 'autoControl') {
-                const princherScrapValue = PlcDataLayer.tagValues[305] || 0;
-                const leadScrapValue = PlcDataLayer.tagValues[230] || 0;
+                const princherScrapValue = PlcDataLayer.tagValues[493] || 0;
+                const leadScrapValue = PlcDataLayer.tagValues[492] || 0;
                 if (jQuery(".princherScrapInput").val() === "") {
                     jQuery(".princherScrapInput").val(princherScrapValue);
                 }
@@ -333,9 +333,9 @@ function loadRoute(viewName, forceLoad = false) {
 
 
             PlcDataLayer.onTagChange(309, () => ifReadySendNextLine());
-            PlcDataLayer.onTagChange(208, () => ifReadySendNextLine());
+            PlcDataLayer.onTagChange(300, () => ifReadySendNextLine());
 
-            PlcDataLayer.onTagChange(643, () => ifNeedToAskPassword());
+            PlcDataLayer.onTagChange(346, () => ifNeedToAskPassword());
 
             if (isCycleMonitorEnabled)
                 CycleMonitor.resubscribe();
@@ -829,9 +829,9 @@ window.PlcDataLayer = {
 
         for (let tagId in data) {
             let val = data[tagId];
-            if (tagId == 351) {
-                val = val / 10;
-            }
+            // if (tagId == 351) {
+            //     val = val / 10;
+            // }
             if (this.tagValues[tagId] !== val) {
                 this.tagValues[tagId] = val;
                 (this.listeners[tagId] || []).forEach(cb => cb(val));
@@ -1430,7 +1430,7 @@ function plcToCi4BindingAuto() {
     jQuery(document).off("change", ".leadScrapInput").on("change", ".leadScrapInput", function () {
         const val = parseFloat(jQuery(this).val());
 
-        const leadScrapValue = PlcDataLayer.tagValues[230] || 0;
+        const leadScrapValue = PlcDataLayer.tagValues[492] || 0;
         if (val < leadScrapValue) {
             mtplAlerts.show("error", "Lead scrap cannot be less than " + leadScrapValue + ".");
             jQuery(this).val(leadScrapValue);
@@ -1444,7 +1444,7 @@ function plcToCi4BindingAuto() {
     jQuery(document).off("change", ".princherScrapInput").on("change", ".princherScrapInput", function () {
         const val = parseFloat(jQuery(this).val());
 
-        const princherScrapValue = PlcDataLayer.tagValues[305] || 0;
+        const princherScrapValue = PlcDataLayer.tagValues[493] || 0;
         if (val < princherScrapValue) {
             mtplAlerts.show("error", "Princher scrap cannot be less than " + princherScrapValue + ".");
             jQuery(this).val(princherScrapValue);
@@ -1455,20 +1455,20 @@ function plcToCi4BindingAuto() {
     });
 
     // callback for bar length change
-    PlcDataLayer.onTagChange(212, () => updateOnAutoBarLength());
+    PlcDataLayer.onTagChange(296, () => updateOnAutoBarLength());
 
-    // PlcDataLayer.onTagChange(305, (val) => updateLeadScrap(val));
-    // PlcDataLayer.onTagChange(230, (val) => updatePrincherScrap(val));
+    // PlcDataLayer.onTagChange(493, (val) => updateLeadScrap(val));
+    // PlcDataLayer.onTagChange(492, (val) => updatePrincherScrap(val));
 
     // callback for auto program cycle
     // PlcDataLayer.onTagChange(309, () => ifReadySendNextLine());
-    // PlcDataLayer.onTagChange(208, () => ifReadySendNextLine());
+    // PlcDataLayer.onTagChange(300, () => ifReadySendNextLine());
 
     //AUTO START FROM SELECTED
-    PlcDataLayer.onTagChange(211, (val) => startSelected());
+    PlcDataLayer.onTagChange(317, (val) => startSelected());
 
     //AUTO START FROM FIRST
-    PlcDataLayer.onTagChange(210, (val) => startFirst());
+    PlcDataLayer.onTagChange(316, (val) => startFirst());
 
 }
 
@@ -1602,7 +1602,7 @@ function updateLeadScrap(val) {
     }
 
 
-    const barLength = PlcDataLayer.tagValues[212] || 0; // Assuming 318 is the tag for bar length
+    const barLength = PlcDataLayer.tagValues[296] || 0; // Assuming 318 is the tag for bar length
 
     if (barLength <= 0) {
         mtplAlerts.show("error", "Bar length error");
@@ -1611,7 +1611,7 @@ function updateLeadScrap(val) {
 
     let leadscrap = barLength - val - programLogic.programData.barLength;
 
-    const leadScrapValue = PlcDataLayer.tagValues[230] || 0;
+    const leadScrapValue = PlcDataLayer.tagValues[492] || 0;
 
     if (leadscrap < leadScrapValue) {
         mtplAlerts.show("error", "Lead scrap cannot be less than " + leadScrapValue + ".");
@@ -1635,7 +1635,7 @@ function updatePrincherScrap(val) {
     }
 
 
-    const barLength = PlcDataLayer.tagValues[212] || 0; // Assuming 318 is the tag for bar length
+    const barLength = PlcDataLayer.tagValues[296] || 0; // Assuming 318 is the tag for bar length
 
     if (barLength <= 0) {
         mtplAlerts.show("error", "Bar length error");
@@ -1644,7 +1644,7 @@ function updatePrincherScrap(val) {
 
     let princherScrap = barLength - val - programLogic.programData.barLength;
 
-    const princherScrapValue = PlcDataLayer.tagValues[305] || 0;
+    const princherScrapValue = PlcDataLayer.tagValues[493] || 0;
 
     if (princherScrap < princherScrapValue) {
         mtplAlerts.show("error", "Princher scrap cannot be less than " + princherScrapValue + ".");
@@ -1722,7 +1722,7 @@ function sendNextLine() {
         displayProgramSummary();
 
         // tell PLC that all operations are completed
-        writeTags({ 216: true }).then(() => {
+        writeTags({ 308: true }).then(() => {
             // mtplAlerts.show("success", "All operations completed and reset.");
             addLog("autoCycleLog", "================All operations completed and reset.================");
             // addLog("autoCycleLog", "All operations completed and reset.");
@@ -1750,7 +1750,7 @@ function sendNextLine() {
 
     let tagsToWrite = {};
 
-    const barLength = PlcDataLayer.tagValues[212] || 0; // Assuming 318 is the tag for bar length
+    const barLength = PlcDataLayer.tagValues[296] || 0; // Assuming 318 is the tag for bar length
 
     if (barLength <= 0 && !debugRun) {
         mtplAlerts.show("error", "Bar length error");
@@ -1762,51 +1762,51 @@ function sendNextLine() {
 
     if (item.headName === 'DA1') {
         tagsToWrite = {
-            321: finalX,
-            339: item.y,
-            206: 3 // DA1 operation code
+            301: finalX,
+            305: item.y,
+            299: 3 // DA1 operation code
         };
     }
     else if (item.headName === 'DA2') {
         tagsToWrite = {
-            321: finalX,
-            345: item.y,
-            206: 4 // DA2 operation code
+            301: finalX,
+            306: item.y,
+            299: 4 // DA2 operation code
         };
     }
     else if (item.headName === 'DA3') {
         tagsToWrite = {
-            321: finalX,
-            345: item.y,
-            206: 4 // DA2 operation code
+            301: finalX,
+            307: item.y,
+            299: 4 // DA2 operation code
         };
     }
     else if (item.headName === 'DB1') {
         tagsToWrite = {
-            321: finalX,
-            327: item.y,
-            206: 1 // DB1 operation code
+            301: finalX,
+            302: item.y,
+            299: 1 // DB1 operation code
         };
     }
     else if (item.headName === 'DB2') {
         tagsToWrite = {
-            321: finalX,
-            333: item.y,
-            206: 2 // DB2 operation code
+            301: finalX,
+            303: item.y,
+            299: 2 // DB2 operation code
         };
     }
     else if (item.headName === 'DB3') {
         tagsToWrite = {
-            321: finalX,
-            333: item.y,
-            206: 2 // DB2 operation code
+            301: finalX,
+            304: item.y,
+            299: 2 // DB2 operation code
         };
     }
     else if (item.headName === 'Marking') {
         tagsToWrite = {
-            321: finalX,
-            203: item.cassetId,
-            206: 5 // Marking operation code
+            301: finalX,
+            298: item.cassetId,
+            299: 5 // Marking operation code
         };
     }
     else if (item.headName === 'Cutting') {
@@ -1837,8 +1837,8 @@ function sendNextLine() {
         }
 
         tagsToWrite = {
-            321: finalX,
-            206: 6 // Cutting operation code
+            301: finalX,
+            299: 6 // Cutting operation code
         };
 
         storeProgramState(true); // store after cutting
@@ -1852,8 +1852,8 @@ function sendNextLine() {
     }
     else if (item.headName === 'holdDown') {
         tagsToWrite = {
-            321: finalX,
-            206: 7 // holdDown operation code
+            301: finalX,
+            299: 7 // holdDown operation code
         };
     }
     else {
@@ -1874,7 +1874,7 @@ function sendNextLine() {
         addLog("autoCycleLog", "Operation completed: " + item.headName);
         // send command to PLC to reset ready state
 
-        writeTags({ 208: true }).then(() => {
+        writeTags({ 300: true }).then(() => {
             // programLogic.lastExecutedLineNumber = programLogic.nextLineNumber;
 
 
@@ -1935,7 +1935,7 @@ function ifReadySendNextLine() {
         setDotColor("debugDot1", "red");
     }
 
-    if (PlcDataLayer.tagValues[208] == false) {
+    if (PlcDataLayer.tagValues[300] == false) {
         setDotColor("debugDot2", "green");
     }
     else {
@@ -1950,7 +1950,7 @@ function ifReadySendNextLine() {
         return false;
     }
 
-    if ((debugRun && autoRunStepEnabled) || (PlcDataLayer.tagValues[309] == true && PlcDataLayer.tagValues[208] == false)) {
+    if ((debugRun && autoRunStepEnabled) || (PlcDataLayer.tagValues[309] == true && PlcDataLayer.tagValues[300] == false)) {
         // If ready, proceed with sending next line
         sendNextLine();
 
@@ -2057,7 +2057,7 @@ function setDotColor(dotId, color) {
 
 
 function checkBarLength() {
-    const barLength = PlcDataLayer.tagValues[212] || 0; // Assuming 318 is the tag for bar length
+    const barLength = PlcDataLayer.tagValues[296] || 0; // Assuming 318 is the tag for bar length
     const leadScrapValue = parseFloat(jQuery(".leadScrapInput").val()) || 0;
     const princherScrapValue = parseFloat(jQuery(".princherScrapInput").val()) || 0;
 
@@ -2088,21 +2088,21 @@ function updateOnAutoBarLength() {
     }
 
     if (jQuery("#actualBarLength").length) {
-        jQuery("#actualBarLength").text(PlcDataLayer.tagValues[212] || 0);
+        jQuery("#actualBarLength").text(PlcDataLayer.tagValues[296] || 0);
     }
 
     const scrapType = PlcDataLayer.localFlags['flag_1'] || false; // Assuming flag_1 is used for scrap type toggle
     if (scrapType) {
         jQuery(".leadScrapInput").prop("disabled", true);
         jQuery(".princherScrapInput").prop("disabled", false);
-        const princherScrapValue = PlcDataLayer.tagValues[305] || 0;
+        const princherScrapValue = PlcDataLayer.tagValues[493] || 0;
         jQuery(".princherScrapInput").val(princherScrapValue);
         updateLeadScrap(princherScrapValue);
     } else {
         jQuery(".leadScrapInput").prop("disabled", false);
         jQuery(".princherScrapInput").prop("disabled", true);
 
-        const leadScrapValue = PlcDataLayer.tagValues[230] || 0;
+        const leadScrapValue = PlcDataLayer.tagValues[492] || 0;
         jQuery(".leadScrapInput").val(leadScrapValue);
         updatePrincherScrap(leadScrapValue);
     }
@@ -2338,10 +2338,10 @@ function askPassword() {
         const pwd = modalEl.querySelector('#userPassword').value.trim();
         console.log('Entered Password:', pwd);
 
-        writeTags({ 642: pwd }).then(() => {
+        writeTags({ 202: pwd }).then(() => {
 
             setTimeout(() => {
-                const val = (window.PlcDataLayer?.tagValues?.[643]) || false;
+                const val = (window.PlcDataLayer?.tagValues?.[346]) || false;
                 if (val === false) {
                     mtplAlerts.show("success", "Password accepted.");
                 } else {
@@ -2353,7 +2353,7 @@ function askPassword() {
 
             restartPasswordCheckInterval(passwordCheckInterval);
         }).catch(error => {
-            writeTags({ 642: 0 });
+            writeTags({ 202: 0 });
             restartPasswordCheckInterval(passwordCheckInterval);
             mtplAlerts.show("error", "Failed to submit password: " + error.message);
         });
@@ -2370,7 +2370,7 @@ function askPassword() {
 
 // --- conditional trigger ---
 function ifNeedToAskPassword() {
-    const val = (window.PlcDataLayer?.tagValues?.[643]) || false;
+    const val = (window.PlcDataLayer?.tagValues?.[346]) || false;
     if (val === true && !__askPwdModalOpen) {
         askPassword();
     }
@@ -2427,7 +2427,7 @@ function storeProgramState(force = false) {
 }
 
 function getMachineSetup() {
-    tags = [307, 309, 311, 313, 292, 293, 294, 295, 318, 215, 308, 218, 310, 219, 312, 220, 314, 221, 296];
+    tags = [468, 469, 470, 471, 472, 473, 579, 580, 581, 582, 393, 392, 403, 395, 404, 396, 405, 397, 406, 398, 407, 399, 408, 400, 402];
 
     tagValues = {};
 
@@ -2530,14 +2530,14 @@ function updateLeadPrincherScrapeByType() {
     if (scrapType) {
         jQuery(".leadScrapInput").prop("disabled", true);
         jQuery(".princherScrapInput").prop("disabled", false);
-        const princherScrapValue = PlcDataLayer.tagValues[305] || 0;
+        const princherScrapValue = PlcDataLayer.tagValues[493] || 0;
         jQuery(".princherScrapInput").val(princherScrapValue);
         updateLeadScrap(princherScrapValue);
     } else {
         jQuery(".leadScrapInput").prop("disabled", false);
         jQuery(".princherScrapInput").prop("disabled", true);
 
-        const leadScrapValue = PlcDataLayer.tagValues[230] || 0;
+        const leadScrapValue = PlcDataLayer.tagValues[492] || 0;
         jQuery(".leadScrapInput").val(leadScrapValue);
         updatePrincherScrap(leadScrapValue);
     }

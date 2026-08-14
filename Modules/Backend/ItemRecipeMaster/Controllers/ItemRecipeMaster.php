@@ -57,12 +57,12 @@ class ItemRecipeMaster extends ApiBaseController
 
         $rules['sideAWidth'] = [
             'label'  => 'Side A Width',
-            'rules'  => 'required|decimal|less_than_equal_to[120]'
+            'rules'  => 'required|decimal|less_than_equal_to[200]'
         ];
 
         $rules['sideBWidth'] = [
             'label'  => 'Side B Width',
-            'rules'  => 'required|decimal|less_than_equal_to[120]'
+            'rules'  => 'required|decimal|less_than_equal_to[200]'
         ];
 
         $rules['sideAThickness'] = [
