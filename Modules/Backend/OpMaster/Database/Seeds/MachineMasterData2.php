@@ -24,7 +24,8 @@ class MachineMasterData2 extends Seeder
 (579, 1, 579, 1, 'S_MARK1', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_MARK1', 'String', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
 (580, 1, 580, 1, 'S_MARK2', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_MARK2', 'String', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
 (581, 1, 581, 1, 'S_MARK3', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_MARK3', 'String', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
-(582, 1, 582, 1, 'S_MARK4', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_MARK4', 'String', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2)
+(582, 1, 582, 1, 'S_MARK4', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.S_MARK4', 'String', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2),
+(583, 1, 583, 1, 'SET_AUTO_HOLDDOWN_MM', 'ns=4;s=|var|Inovance-ARM-Linux.Application.RADHE.SET_AUTO_HOLDDOWN_MM', 'Float', 'holding', 'readwrite', 1, 0, NULL, NULL, 1, '2026-07-27 16:07:36', '2026-07-27 16:07:36', 2, 2)
                             ;");
 
         $lastIndex = 579;

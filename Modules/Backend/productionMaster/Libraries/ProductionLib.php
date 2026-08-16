@@ -9,6 +9,7 @@ class ProductionLib
     protected array $programQueue = [];
     protected float $scale = 1.0;
     protected float $startOffset = 0.0;
+    public float $holdDownMm = 0;
 
     // defaults for per-program transforms
     protected array $defaultReverse = [
@@ -16,10 +17,11 @@ class ProductionLib
         'swapSides' => false  // A<->B
     ];
 
-    public function __construct(array $machineHeads = [], array $cassetsData = [])
+    public function __construct(array $machineHeads = [], array $cassetsData = [], float $holdDownMm = 0)
     {
         $this->setMachineHeads($machineHeads);
         $this->setCassetsData($cassetsData);
+        $this->holdDownMm = $holdDownMm;
     }
 
     public function setCassetsData(array $cassetsData): void
@@ -193,8 +195,11 @@ class ProductionLib
         $itemIndex = 1;
 
         $db = db_connect();
-        $holdDownX = $db->query("SELECT holdDownX FROM machineDetails WHERE machineDetailId = 3")->getRow();
-        $holdDownX = $holdDownX ? floatval($holdDownX->holdDownX) : 0;
+        // $holdDownX = $db->query("SELECT holdDownX FROM machineDetails WHERE machineDetailId = 3")->getRow();
+        // $holdDownX = $holdDownX ? floatval($holdDownX->holdDownX) : 0;
+
+        $holdDownX = $this->holdDownMm;
+
 
         $final[] = [
             'itemIndex' => 0,

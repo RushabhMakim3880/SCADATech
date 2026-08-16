@@ -85,6 +85,7 @@ class productionMaster extends ApiBaseController
         if (isset($jsonInput["tagValues"]))
             updateTagValuesToDb($jsonInput["tagValues"]);
 
+        $holdDownMm = $jsonInput["tagValues"][583] ?? 0;
 
         $headPositions = [];
         $cassetsData = [];
@@ -103,7 +104,7 @@ class productionMaster extends ApiBaseController
         }
 
 
-        $lib = new ProductionLib($headPositions, $cassetsData);
+        $lib = new ProductionLib($headPositions, $cassetsData, $holdDownMm);
         $lib->setStartOffset($jsonInput['leadScrap'] ?? 100); //
 
         $maxBarLenthLimit = 20000; // Maximum bar length limit

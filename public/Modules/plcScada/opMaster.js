@@ -1764,21 +1764,21 @@ function sendNextLine() {
         tagsToWrite = {
             301: finalX,
             305: item.y,
-            299: 3 // DA1 operation code
+            299: 4 // DA1 operation code
         };
     }
     else if (item.headName === 'DA2') {
         tagsToWrite = {
             301: finalX,
             306: item.y,
-            299: 4 // DA2 operation code
+            299: 5 // DA2 operation code
         };
     }
     else if (item.headName === 'DA3') {
         tagsToWrite = {
             301: finalX,
             307: item.y,
-            299: 4 // DA2 operation code
+            299: 6 // DA3 operation code
         };
     }
     else if (item.headName === 'DB1') {
@@ -1799,14 +1799,14 @@ function sendNextLine() {
         tagsToWrite = {
             301: finalX,
             304: item.y,
-            299: 2 // DB2 operation code
+            299: 3 // DB3 operation code
         };
     }
     else if (item.headName === 'Marking') {
         tagsToWrite = {
             301: finalX,
             298: item.cassetId,
-            299: 5 // Marking operation code
+            299: 7 // Marking operation code
         };
     }
     else if (item.headName === 'Cutting') {
@@ -1838,7 +1838,7 @@ function sendNextLine() {
 
         tagsToWrite = {
             301: finalX,
-            299: 6 // Cutting operation code
+            299: 8 // Cutting operation code
         };
 
         storeProgramState(true); // store after cutting
@@ -1853,7 +1853,7 @@ function sendNextLine() {
     else if (item.headName === 'holdDown') {
         tagsToWrite = {
             301: finalX,
-            299: 7 // holdDown operation code
+            299: 9 // holdDown operation code
         };
     }
     else {
