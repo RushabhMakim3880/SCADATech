@@ -521,7 +521,7 @@
                                         <button class="plc-btn btn btn-sm w-100" data-tag-id="326"
                                             data-behavior="maintain" data-indicator-id="326" data-on-color="#82c779"
                                             data-off-color="#0f75bc" data-disable-color="#6c757d"
-                                            data-on-label="AUTO<br>REFERENCE" data-off-label="AUTO<br>REFERENCE"
+                                            data-on-label="AUTO<br>REFERENCE ON" data-off-label="AUTO<br>REFERENCE OFF"
                                             data-on-confirm="" data-off-confirm=""></button>
                                     </td>
                                     <td colspan="4">

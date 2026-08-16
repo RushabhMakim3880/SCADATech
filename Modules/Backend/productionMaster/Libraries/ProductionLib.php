@@ -193,7 +193,7 @@ class ProductionLib
         $itemIndex = 1;
 
         $db = db_connect();
-        $holdDownX = $db->query("SELECT holdDownX FROM machineDetails WHERE machineDetailId = 2")->getRow();
+        $holdDownX = $db->query("SELECT holdDownX FROM machineDetails WHERE machineDetailId = 3")->getRow();
         $holdDownX = $holdDownX ? floatval($holdDownX->holdDownX) : 0;
 
         $final[] = [

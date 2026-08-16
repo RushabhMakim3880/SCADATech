@@ -368,7 +368,7 @@
                                 data-disable-condition="" /></td>
                     </tr>
                     <tr>
-                        <th>PUNCH 3 (DA-3)</th>
+                        <th>PUNCH 3 (DB-3)</th>
                         <td><input class="plc-input virtualNumKeypad" data-tag-id="470" data-disable-color="#6c757d"
                                 data-disable-condition="" /></td>
                     </tr>
@@ -842,7 +842,7 @@
                                 </tr>
                                 <tr>
                                     <th>HOLD3 UP PROXY</th>
-                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='533'
+                                    <td><input class='plc-input virtualNumKeypad' data-tag-id='553'
                                             data-disable-color='#6c757d' data-disable-condition='' /></td>
                                 </tr>
                                 <tr>

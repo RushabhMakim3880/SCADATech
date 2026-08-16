@@ -67,7 +67,7 @@ class ItemRecipeMaster extends ApiBaseController
 
         $rules['sideAThickness'] = [
             'label'  => 'Thickness',
-            'rules'  => 'required|decimal|greater_than[0]|less_than_equal_to[8]'
+            'rules'  => 'required|decimal|greater_than_equal_to[6]|less_than_equal_to[16]'
         ];
 
         // cutRadius
