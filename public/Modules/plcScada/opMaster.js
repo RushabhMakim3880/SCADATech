@@ -1712,8 +1712,8 @@ function sendNextLine() {
     if (programLogic.nextLineNumber > programLogic.programData.program.length) {
 
         // Reset nextLineNumber to 0
-        programLogic.nextLineNumber = 1;
         nextPointHighlight(programLogic.nextLineNumber);
+        programLogic.nextLineNumber = 1;
 
 
         if (isCanvasVisible()) {
@@ -1894,7 +1894,7 @@ function sendNextLine() {
 
 
 
-            programLogic.nextLineNumber++;
+
             if (programLogic.nextLineNumber <= programLogic.programData.program.length) {
                 nextPointHighlight(programLogic.nextLineNumber);
                 programLogic.selectedLine = programLogic.nextLineNumber;
@@ -1902,7 +1902,7 @@ function sendNextLine() {
             else {
                 programLogic.selectedLine = 1;
             }
-
+            programLogic.nextLineNumber++;
 
 
             displayProgramSummary();
