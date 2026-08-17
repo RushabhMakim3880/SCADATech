@@ -6,7 +6,29 @@
     </button>
 
     <div class="row mb-3">
-        <div class="col-8">
+        <div class="col-12">
+            <div class="prepareForProgramAlign">
+                <h2>Prepare Items Here</h2>
+                <div id="jobcardDetailsBox" class="p-2 border rounded-3 shadow-sm" style="min-height: 100px;">
+                    <!-- <div class="alert alert-info">Select a job card to prepare items.</div> -->
+
+                    <table class="table table-sm align-middle m-0">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th style="width:160px;">Qty</th>
+                                <th style="width:100px;">Reverse?</th>
+                            </tr>
+                        </thead>
+                        <tbody id="selectedJobsBody">
+                            <!-- rows appended dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mt-3">
             <div class="prepareForProgramAlign">
                 <input type="text" id="jobCardSearch" class="form-control mb-2 float-end" style="max-width:300px;" placeholder="Search Job Cards...">
                 <h2>Pending Job Cards</h2>
@@ -48,27 +70,6 @@
                         </thead>
                         <tbody id="pendingJobcardsTableBody">
                             <!-- Dynamic content will be injected here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="prepareForProgramAlign">
-                <h2>Prepare Items Here</h2>
-                <div id="jobcardDetailsBox" class="p-2 border rounded-3 shadow-sm" style="min-height: 300px;">
-                    <!-- <div class="alert alert-info">Select a job card to prepare items.</div> -->
-
-                    <table class="table table-sm align-middle m-0">
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th style="width:160px;">Qty</th>
-                                <th style="width:100px;">Reverse?</th>
-                            </tr>
-                        </thead>
-                        <tbody id="selectedJobsBody">
-                            <!-- rows appended dynamically -->
                         </tbody>
                     </table>
                 </div>
