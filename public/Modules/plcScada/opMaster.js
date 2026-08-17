@@ -502,6 +502,9 @@ function loadProgramAlign() {
         tagValues: PlcDataLayer.tagValues
     }
 
+    programLogic.isReady = false;
+    setDotColor("programAlignIndicator", "red");
+
     // Make API call to start jobcard
     apiCall("POST", "api/productionMaster/programAlign", $finalPostData).then(function (response) {
         programLogic.programData = response.data;
@@ -512,10 +515,12 @@ function loadProgramAlign() {
 
             if (checkBarLength()) {
                 programLogic.isReady = true;
+                setDotColor("programAlignIndicator", "green");
             }
         }
         else {
             programLogic.isReady = false;
+            setDotColor("programAlignIndicator", "red");
             const errorHtml = formatProgramAlignErrors(response.errors || response.message || "Program alignment failed.");
             jQuery(".programOutput").html("<div class='alert alert-danger'>" + errorHtml + "</div>");
             initMap();
@@ -528,7 +533,7 @@ function loadProgramAlign() {
         });
 
     }).catch(function (error) {
-
+        setDotColor("programAlignIndicator", "red");
     });
 
 
@@ -1507,7 +1512,20 @@ function plcToCi4BindingAuto() {
     PlcDataLayer.onTagChange(317, (val) => startSelected());
 
     //AUTO START FROM FIRST
-    PlcDataLayer.onTagChange(316, (val) => startFirst());
+    let initial316 = true;
+    PlcDataLayer.onTagChange(316, () => {
+        const tagValue = PlcDataLayer.tagValues[316];
+        if (tagValue) {
+            if (!initial316) {
+                startFirst();
+            }
+            setDotColor("autoCycleOnIndicator", "green");
+        }
+        else {
+            setDotColor("autoCycleOnIndicator", "red");
+        }
+        initial316 = false;
+    });
 
 }
 
