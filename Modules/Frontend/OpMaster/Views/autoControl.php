@@ -277,8 +277,8 @@
                                     <td>
                                         <span title="490:SET_CUT_GAP">
                                             <input class="plc-input virtualNumKeypad" style="width:80px;"
-                                                data-tag-id="490" data-disable-color="#6c757d" data-disable-condition=""
-                                                disabled />
+                                                data-tag-id="490" data-disable-color="#6c757d"
+                                                data-disable-condition="" />
                                         </span>
                                         <!-- <span title="685:SD_BSIDE_HOLE_TIME_SEC">
                                             <input class="plc-input virtualNumKeypad" style="width:80px;"
@@ -325,8 +325,7 @@
                                 <td>
                                     <input type="checkbox"
                                         onclick="return confirm('Are you sure you want to skip cut operation?');"
-                                        id="skipCutOperation" style="width: 2em; height: 2em; vertical-align: middle;"
-                                        disabled>
+                                        id="skipCutOperation" style="width: 2em; height: 2em; vertical-align: middle;">
                                 </td>
                                 </tr>
 

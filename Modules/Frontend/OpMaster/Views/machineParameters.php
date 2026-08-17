@@ -617,8 +617,10 @@
                             <th>HEAD LUB OFF TIME</th>
                             <td><input class="plc-input virtualNumKeypad" data-tag-id="452" data-disable-color="#6c757d"
                                     data-disable-condition="" />
-                                <input class="plc-input virtualNumKeypad" data-tag-id="380" data-disable-color="#6c757d"
-                                    data-disable-condition="" disabled />
+                                <span title="380: SD_HEAD_LUB_OFF_CURRENT_TIME_MIN">
+                                    <input class="plc-input virtualNumKeypad" data-tag-id="380"
+                                        data-disable-color="#6c757d" data-disable-condition="" disabled />
+                                </span>
                             </td>
                         </tr>
                         <tr>
@@ -630,18 +632,21 @@
                             <th>PRICHER LUB ON TIME</th>
                             <td><input class="plc-input virtualNumKeypad" data-tag-id="455" data-disable-color="#6c757d"
                                     data-disable-condition="" />
-
-                                <input class="plc-input virtualNumKeypad" data-tag-id="383" data-disable-color="#6c757d"
-                                    data-disable-condition="" disabled />
+                                <span title="383: SD_PRINCHER_LUB_OFF_CURRENT_TIME_MIN">
+                                    <input class="plc-input virtualNumKeypad" data-tag-id="383"
+                                        data-disable-color="#6c757d" data-disable-condition="" disabled />
+                                </span>
                             </td>
                         </tr>
                         <tr>
                             <th>MAIN HYD NO OPERATION TIME</th>
                             <td><input class="plc-input virtualNumKeypad" data-tag-id="453" data-disable-color="#6c757d"
                                     data-disable-condition="" />
+                                <span title="381: SD_IDEAL_TIME_MIN">
 
-                                <input class="plc-input virtualNumKeypad" data-tag-id="381" data-disable-color="#6c757d"
-                                    data-disable-condition="" disabled />
+                                    <input class="plc-input virtualNumKeypad" data-tag-id="381"
+                                        data-disable-color="#6c757d" data-disable-condition="" disabled />
+                                </span>
                             </td>
                         </tr>
                         <tr>
