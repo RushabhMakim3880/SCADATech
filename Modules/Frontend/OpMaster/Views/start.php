@@ -190,8 +190,8 @@
     </div>
 
     <div class="">
-        <img src="<?= base_url('assets/img/DetanicsLogo.png') ?>" alt="OpMaster Image" class="centerLogo"
-            style="max-height: 150px; width: auto;">
+        <img src="<?= base_url('assets/img/hptlogo2.png') ?>" alt="OpMaster Image" class="centerLogo"
+            style="max-height: 500px; width: auto;">
     </div>
 
     <?php
@@ -204,7 +204,7 @@
 
     <?php
     if ($isIpc) {
-    ?>
+        ?>
 
         <div class="position-fixed bottom-0 w-100 text-center pb-2" style="pointer-events: none;left:0px; z-index: 1050;">
             <div class="d-inline-flex flex-nowrap gap-2 justify-content-center ipc-nav-container px-2">
@@ -233,18 +233,15 @@
                     <i class="fa fa-gears"></i> <br>
                     Auto
                 </button>
-                <a class="btn btn-primary ipc-nav-btn" data-bs-toggle="modal"
-                    href="#inputList">
+                <a class="btn btn-primary ipc-nav-btn" data-bs-toggle="modal" href="#inputList">
                     <i class="fa fa-rotate-270 fa-arrow-right-to-bracket"></i> <br>
                     Input
                 </a>
-                <a class="btn btn-primary ipc-nav-btn" data-bs-toggle="modal"
-                    href="#outputList">
+                <a class="btn btn-primary ipc-nav-btn" data-bs-toggle="modal" href="#outputList">
                     <i class="fa fa-rotate-90 fa-arrow-right-from-bracket"></i> <br>
                     Output
                 </a>
-                <a class="btn btn-primary ipc-nav-btn" data-bs-toggle="modal"
-                    href="#debugLog">
+                <a class="btn btn-primary ipc-nav-btn" data-bs-toggle="modal" href="#debugLog">
                     <i class="fa fa-list"></i> <br>
                     Log
                 </a>
@@ -302,7 +299,7 @@
 
 
 
-    <?php
+        <?php
     }
     ?>
 
@@ -313,7 +310,7 @@
 
 <?php
 if ($isIpc) {
-?>
+    ?>
 
     <!-- #modal-dialog -->
     <div class="modal fade" id="princherSafeScreen">
@@ -443,10 +440,10 @@ if ($isIpc) {
                             '121' => ['value' => 'X4, I_PHASE_PROTECTOR_GIC', 'isReverse' => false],
                             '107' => ['value' => 'X5, I_MAIN_MOTOR_RUN', 'isReverse' => false],
                             '108' => ['value' => 'X6, I_MAIN_MOTOR_TRIP', 'isReverse' => false],
-                            '99'  => ['value' => 'X7, I_CHAIN_FEEDER_MOTOR_FWD_RUN', 'isReverse' => false],
+                            '99' => ['value' => 'X7, I_CHAIN_FEEDER_MOTOR_FWD_RUN', 'isReverse' => false],
                             '100' => ['value' => 'IX24.0, I_CHAIN_FEEDER_MOTOR_REV_RUN', 'isReverse' => false],
-                            '97'  => ['value' => 'IX24.1, I_CHAIN_FEEDER_MOTOR_1_TRIP', 'isReverse' => false],
-                            '98'  => ['value' => 'IX24.2, I_CHAIN_FEEDER_MOTOR_2_TRIP', 'isReverse' => false],
+                            '97' => ['value' => 'IX24.1, I_CHAIN_FEEDER_MOTOR_1_TRIP', 'isReverse' => false],
+                            '98' => ['value' => 'IX24.2, I_CHAIN_FEEDER_MOTOR_2_TRIP', 'isReverse' => false],
                             '109' => ['value' => 'IX24.3, I_OIL_CIRCULATION_MOTOR_RUN', 'isReverse' => false],
                             '110' => ['value' => 'IX24.4, I_OIL_CIRCULATION_MOTOR_TRIP', 'isReverse' => false],
                             '101' => ['value' => 'IX24.5, I_COOLER_FAN_RUN', 'isReverse' => false],
@@ -747,7 +744,7 @@ if ($isIpc) {
         </div>
     </div>
 
-<?php
+    <?php
 }
 ?>
 

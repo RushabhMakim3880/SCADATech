@@ -150,7 +150,8 @@
 <div id="content" class="app-content">
 
     <div class="">
-        <img src="<?= base_url('assets/img/DetanicsLogo.png') ?>" alt="OpMaster Image" class="centerLogo" style="max-height: 150px; width: auto;">
+        <img src="<?= base_url('assets/img/hptlogo2.png') ?>" alt="OpMaster Image" class="centerLogo"
+            style="max-height: 150px; width: auto;">
     </div>
 
     <?php
@@ -163,36 +164,43 @@
 
     <?php
     if ($isIpc) {
-    ?>
+        ?>
 
         <div class="position-fixed bottom-0 w-100 text-center pb-2" style="pointer-events: none;">
             <div class="d-inline-flex flex-wrap gap-3" style="pointer-events: auto;">
-                <button data-route="homing" class="btn btn-primary btn-lg loadRoutes" style="font-size: large; min-width: 150px;">
+                <button data-route="homing" class="btn btn-primary btn-lg loadRoutes"
+                    style="font-size: large; min-width: 150px;">
                     <i class="fa fa-home-alt fa-2x"></i> <br>
                     Homing
                 </button>
-                <button data-route="machineParameters" class="btn btn-primary btn-lg loadRoutes" style="font-size: large; min-width: 150px;">
+                <button data-route="machineParameters" class="btn btn-primary btn-lg loadRoutes"
+                    style="font-size: large; min-width: 150px;">
                     <i class="fa fa-cogs fa-2x"></i> <br>
                     Settings
                 </button>
 
-                <button data-route="manualControl" class="btn btn-primary btn-lg loadRoutes" style="font-size: large; min-width: 150px;">
+                <button data-route="manualControl" class="btn btn-primary btn-lg loadRoutes"
+                    style="font-size: large; min-width: 150px;">
                     <i class="fa fa-user-gear fa-2x"></i> <br>
                     Manaul Control
                 </button>
-                <button data-route="autoControl" class="btn btn-primary btn-lg loadRoutes" style="font-size: large; min-width: 150px;">
+                <button data-route="autoControl" class="btn btn-primary btn-lg loadRoutes"
+                    style="font-size: large; min-width: 150px;">
                     <i class="fa fa-gears fa-2x"></i> <br>
                     Auto Control
                 </button>
-                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal" href="#inputList">
+                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal"
+                    href="#inputList">
                     <i class="fa fa-rotate-270 fa-arrow-right-to-bracket fa-2x"></i> <br>
                     Input List
                 </a>
-                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal" href="#outputList">
+                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal"
+                    href="#outputList">
                     <i class="fa fa-rotate-90 fa-arrow-right-from-bracket fa-2x"></i> <br>
                     Output List
                 </a>
-                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal" href="#debugLog">
+                <a class="btn btn-primary btn-lg" style="font-size: large; min-width: 150px;" data-bs-toggle="modal"
+                    href="#debugLog">
                     <i class="fa fa-list fa-2x"></i> <br>
                     Log
                 </a>
@@ -206,24 +214,33 @@
                     Log Out
                 </button>
 
-                <button class="btn btn-primary btn-lg exitBtn nativeChannelBtns" style="font-size: large; min-width: 150px;">
+                <button class="btn btn-primary btn-lg exitBtn nativeChannelBtns"
+                    style="font-size: large; min-width: 150px;">
                     <i class="fa fa-times fa-2x"></i> <br>
                     Exit
                 </button>
 
                 <div class="dropdown nativeChannelBtns">
-                    <button class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown" style="font-size: large; min-width: 150px;">
+                    <button class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown"
+                        style="font-size: large; min-width: 150px;">
                         <i class="fa fa-list fa-2x"></i> <br>
                         ...
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="status" href="javascript:;"><i class="fa fa-check-circle"></i> Check Status</a></li>
-                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="start" href="javascript:;"><i class="fa fa-play-circle"></i> Start Process</a></li>
-                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="stop" href="javascript:;"><i class="fa fa-stop-circle"></i> Stop Process</a></li>
-                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="restart" href="javascript:;"><i class="fa fa-rotate"></i> Restart Process</a></li>
-                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="logs" href="javascript:;"><i class="fa fa-list"></i> Process Log</a></li>
-                        <li><a class="dropdown-item h3 blueTitle shutdownBtn" href="javascript:;"><i class="fa fa-power-off"></i> Shutdown System</a></li>
-                        <li><a class="dropdown-item h3 blueTitle restartBtn" href="javascript:;"><i class="fa fa-rotate"></i> Restart System</a></li>
+                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="status"
+                                href="javascript:;"><i class="fa fa-check-circle"></i> Check Status</a></li>
+                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="start"
+                                href="javascript:;"><i class="fa fa-play-circle"></i> Start Process</a></li>
+                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="stop" href="javascript:;"><i
+                                    class="fa fa-stop-circle"></i> Stop Process</a></li>
+                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="restart"
+                                href="javascript:;"><i class="fa fa-rotate"></i> Restart Process</a></li>
+                        <li><a class="dropdown-item h3 blueTitle nodeProcess" data-node-action="logs" href="javascript:;"><i
+                                    class="fa fa-list"></i> Process Log</a></li>
+                        <li><a class="dropdown-item h3 blueTitle shutdownBtn" href="javascript:;"><i
+                                    class="fa fa-power-off"></i> Shutdown System</a></li>
+                        <li><a class="dropdown-item h3 blueTitle restartBtn" href="javascript:;"><i
+                                    class="fa fa-rotate"></i> Restart System</a></li>
                     </ul>
                 </div>
 
@@ -243,7 +260,7 @@
 
 
 
-    <?php
+            <?php
     }
     ?>
 
@@ -254,7 +271,7 @@
 
 <?php
 if ($isIpc) {
-?>
+    ?>
 
     <!-- #modal-dialog -->
     <div class="modal fade" id="princherSafeScreen">
@@ -616,9 +633,12 @@ if ($isIpc) {
                 </div>
                 <div class="modal-body">
                     <ul class="nav nav-pills">
-                        <li class="nav-item"><a href="#autoCycleLog" data-bs-toggle="tab" class="nav-link active">Auto Cycle Log</a></li>
-                        <li class="nav-item"><a href="#tagWriteLog" data-bs-toggle="tab" class="nav-link">Tag Write Log</a></li>
-                        <li class="nav-item"><a href="#liveTagView" data-bs-toggle="tab" class="nav-link">Live Tag View</a></li>
+                        <li class="nav-item"><a href="#autoCycleLog" data-bs-toggle="tab" class="nav-link active">Auto Cycle
+                                Log</a></li>
+                        <li class="nav-item"><a href="#tagWriteLog" data-bs-toggle="tab" class="nav-link">Tag Write Log</a>
+                        </li>
+                        <li class="nav-item"><a href="#liveTagView" data-bs-toggle="tab" class="nav-link">Live Tag View</a>
+                        </li>
                     </ul>
 
                     <div class="tab-content panel p-3 rounded">
@@ -641,6 +661,6 @@ if ($isIpc) {
         </div>
     </div>
 
-<?php
+    <?php
 }
 ?>
