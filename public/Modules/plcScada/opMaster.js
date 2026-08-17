@@ -303,7 +303,7 @@ function loadRoute(viewName, forceLoad = false) {
                 //     jQuery(".autoStartMode[data-mode='selected']").addClass("btn-success").removeClass("btn-primary");
                 // }
 
-                loadProgramAlign();
+                refreshProgramAlignView();
 
                 setTimeout(() => {
                     // updatePrincherScrap(leadScrapValue);
@@ -329,6 +329,7 @@ function loadRoute(viewName, forceLoad = false) {
                 plcToCi4BindingAuto();
                 updateOnAutoBarLength();
                 loadActiveAlarms();
+                refreshProgramAlignView();
             }
 
 
@@ -507,13 +508,7 @@ function loadProgramAlign() {
         if (response.status) {
 
             // ProductionRuntime.onProgramAligned(programLogic.programData, programLogic.programItems);
-            displayProgramSummary();
-            const data = generateHtmlTableFromObjectArray(programLogic.programData.program, "programOutputTable");
-
-            jQuery(".programOutput").html(data);
-            initMap();
-
-            nextPointHighlight(programLogic.nextLineNumber);
+            renderProgramAlign();
 
             if (checkBarLength()) {
                 programLogic.isReady = true;
@@ -521,7 +516,8 @@ function loadProgramAlign() {
         }
         else {
             programLogic.isReady = false;
-            jQuery(".programOutput").html("<div class='alert alert-danger'>" + response.errors + "</div>");
+            const errorHtml = formatProgramAlignErrors(response.errors || response.message || "Program alignment failed.");
+            jQuery(".programOutput").html("<div class='alert alert-danger'>" + errorHtml + "</div>");
             initMap();
         }
 
@@ -536,6 +532,45 @@ function loadProgramAlign() {
     });
 
 
+}
+
+function renderProgramAlign() {
+    if (currentView != "autoControl") {
+        return;
+    }
+
+    if (!programLogic.programData || !Array.isArray(programLogic.programData.program)) {
+        return;
+    }
+
+    displayProgramSummary();
+    const data = generateHtmlTableFromObjectArray(programLogic.programData.program, "programOutputTable");
+    jQuery(".programOutput").html(data);
+    initMap();
+    nextPointHighlight(programLogic.nextLineNumber);
+}
+
+function refreshProgramAlignView() {
+    renderProgramAlign();
+}
+
+function formatProgramAlignErrors(errors) {
+    if (!errors) return "Program alignment failed.";
+
+    if (Array.isArray(errors)) {
+        return errors.map(err => {
+            if (typeof err === "string") return escapeHtml(err);
+            if (err && typeof err === "object") {
+                const itemCode = err.itemCode ? `Item ${escapeHtml(String(err.itemCode))}` : "Item";
+                const requested = err.requestedQuantity != null ? escapeHtml(String(err.requestedQuantity)) : "?";
+                const pending = err.pendingQuantity != null ? escapeHtml(String(err.pendingQuantity)) : "?";
+                return `${itemCode}: requested ${requested}, pending ${pending}`;
+            }
+            return escapeHtml(String(err));
+        }).join("<br>");
+    }
+
+    return escapeHtml(String(errors));
 }
 
 // function autoRun() {
@@ -1740,6 +1775,7 @@ function sendNextLine() {
 
         mtplAlerts.show("info", "All operations completed.");
         storeProgramState(true); // store after finishing
+        loadProgramAlign();
         return;
     }
 

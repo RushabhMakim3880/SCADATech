@@ -76,6 +76,7 @@ class productionMaster extends ApiBaseController
     {
         $input = $this->getInputData();
         $jsonInput = $input['jsonInput'];
+        $strictProgramAlign = getenv('isStrictProgramAlignEnabled') !== 'false';
 
         $heads = $this->db->query("SELECT MD.*,MS.value FROM `machineDetails` AS MD
                 LEFT JOIN (SELECT * FROM machineSetup  WHERE childId = 0 ) MS ON MD.machineDetailId = MS.machineDetailId
@@ -164,6 +165,63 @@ class productionMaster extends ApiBaseController
                 }
 
                 $lib->addProgram($recipe, $recipeSteps, intval($qnt), $reverse);
+            }
+        }
+
+        if ($strictProgramAlign) {
+            $requestedByRecipe = [];
+            foreach ($jsonInput['programItems'] as $item) {
+                $recipeId = (int)($item['recipeId'] ?? 0);
+                $qnt = (int)($item['quantity'] ?? 0);
+                if ($recipeId > 0 && $qnt > 0) {
+                    $requestedByRecipe[$recipeId] = ($requestedByRecipe[$recipeId] ?? 0) + $qnt;
+                }
+            }
+
+            $recipeIds = array_keys($requestedByRecipe);
+            if (!empty($recipeIds)) {
+                $placeholders = implode(',', array_fill(0, count($recipeIds), '?'));
+                $pendingRows = $this->db->query(
+                    "SELECT itemRecipeId, SUM(requiredQuantity - completedQuantity) AS pendingQuantity
+                     FROM productionJobCards
+                     WHERE tenantId = ?
+                       AND status IN ('waiting', 'started', 'partiallyCompleted')
+                       AND itemRecipeId IN ($placeholders)
+                     GROUP BY itemRecipeId",
+                    array_merge([$this->user->tenantId], $recipeIds)
+                )->getResult();
+
+                $pendingByRecipe = [];
+                foreach ($pendingRows as $row) {
+                    $pendingByRecipe[(int)$row->itemRecipeId] = (int)max(0, $row->pendingQuantity);
+                }
+
+                $violations = [];
+                foreach ($requestedByRecipe as $recipeId => $requestedQty) {
+                    $pendingQty = $pendingByRecipe[$recipeId] ?? 0;
+                    if ($requestedQty > $pendingQty) {
+                        $recipe = $this->db->query(
+                            "SELECT itemCode FROM itemRecipeMaster WHERE itemRecipeId = ? AND tenantId = ?",
+                            [$recipeId, $this->user->tenantId]
+                        )->getRow();
+
+                        $violations[] = [
+                            'recipeId' => $recipeId,
+                            'itemCode' => $recipe->itemCode ?? ('Recipe ' . $recipeId),
+                            'requestedQuantity' => $requestedQty,
+                            'pendingQuantity' => $pendingQty,
+                        ];
+                    }
+                }
+
+                if (!empty($violations)) {
+                    return $this->respond([
+                        'status' => false,
+                        'message' => 'Program alignment exceeds pending jobcard quantity.',
+                        'errors' => $violations,
+                        'strictProgramAlign' => true
+                    ], 200);
+                }
             }
         }
 

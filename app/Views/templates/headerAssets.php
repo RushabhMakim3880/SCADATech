@@ -135,4 +135,5 @@ $fontType = "variable"; // or "static" based on your requirement
     }
     ?>
     window.appSettings = <?= json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>;
+    window.isStrictProgramAlignEnabled = <?= getenv('isStrictProgramAlignEnabled') === 'false' ? 'false' : 'true'; ?>;
 </script>
