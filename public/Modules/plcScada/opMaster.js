@@ -526,6 +526,10 @@ function loadProgramAlign() {
         }
 
 
+        //write tag for barThickness
+        writeTags({
+            495: programLogic.programData.sideAThickness, // Assuming side A thickness is the bar thickness
+        });
 
     }).catch(function (error) {
 
