@@ -110,13 +110,42 @@ class productionMaster extends ApiBaseController
         $maxBarLenthLimit = 20000; // Maximum bar length limit
         $expectedLength = 0;
 
+        // Pre-fetch all recipes and steps to avoid N+1 query problem
+        $recipeIds = [];
+        foreach ($jsonInput['programItems'] as $item) {
+            if (is_numeric($item['recipeId']) && is_numeric($item['quantity'])) {
+                $recipeIds[] = $item['recipeId'];
+            }
+        }
+        $recipeIds = array_unique($recipeIds);
+
+        $recipes = [];
+        $recipeStepsAll = [];
+        
+        if (!empty($recipeIds)) {
+            $recipeIdsStr = implode(',', $recipeIds);
+            
+            $recipesData = $this->db->query("SELECT * FROM `itemRecipeMaster` WHERE `itemRecipeId` IN ($recipeIdsStr)")->getResult();
+            foreach ($recipesData as $row) {
+                $recipes[$row->itemRecipeId] = $row;
+            }
+
+            $stepsData = $this->db->query("SELECT * FROM `itemRecipeSteps` WHERE `itemRecipeId` IN ($recipeIdsStr) ORDER BY ordId ASC")->getResult();
+            foreach ($stepsData as $row) {
+                if (!isset($recipeStepsAll[$row->itemRecipeId])) {
+                    $recipeStepsAll[$row->itemRecipeId] = [];
+                }
+                $recipeStepsAll[$row->itemRecipeId][] = $row;
+            }
+        }
+
         foreach ($jsonInput['programItems'] as $item) {
             $recipeId = $item['recipeId'];
             $qnt = $item['quantity'];
 
             if (is_numeric($recipeId) && is_numeric($qnt)) {
-                $recipe = $this->db->query("SELECT * FROM `itemRecipeMaster` WHERE `itemRecipeId` = $recipeId")->getRow();
-                $recipeSteps = $this->db->query("SELECT * FROM `itemRecipeSteps` WHERE `itemRecipeId` = $recipeId ORDER BY ordId ASC")->getResult();
+                $recipe = $recipes[$recipeId] ?? null;
+                $recipeSteps = $recipeStepsAll[$recipeId] ?? [];
 
                 $max = 0;
                 foreach ($recipeSteps as $step) {

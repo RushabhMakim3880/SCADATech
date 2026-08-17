@@ -657,7 +657,7 @@
 
                         <tr>
                             <th>PRINCHER MIN SCAP</th>
-                            <td><input class="plc-input virtualNumKeypad" data-tag-id="494" data-disable-color="#6c757d"
+                            <td><input class="plc-input virtualNumKeypad" data-tag-id="493" data-disable-color="#6c757d"
                                     data-disable-condition="" /></td>
                         </tr>
                     </tbody>
