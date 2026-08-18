@@ -489,11 +489,15 @@ function isSingleItem() {
 }
 
 function loadProgramAlign() {
+    console.time("loadProgramAlign_Total");
+    console.time("loadProgramAlign_BeforeAPI");
 
     loadActiveAlarms();
 
     if (!programLogic.programItems) {
         mtplAlerts.show("error", "Please prepare a program first.");
+        console.timeEnd("loadProgramAlign_BeforeAPI");
+        console.timeEnd("loadProgramAlign_Total");
         return;
     }
 
@@ -507,14 +511,20 @@ function loadProgramAlign() {
 
     programLogic.isReady = false;
     setDotColor("programAlignIndicator", "red");
+    console.timeEnd("loadProgramAlign_BeforeAPI");
 
+    console.time("loadProgramAlign_APIRequest");
     // Make API call to start jobcard
     apiCall("POST", "api/productionMaster/programAlign", $finalPostData).then(function (response) {
+        console.timeEnd("loadProgramAlign_APIRequest");
+        console.time("loadProgramAlign_ProcessResponse");
         programLogic.programData = response.data;
         if (response.status) {
 
             // ProductionRuntime.onProgramAligned(programLogic.programData, programLogic.programItems);
+            console.time("loadProgramAlign_renderProgramAlign");
             renderProgramAlign();
+            console.timeEnd("loadProgramAlign_renderProgramAlign");
 
             if (checkBarLength()) {
                 programLogic.isReady = true;
@@ -526,7 +536,9 @@ function loadProgramAlign() {
             setDotColor("programAlignIndicator", "red");
             const errorHtml = formatProgramAlignErrors(response.errors || response.message || "Program alignment failed.");
             jQuery(".programOutput").html("<div class='alert alert-danger'>" + errorHtml + "</div>");
+            console.time("loadProgramAlign_initMap");
             initMap();
+            console.timeEnd("loadProgramAlign_initMap");
         }
 
 
@@ -534,28 +546,51 @@ function loadProgramAlign() {
         writeTags({
             495: programLogic.programData.sideAThickness, // Assuming side A thickness is the bar thickness
         });
+        console.timeEnd("loadProgramAlign_ProcessResponse");
+        console.timeEnd("loadProgramAlign_Total");
 
     }).catch(function (error) {
+        console.timeEnd("loadProgramAlign_APIRequest");
         setDotColor("programAlignIndicator", "red");
+        console.timeEnd("loadProgramAlign_Total");
     });
 
 
 }
 
 function renderProgramAlign() {
+    console.time("renderProgramAlign_Total");
     if (currentView != "autoControl") {
+        console.timeEnd("renderProgramAlign_Total");
         return;
     }
 
     if (!programLogic.programData || !Array.isArray(programLogic.programData.program)) {
+        console.timeEnd("renderProgramAlign_Total");
         return;
     }
 
+    console.time("renderProgramAlign_displayProgramSummary");
     displayProgramSummary();
+    console.timeEnd("renderProgramAlign_displayProgramSummary");
+    
+    console.time("renderProgramAlign_generateHtmlTable");
     const data = generateHtmlTableFromObjectArray(programLogic.programData.program, "programOutputTable");
+    console.timeEnd("renderProgramAlign_generateHtmlTable");
+    
+    console.time("renderProgramAlign_DOMUpdate");
     jQuery(".programOutput").html(data);
+    console.timeEnd("renderProgramAlign_DOMUpdate");
+    
+    console.time("renderProgramAlign_initMap");
     initMap();
+    console.timeEnd("renderProgramAlign_initMap");
+    
+    console.time("renderProgramAlign_nextPointHighlight");
     nextPointHighlight(programLogic.nextLineNumber);
+    console.timeEnd("renderProgramAlign_nextPointHighlight");
+    
+    console.timeEnd("renderProgramAlign_Total");
 }
 
 function refreshProgramAlignView() {

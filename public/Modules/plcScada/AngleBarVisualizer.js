@@ -455,7 +455,7 @@ class AngleBarVisualizer {
         });
 
         this.contentGroup.add(shape);
-        this.layer.draw();
+        this.layer.batchDraw();
     }
 
     highlightMatchingPoints(matchFn) {
@@ -488,6 +488,7 @@ class AngleBarVisualizer {
                 easing: Konva.Easings.EaseInOut
             });
         }
+        this.layer.batchDraw();
     }
 
 
