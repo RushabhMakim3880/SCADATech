@@ -6,6 +6,8 @@ let autoStartMode = "first";
 const passwordCheckInterval = 10 * 1000;
 let isCycleMonitorEnabled = false;
 let isSendingNextLine = false;
+let skipCutOperationState = false;
+let skipMarkingOperationState = false;
 
 programLogicTemplate = {
     programId: 0,
@@ -99,6 +101,14 @@ jQuery(document).ready(function () {
         $('#spaContainer').fadeOut(200, function () {
             $(this).empty().show();
         });
+    });
+
+    $(document).on("change", "#skipCutOperation", function () {
+        skipCutOperationState = $(this).is(":checked");
+    });
+
+    $(document).on("change", "#skipMarkingOperation", function () {
+        skipMarkingOperationState = $(this).is(":checked");
     });
 
     $(document).on("click", ".nodeProcess", function () {
@@ -313,6 +323,11 @@ function loadRoute(viewName, forceLoad = false) {
                 if (isSingleItem()) {
                     jQuery("#skipCutOperation").prop("disabled", false);
                 }
+
+                // Restore checkbox states
+                jQuery("#skipCutOperation").prop("checked", skipCutOperationState);
+                jQuery("#skipMarkingOperation").prop("checked", skipMarkingOperationState);
+
                 updateDateInPLC();
 
             }
@@ -573,23 +588,23 @@ function renderProgramAlign() {
     console.time("renderProgramAlign_displayProgramSummary");
     displayProgramSummary();
     console.timeEnd("renderProgramAlign_displayProgramSummary");
-    
+
     console.time("renderProgramAlign_generateHtmlTable");
     const data = generateHtmlTableFromObjectArray(programLogic.programData.program, "programOutputTable");
     console.timeEnd("renderProgramAlign_generateHtmlTable");
-    
+
     console.time("renderProgramAlign_DOMUpdate");
     jQuery(".programOutput").html(data);
     console.timeEnd("renderProgramAlign_DOMUpdate");
-    
+
     console.time("renderProgramAlign_initMap");
     initMap();
     console.timeEnd("renderProgramAlign_initMap");
-    
+
     console.time("renderProgramAlign_nextPointHighlight");
     nextPointHighlight(programLogic.nextLineNumber);
     console.timeEnd("renderProgramAlign_nextPointHighlight");
-    
+
     console.timeEnd("renderProgramAlign_Total");
 }
 
