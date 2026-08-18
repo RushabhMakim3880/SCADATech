@@ -495,6 +495,7 @@ function startJobcardButton() {
     programLogic.programItems = postData;
 
     loadRoute('autoControl');
+    loadProgramAlign();
 }
 
 function isSingleItem() {
