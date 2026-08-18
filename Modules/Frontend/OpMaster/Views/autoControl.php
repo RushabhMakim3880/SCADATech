@@ -321,11 +321,18 @@
                                             data-disable-color="#6c757d" data-disable-condition="" disabled />
                                     </span>
                                 </td>
-                                <th>SKIP CUT OPR</th>
+                                <th>SKIP OPR</th>
                                 <td>
-                                    <input type="checkbox"
-                                        onclick="return confirm('Are you sure you want to skip cut operation?');"
-                                        id="skipCutOperation" style="width: 2em; height: 2em; vertical-align: middle;">
+                                    <label>
+                                        <input type="checkbox"
+                                            onclick="return confirm('Are you sure you want to skip cut operation?');"
+                                            id="skipCutOperation" style="width: 2em; height: 2em; vertical-align: middle;">
+                                        CUT</label>
+                                    <label>
+                                        <input type="checkbox"
+                                            onclick="return confirm('Are you sure you want to skip marking operations?');"
+                                            id="skipMarkingOperation" style="width: 2em; height: 2em; vertical-align: middle;">
+                                        MARK</label>
                                 </td>
                                 </tr>
 

@@ -331,6 +331,9 @@ function loadRoute(viewName, forceLoad = false) {
                 loadActiveAlarms();
                 refreshProgramAlignView();
             }
+            else if (viewName == "manualControl") {
+                loadActiveAlarms();
+            }
 
 
             PlcDataLayer.onTagChange(309, () => ifReadySendNextLine());
@@ -1512,11 +1515,11 @@ function plcToCi4BindingAuto() {
     PlcDataLayer.onTagChange(317, (val) => startSelected());
 
     //AUTO START FROM FIRST
-    let initial316 = true;
-    PlcDataLayer.onTagChange(316, () => {
-        const tagValue = PlcDataLayer.tagValues[316];
+    let initial95 = true;
+    PlcDataLayer.onTagChange(95, () => {
+        const tagValue = PlcDataLayer.tagValues[95];
         if (tagValue) {
-            if (!initial316) {
+            if (!initial95) {
                 startFirst();
             }
             setDotColor("autoCycleOnIndicator", "green");
@@ -1524,7 +1527,7 @@ function plcToCi4BindingAuto() {
         else {
             setDotColor("autoCycleOnIndicator", "red");
         }
-        initial316 = false;
+        initial95 = false;
     });
 
 }
@@ -1861,6 +1864,19 @@ function sendNextLine() {
         };
     }
     else if (item.headName === 'Marking') {
+        if (jQuery("#skipMarkingOperation").is(":checked")) {
+            addLog("autoCycleLog", "Skipping Marking operation as per settings.");
+            mtplAlerts.show("info", "Skipping Marking operation as per settings.");
+            programLogic.nextLineNumber++;
+
+            // storeProgramState(true); // store after cutting
+
+            isSendingNextLine = false;
+            sendNextLine();
+            return;
+        }
+
+
         tagsToWrite = {
             301: finalX,
             298: item.cassetId,
