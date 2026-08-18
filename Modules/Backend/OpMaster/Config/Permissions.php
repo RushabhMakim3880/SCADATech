@@ -13,10 +13,9 @@ $permissions['OpMaster'] = [
 $permissions['OpHoming'] = [
     'scope' => 'tenant',
     'permissions' => [
-        'homingSpeed',
+        'machinePos',
         'proxyWear',
-        'wear',
-        'homePosition',
+        'homePos',
     ]
 ];
 
@@ -24,26 +23,20 @@ $permissions['OpSettings'] = [
     'scope' => 'tenant',
     'permissions' => [
         'distance',
+        'autoSpeed',
+        'manualMaxSpeed',
+        'safetyDistances',
         'punchSelection',
-        'barDetails',
-        'scrapDetails',
-        'princherSpeed',
-        'servoAccSettings',
-        'oilTemperature',
-        'lubSettings',
-        'masterSettings',
-        'accumulatorPressureSettings',
-        'markingPressureSettings',
-        'princherPressureSettings',
-        'inFeedPressureSettings',
+        'proxyDelayTime',
+        'servoTime',
+        'accumulator',
+        'marking',
+        'princher',
+        'temperature',
+        'inFeed',
+        'general',
     ]
 ];
 
-$permissions['OpAuto'] = [
-    'scope' => 'tenant',
-    'permissions' => [
-        'autoSpeed',
-    ]
-];
 
 return $permissions;
