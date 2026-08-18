@@ -290,7 +290,20 @@
                 </tbody>
             </table>
 
-
+            <table class="table table-sm ">
+                <tbody>
+                    <tr>
+                        <th>LEAD SCRAP</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="492" data-disable-color="#6c757d"
+                                data-disable-condition="" /></td>
+                    </tr>
+                    <tr>
+                        <th>PRINCHER SCRAP</th>
+                        <td><input class="plc-input virtualNumKeypad" data-tag-id="493" data-disable-color="#6c757d"
+                                data-disable-condition="" /></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <div class="col-md-4">
 
