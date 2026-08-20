@@ -594,18 +594,18 @@ function sendProgramPunchCountsToPLC() {
         586: 0, // S_DA1_PUNCH_COUNT
         587: 0, // S_DA2_PUNCH_COUNT
         588: 0, // S_DA3_PUNCH_COUNT
-        589: 0, // S_DA4_PUNCH_COUNT
-        590: 0, // S_DA5_PUNCH_COUNT
-        591: 0  // S_DA6_PUNCH_COUNT
+        589: 0, // S_DB1_PUNCH_COUNT
+        590: 0, // S_DB2_PUNCH_COUNT
+        591: 0  // S_DB3_PUNCH_COUNT
     };
 
     programLogic.programData.program.forEach(item => {
         if (item.headName === 'DA1') counts[586]++;
         else if (item.headName === 'DA2') counts[587]++;
         else if (item.headName === 'DA3') counts[588]++;
-        else if (item.headName === 'DA4' || item.headName === 'DB1') counts[589]++;
-        else if (item.headName === 'DA5' || item.headName === 'DB2') counts[590]++;
-        else if (item.headName === 'DA6' || item.headName === 'DB3') counts[591]++;
+        else if (item.headName === 'DB1') counts[589]++;
+        else if (item.headName === 'DB2') counts[590]++;
+        else if (item.headName === 'DB3') counts[591]++;
     });
 
     writeTags(counts).then(() => {
