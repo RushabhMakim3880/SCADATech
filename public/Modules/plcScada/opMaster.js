@@ -300,7 +300,7 @@ function loadRoute(viewName, forceLoad = false) {
                 const leadScrapValue = PlcDataLayer.tagValues[492] || 0;
                 const initialPrincher = window.userPrincherScrap !== undefined ? window.userPrincherScrap : princherScrapValue;
                 const initialLead = window.userLeadScrap !== undefined ? window.userLeadScrap : leadScrapValue;
-                
+
                 if (jQuery(".princherScrapInput").val() === "") {
                     jQuery(".princherScrapInput").val(initialPrincher);
                 }
@@ -1572,14 +1572,20 @@ function plcToCi4BindingAuto() {
     // PlcDataLayer.onTagChange(300, () => ifReadySendNextLine());
 
     //AUTO START FROM SELECTED
-    PlcDataLayer.onTagChange(317, (val) => startSelected());
+    let initial317 = true;
+    PlcDataLayer.onTagChange(317, (val) => {
+        if (!initial317) {
+            startSelected();
+        }
+        initial317 = false;
+    });
 
-    //AUTO START FROM FIRST
-    let initial95 = true;
+    // Auto Cycle On Indicator
+    let initial95_indicator = true;
     PlcDataLayer.onTagChange(95, () => {
         const tagValue = PlcDataLayer.tagValues[95];
         if (tagValue) {
-            if (!initial95) {
+            if (!initial95_indicator) {
                 startFirst();
             }
             setDotColor("autoCycleOnIndicator", "green");
@@ -1587,14 +1593,22 @@ function plcToCi4BindingAuto() {
         else {
             setDotColor("autoCycleOnIndicator", "red");
         }
-        initial95 = false;
+        initial95_indicator = false;
+    });
+
+    //AUTO START FROM FIRST
+    let initial316 = true;
+    PlcDataLayer.onTagChange(316, (val) => {
+        if (!initial316) {
+            startFirst();
+        }
+        initial316 = false;
     });
 
 }
 
 function startSelected() {
-
-    if (PlcDataLayer.tagValues[95] == true) {
+    if (PlcDataLayer.tagValues[317] == false) {
         return;
     }
 
@@ -1606,7 +1620,7 @@ function startSelected() {
 }
 
 function startFirst() {
-    if (PlcDataLayer.tagValues[95] == true) {
+    if (PlcDataLayer.tagValues[316] == false) {
         return;
     }
     autoStartMode = "First"
