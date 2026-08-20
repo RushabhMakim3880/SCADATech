@@ -273,67 +273,28 @@
                                                 disabled />
                                         </span>
                                     </td>
-                                    <th>CUT GAP(MM)</th>
-                                    <td>
-                                        <span title="490:SET_CUT_GAP">
-                                            <input class="plc-input virtualNumKeypad" style="width:80px;"
-                                                data-tag-id="490" data-disable-color="#6c757d"
-                                                data-disable-condition="" />
-                                        </span>
-                                        <!-- <span title="685:SD_BSIDE_HOLE_TIME_SEC">
-                                            <input class="plc-input virtualNumKeypad" style="width:80px;"
-                                                data-tag-id="685" data-disable-color="#6c757d" data-disable-condition=""
-                                                disabled />
-                                        </span> -->
-                                    </td>
-                                </tr>
-                                <!-- <tr>
-                                    <th>CUT GAP(MM)</th>
-                                    <td><input class="plc-input virtualNumKeypad" style="width:80px;" data-tag-id="686"
-                                            data-disable-color="#6c757d" data-disable-condition="" /></td>
-                                    <th>MARKING</th>
-                                    <td>
-                                        <span title="269:M_CHAR">
-                                            <input class="plc-input virtualNumKeypad" style="width:80px;"
-                                                data-tag-id="269" data-disable-color="#6c757d" data-disable-condition=""
-                                                disabled />
-                                        </span>
-                                        <span title="495:SD_M_ACT_POS">
-                                            <input class="plc-input virtualNumKeypad" style="width:80px;"
-                                                data-tag-id="495" data-disable-color="#6c757d" data-disable-condition=""
-                                                disabled />
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Marking Bypass</th>
-                                    <td>
-                                        <button class="plc-btn btn btn-xs" style="width: 80px;" data-tag-id="452"
-                                            data-indicator-id="452" data-behavior="maintain" data-on-color="#82c779"
-                                            data-off-color="#ff5b57" data-disable-color="#6c757d" data-on-label="ON"
-                                            data-off-label="OFF" data-on-confirm="" data-off-confirm=""></button>
-                                    </td> -->
-                                <th class="cutOperationsControl">OIL TEMP</th>
-                                <td>
 
-                                    <span title="371:SD_ACT_TEMP">
-                                        <input class="plc-input virtualNumKeypad" style="width:80px;" data-tag-id="371"
-                                            data-disable-color="#6c757d" data-disable-condition="" disabled />
-                                    </span>
-                                </td>
-                                <th>SKIP OPR</th>
-                                <td>
-                                    <label>
-                                        <input type="checkbox"
-                                            onclick="return confirm('Are you sure you want to skip cut operation?');"
-                                            id="skipCutOperation" style="width: 2em; height: 2em; vertical-align: middle;">
-                                        CUT</label>
-                                    <label>
-                                        <input type="checkbox"
-                                            onclick="return confirm('Are you sure you want to skip marking operations?');"
-                                            id="skipMarkingOperation" style="width: 2em; height: 2em; vertical-align: middle;">
-                                        MARK</label>
-                                </td>
+                                    <th class="cutOperationsControl">OIL TEMP</th>
+                                    <td>
+
+                                        <span title="371:SD_ACT_TEMP">
+                                            <input class="plc-input virtualNumKeypad" style="width:80px;" data-tag-id="371"
+                                                data-disable-color="#6c757d" data-disable-condition="" disabled />
+                                        </span>
+                                    </td>
+                                    <th>SKIP OPR</th>
+                                    <td>
+                                        <label>
+                                            <input type="checkbox"
+                                                onclick="return confirm('Are you sure you want to skip cut operation?');"
+                                                id="skipCutOperation" style="width: 2em; height: 2em; vertical-align: middle;">
+                                            CUT</label>
+                                        <label>
+                                            <input type="checkbox"
+                                                onclick="return confirm('Are you sure you want to skip marking operations?');"
+                                                id="skipMarkingOperation" style="width: 2em; height: 2em; vertical-align: middle;">
+                                            MARK</label>
+                                    </td>
                                 </tr>
 
                             </tbody>
