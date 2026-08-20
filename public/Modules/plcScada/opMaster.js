@@ -298,11 +298,14 @@ function loadRoute(viewName, forceLoad = false) {
             if (viewName === 'autoControl') {
                 const princherScrapValue = PlcDataLayer.tagValues[493] || 0;
                 const leadScrapValue = PlcDataLayer.tagValues[492] || 0;
+                const initialPrincher = window.userPrincherScrap !== undefined ? window.userPrincherScrap : princherScrapValue;
+                const initialLead = window.userLeadScrap !== undefined ? window.userLeadScrap : leadScrapValue;
+                
                 if (jQuery(".princherScrapInput").val() === "") {
-                    jQuery(".princherScrapInput").val(princherScrapValue);
+                    jQuery(".princherScrapInput").val(initialPrincher);
                 }
                 if (jQuery(".leadScrapInput").val() === "") {
-                    jQuery(".leadScrapInput").val(leadScrapValue);
+                    jQuery(".leadScrapInput").val(initialLead);
                 }
 
                 // jQuery(".autoStartMode").removeClass("btn-success").addClass("btn-primary");
@@ -1534,9 +1537,11 @@ function plcToCi4BindingAuto() {
         if (val < leadScrapValue) {
             mtplAlerts.show("error", "Lead scrap cannot be less than " + leadScrapValue + ".");
             jQuery(this).val(leadScrapValue);
+            window.userLeadScrap = leadScrapValue;
             return;
         }
 
+        window.userLeadScrap = val;
         // updateLeadScrap(val);
         updatePrincherScrap(val);
     });
@@ -1548,9 +1553,11 @@ function plcToCi4BindingAuto() {
         if (val < princherScrapValue) {
             mtplAlerts.show("error", "Princher scrap cannot be less than " + princherScrapValue + ".");
             jQuery(this).val(princherScrapValue);
+            window.userPrincherScrap = princherScrapValue;
             return;
         }
 
+        window.userPrincherScrap = val;
         updateLeadScrap(val);
     });
 
@@ -2218,21 +2225,7 @@ function updateOnAutoBarLength() {
         jQuery("#actualBarLength").text(PlcDataLayer.tagValues[296] || 0);
     }
 
-    const scrapType = PlcDataLayer.localFlags['flag_1'] || false; // Assuming flag_1 is used for scrap type toggle
-    if (scrapType) {
-        jQuery(".leadScrapInput").prop("disabled", true);
-        jQuery(".princherScrapInput").prop("disabled", false);
-        const princherScrapValue = PlcDataLayer.tagValues[493] || 0;
-        jQuery(".princherScrapInput").val(princherScrapValue);
-        updateLeadScrap(princherScrapValue);
-    } else {
-        jQuery(".leadScrapInput").prop("disabled", false);
-        jQuery(".princherScrapInput").prop("disabled", true);
-
-        const leadScrapValue = PlcDataLayer.tagValues[492] || 0;
-        jQuery(".leadScrapInput").val(leadScrapValue);
-        updatePrincherScrap(leadScrapValue);
-    }
+    updateLeadPrincherScrapeByType();
 }
 
 function initProgramPrepareLogic() {
@@ -2658,15 +2651,17 @@ function updateLeadPrincherScrapeByType() {
         jQuery(".leadScrapInput").prop("disabled", true);
         jQuery(".princherScrapInput").prop("disabled", false);
         const princherScrapValue = PlcDataLayer.tagValues[493] || 0;
-        jQuery(".princherScrapInput").val(princherScrapValue);
-        updateLeadScrap(princherScrapValue);
+        const valToSet = window.userPrincherScrap !== undefined ? window.userPrincherScrap : princherScrapValue;
+        jQuery(".princherScrapInput").val(valToSet);
+        updateLeadScrap(valToSet);
     } else {
         jQuery(".leadScrapInput").prop("disabled", false);
         jQuery(".princherScrapInput").prop("disabled", true);
 
         const leadScrapValue = PlcDataLayer.tagValues[492] || 0;
-        jQuery(".leadScrapInput").val(leadScrapValue);
-        updatePrincherScrap(leadScrapValue);
+        const valToSet = window.userLeadScrap !== undefined ? window.userLeadScrap : leadScrapValue;
+        jQuery(".leadScrapInput").val(valToSet);
+        updatePrincherScrap(valToSet);
     }
 }
 function updateDateInPLC() {
