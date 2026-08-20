@@ -1555,7 +1555,7 @@ function plcToCi4BindingAuto() {
 
 function startSelected() {
 
-    if (PlcDataLayer.tagValues[10] == true) {
+    if (PlcDataLayer.tagValues[95] == true) {
         return;
     }
 
@@ -1567,7 +1567,7 @@ function startSelected() {
 }
 
 function startFirst() {
-    if (PlcDataLayer.tagValues[10] == true) {
+    if (PlcDataLayer.tagValues[95] == true) {
         return;
     }
     autoStartMode = "First"
