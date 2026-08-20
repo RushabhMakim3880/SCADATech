@@ -153,14 +153,14 @@ class ItemRecipeMaster extends ApiBaseController
                     } else {
                         $minY = 20 + $jsonInput['sideAThickness'];
                     }
-                    $maxY = $jsonInput['sideAWidth'] + 5;
+                    $maxY = $jsonInput['sideAWidth'] - ($step['opValue'] / 2);
                 } else {
                     if ($jsonInput['sideBWidth'] <= 50) {
                         $minY = ($step['opValue'] / 2) + $jsonInput['sideAThickness'];
                     } else {
                         $minY = 20 + $jsonInput['sideAThickness'];
                     }
-                    $maxY = $jsonInput['sideBWidth'] + 5;
+                    $maxY = $jsonInput['sideBWidth'] - ($step['opValue'] / 2);
                 }
 
                 if ($step['yPos'] < $minY || $step['yPos'] > $maxY) {
