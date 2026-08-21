@@ -401,7 +401,9 @@ class UiTagMaster extends ApiBaseController
                       title='Edit Scada Tag'>
                       <i class='fa fa-pencil-alt'></i>
                    </a>";
+                }
 
+                if (UserPermissionLib::userCanDo("UiTagMaster", 'writeTag')) {
                     $writeButton = "<button type='button' class='btn btn-xs btn-info ms-1 writeUiTagBtn'
                       data-tagid='" . $primaryKey . "'
                       data-tagname='" . htmlspecialchars($row->uiTagMaster_tagName, ENT_QUOTES, 'UTF-8') . "'

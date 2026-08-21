@@ -116,6 +116,10 @@ class OpMasterFront extends ApiBaseController
 
     public function writeTags()
     {
+        if (!UserPermissionLib::userCanDo("UiTagMaster", 'writeTag')) {
+            return $this->failForbidden('Insufficient permissions to write tag values');
+        }
+
         $tagMap = $this->request->getJSON(true);
 
         if (empty($tagMap)) {

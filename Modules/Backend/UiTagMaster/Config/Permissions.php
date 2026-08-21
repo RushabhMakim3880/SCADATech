@@ -9,6 +9,7 @@ $permissions['UiTagMaster'] = [
         'edit',
         'view',
         'manage',
+        'writeTag',
     ]
 ];
 
