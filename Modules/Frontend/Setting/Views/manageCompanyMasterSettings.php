@@ -14,27 +14,45 @@ use App\Libraries\UserPermissionLib;
             data-resource="api/setting/getCompanyMasterSetting"
             data-record-id="1">
 
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="sideAWidth" class="form-label fw-bold">Side A Width</label>
-                        <input type="text" class="form-control numberInput virtualNumKeypad" name="sideAWidth" id="sideAWidth" placeholder="Enter Side A Width">
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="sideBWidth" class="form-label fw-bold">Side B Width</label>
-                        <input type="text" class="form-control numberInput virtualNumKeypad" name="sideBWidth" id="sideBWidth" placeholder="Enter Side B Width">
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="sideAThickness" class="form-label fw-bold">Side A Thickness</label>
-                        <input type="text" class="form-control numberInput virtualNumKeypad" name="sideAThickness" id="sideAThickness" placeholder="Enter Side A Thickness">
-                    </div>
-                </div>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-start" style="width: 40%;">PARAMETER</th>
+                            <th style="width: 30%;">LOW MIN</th>
+                            <th style="width: 30%;">MAX</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th class="fw-bold align-middle text-start">SIDE A Width</th>
+                            <td>
+                                <input type="text" class="form-control text-center numberInput virtualNumKeypad" name="sideAWidthMin" id="sideAWidthMin" placeholder="Enter Low Min">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control text-center numberInput virtualNumKeypad" name="sideAWidthMax" id="sideAWidthMax" placeholder="Enter Max">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="fw-bold align-middle text-start">SIDE B Width</th>
+                            <td>
+                                <input type="text" class="form-control text-center numberInput virtualNumKeypad" name="sideBWidthMin" id="sideBWidthMin" placeholder="Enter Low Min">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control text-center numberInput virtualNumKeypad" name="sideBWidthMax" id="sideBWidthMax" placeholder="Enter Max">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="fw-bold align-middle text-start">SIDE A Thickness</th>
+                            <td>
+                                <input type="text" class="form-control text-center numberInput virtualNumKeypad" name="sideAThicknessMin" id="sideAThicknessMin" placeholder="Enter Low Min">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control text-center numberInput virtualNumKeypad" name="sideAThicknessMax" id="sideAThicknessMax" placeholder="Enter Max">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <div class="mt-4 text-end">
