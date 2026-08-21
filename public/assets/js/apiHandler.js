@@ -1563,6 +1563,30 @@ function transformLineToBarChartConfig(chartConfig) {
 }
 
 $(function () {
+    jQuery(document).on("click", ".writeUiTagBtn", function (e) {
+        e.preventDefault();
+        let $btn = $(this);
+        let tagId = $btn.data('tagid');
+        let tagName = $btn.data('tagname') || ('Tag #' + tagId);
+
+        let val = prompt('Enter value for tag "' + tagName + '" (ID: ' + tagId + '):');
+        if (val !== null && val.trim() !== '') {
+            skipPreloader = true;
+            let payload = {};
+            payload[tagId] = val.trim();
+            apiCall('POST', 'api/OpMasterFront/writeTags', payload).then(function (response) {
+                if (response && response.status) {
+                    mtplAlerts.show('success', response.message || 'Tag value written successfully!', 'Success');
+                } else {
+                    let errMsg = (response && (response.errorMessage || response.message)) ? (response.errorMessage || response.message) : 'Failed to write tag';
+                    mtplAlerts.show('error', errMsg, 'Error');
+                }
+            }).catch(function (err) {
+                mtplAlerts.show('error', 'Error writing tag value', 'Error');
+            });
+        }
+    });
+
     jQuery(document).on("click", ".apiAction", function () {
         let $clickedElement = $(this); // Store reference to $(this)
         let endpoint = $clickedElement.data('endpoint');

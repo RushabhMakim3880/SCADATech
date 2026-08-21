@@ -393,6 +393,7 @@ class UiTagMaster extends ApiBaseController
 
                 //edit button
                 $editButton = '';
+                $writeButton = '';
                 if (UserPermissionLib::userCanDo("UiTagMaster", 'edit')) {
                     $editButton = "<a href='#'class='btn btn-xs btn-warning ms-2 apiPopup'
                       data-size='xl'data-title='Edit Scada Tag'
@@ -400,9 +401,16 @@ class UiTagMaster extends ApiBaseController
                       title='Edit Scada Tag'>
                       <i class='fa fa-pencil-alt'></i>
                    </a>";
+
+                    $writeButton = "<button type='button' class='btn btn-xs btn-info ms-1 writeUiTagBtn'
+                      data-tagid='" . $primaryKey . "'
+                      data-tagname='" . htmlspecialchars($row->uiTagMaster_tagName, ENT_QUOTES, 'UTF-8') . "'
+                      title='Write Scada Tag Value'>
+                      <i class='fa fa-paper-plane'></i>
+                   </button>";
                 }
 
-                $row->uiTagMaster_uiTagId = $row->uiTagMaster_serialNo . ' ' . $editButton;
+                $row->uiTagMaster_uiTagId = $row->uiTagMaster_serialNo . ' ' . $editButton . ' ' . $writeButton;
 
                 //display active status
 

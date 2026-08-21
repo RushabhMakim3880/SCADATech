@@ -40,6 +40,7 @@ class UiTagMaster extends BaseController
     {
         AssetManager::loadLibrary('DataTables');
         AssetManager::loadLibrary('Select2');
+        AssetManager::loadLibrary('SweetAlert2');
         
         $data['pageTitle'] = 'Manage Scada Tag';
         $data["view"] =  'Modules\Frontend\UiTagMaster\Views\manageUiTag';
