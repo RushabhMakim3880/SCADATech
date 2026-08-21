@@ -156,5 +156,17 @@
         "children": []
       }
     ]
+  },
+  {
+    "id": "menuItem_56",
+    "label": "Company Master Settings",
+    "icon": "fas fa-cogs",
+    "class": "",
+    "module": "setting",
+    "permissions": "view,manage",
+    "attributes": "",
+    "isPopup": 0,
+    "url": "setting/manageCompanyMasterSettings",
+    "children": []
   }
 ]

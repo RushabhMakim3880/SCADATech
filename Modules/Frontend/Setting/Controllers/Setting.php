@@ -39,4 +39,28 @@ class Setting extends BaseController
 
         return view('viewLoader', $data);
     }
+
+    public function manageCompanyMasterSettings()
+    {
+        if (!UserPermissionLib::userCanDo("setting", 'view')) {
+            return redirect()->to('');
+        }
+
+        $data['pageTitle'] = 'Manage Company Settings';
+        $data["view"] = 'Modules\Frontend\Setting\Views\manageCompanyMasterSettings';
+
+        return view('viewLoader', $data);
+    }
+
+    public function addCompanyMasterSetting($id = 0)
+    {
+        if (!UserPermissionLib::userCanDo("setting", 'view')) {
+            return redirect()->to('');
+        }
+
+        $data['pageTitle'] = $id ? 'Edit Company Setting' : 'Add Company Setting';
+        $data['id'] = $id;
+
+        return view('Modules\Frontend\Setting\Views\addCompanyMasterSetting', $data);
+    }
 }
