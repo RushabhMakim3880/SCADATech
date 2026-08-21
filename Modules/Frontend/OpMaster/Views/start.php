@@ -196,10 +196,10 @@
                 title="Toggle notification sound">
                 <i id="soundToggleIcon" class="fa fa-volume-up"></i>
             </button>
-            <button class="btn btn-sm btn-outline-primary py-0 px-1" onclick="showSystemInfoModal()"
+            <!-- <button class="btn btn-sm btn-outline-primary py-0 px-1" onclick="showSystemInfoModal()"
                 title="System Information">
                 <i class="fa fa-info-circle"></i>
-            </button>
+            </button> -->
         </div>
     </div>
 
