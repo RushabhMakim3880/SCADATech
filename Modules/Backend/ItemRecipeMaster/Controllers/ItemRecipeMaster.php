@@ -55,19 +55,53 @@ class ItemRecipeMaster extends ApiBaseController
         ];
 
 
+        // Fetch company master settings for dynamic min/max validation rules
+        $companySettingsRows = $this->db->table('companyMasterSettings')
+            ->where('tenantId', $this->user->tenantId)
+            ->get()
+            ->getResult();
+
+        $companySettings = [];
+        foreach ($companySettingsRows as $row) {
+            $companySettings[$row->key] = $row->value;
+        }
+
+        $sideAWidthMin     = (isset($companySettings['sideAWidthMin']) && $companySettings['sideAWidthMin'] !== '') ? (float)$companySettings['sideAWidthMin'] : ((isset($companySettings['sideAWidth_min']) && $companySettings['sideAWidth_min'] !== '') ? (float)$companySettings['sideAWidth_min'] : 0);
+        $sideAWidthMax     = (isset($companySettings['sideAWidthMax']) && $companySettings['sideAWidthMax'] !== '') ? (float)$companySettings['sideAWidthMax'] : ((isset($companySettings['sideAWidth_max']) && $companySettings['sideAWidth_max'] !== '') ? (float)$companySettings['sideAWidth_max'] : 200);
+
+        $sideBWidthMin     = (isset($companySettings['sideBWidthMin']) && $companySettings['sideBWidthMin'] !== '') ? (float)$companySettings['sideBWidthMin'] : ((isset($companySettings['sideBWidth_min']) && $companySettings['sideBWidth_min'] !== '') ? (float)$companySettings['sideBWidth_min'] : 0);
+        $sideBWidthMax     = (isset($companySettings['sideBWidthMax']) && $companySettings['sideBWidthMax'] !== '') ? (float)$companySettings['sideBWidthMax'] : ((isset($companySettings['sideBWidth_max']) && $companySettings['sideBWidth_max'] !== '') ? (float)$companySettings['sideBWidth_max'] : 200);
+
+        $sideAThicknessMin = (isset($companySettings['sideAThicknessMin']) && $companySettings['sideAThicknessMin'] !== '') ? (float)$companySettings['sideAThicknessMin'] : ((isset($companySettings['sideAThickness_min']) && $companySettings['sideAThickness_min'] !== '') ? (float)$companySettings['sideAThickness_min'] : 6);
+        $sideAThicknessMax = (isset($companySettings['sideAThicknessMax']) && $companySettings['sideAThicknessMax'] !== '') ? (float)$companySettings['sideAThicknessMax'] : ((isset($companySettings['sideAThickness_max']) && $companySettings['sideAThickness_max'] !== '') ? (float)$companySettings['sideAThickness_max'] : 16);
+
+        $sideAWidthRules = 'required|decimal';
+        if ($sideAWidthMin > 0) {
+            $sideAWidthRules .= '|greater_than_equal_to[' . $sideAWidthMin . ']';
+        }
+        $sideAWidthRules .= '|less_than_equal_to[' . $sideAWidthMax . ']';
+
+        $sideBWidthRules = 'required|decimal';
+        if ($sideBWidthMin > 0) {
+            $sideBWidthRules .= '|greater_than_equal_to[' . $sideBWidthMin . ']';
+        }
+        $sideBWidthRules .= '|less_than_equal_to[' . $sideBWidthMax . ']';
+
+        $sideAThicknessRules = 'required|decimal|greater_than_equal_to[' . $sideAThicknessMin . ']|less_than_equal_to[' . $sideAThicknessMax . ']';
+
         $rules['sideAWidth'] = [
             'label'  => 'Side A Width',
-            'rules'  => 'required|decimal|less_than_equal_to[200]'
+            'rules'  => $sideAWidthRules
         ];
 
         $rules['sideBWidth'] = [
             'label'  => 'Side B Width',
-            'rules'  => 'required|decimal|less_than_equal_to[200]'
+            'rules'  => $sideBWidthRules
         ];
 
         $rules['sideAThickness'] = [
             'label'  => 'Thickness',
-            'rules'  => 'required|decimal|greater_than_equal_to[6]|less_than_equal_to[16]'
+            'rules'  => $sideAThicknessRules
         ];
 
         // cutRadius

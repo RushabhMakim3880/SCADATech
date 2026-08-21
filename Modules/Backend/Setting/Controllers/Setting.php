@@ -103,36 +103,11 @@ class Setting extends ApiBaseController
         $input = $this->getInputData();
         $jsonInput = $input['jsonInput'];
 
-        $keysToSave = [];
         foreach ($jsonInput as $key => $value) {
             if (is_array($value)) {
                 continue;
             }
-            $keysToSave[$key] = $value;
 
-            $aliases = [
-                'sideAWidthMin'      => ['sideAWidth_min'],
-                'sideAWidth_min'     => ['sideAWidthMin'],
-                'sideAWidthMax'      => ['sideAWidth_max'],
-                'sideAWidth_max'     => ['sideAWidthMax'],
-                'sideBWidthMin'      => ['sideBWidth_min'],
-                'sideBWidth_min'     => ['sideBWidthMin'],
-                'sideBWidthMax'      => ['sideBWidth_max'],
-                'sideBWidth_max'     => ['sideBWidthMax'],
-                'sideAThicknessMin'  => ['sideAThickness_min'],
-                'sideAThickness_min' => ['sideAThicknessMin'],
-                'sideAThicknessMax'  => ['sideAThickness_max'],
-                'sideAThickness_max' => ['sideAThicknessMax'],
-            ];
-
-            if (isset($aliases[$key])) {
-                foreach ($aliases[$key] as $aliasKey) {
-                    $keysToSave[$aliasKey] = $value;
-                }
-            }
-        }
-
-        foreach ($keysToSave as $key => $value) {
             $existingSetting = $this->db->table('companyMasterSettings')
                 ->where('key', $key)
                 ->where('tenantId', $this->user->tenantId)
