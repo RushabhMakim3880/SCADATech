@@ -283,6 +283,36 @@ jQuery(document).ready(function () {
 /****************************************************************
     Alert Sound Functionality       
 *****************************************************************/
+
+// --- Standalone sound toggle flag (independent of mtplAlerts cached config) ---
+// Initialise from localStorage, fallback to appSettings default
+(function initSoundFlag() {
+    const saved = localStorage.getItem('notificationSoundEnabled');
+    if (saved !== null) {
+        window._notificationSoundEnabled = saved === '1';
+    } else {
+        window._notificationSoundEnabled = parseInt(window.appSettings?.notificationPlaySound) ? true : false;
+    }
+})();
+
+function toggleNotificationSound() {
+    const next = !window._notificationSoundEnabled;
+    window._notificationSoundEnabled = next;
+    localStorage.setItem('notificationSoundEnabled', next ? '1' : '0');
+
+    // Update button icon
+    const icon = document.getElementById('soundToggleIcon');
+    if (icon) {
+        icon.className = next ? 'fa fa-volume-up' : 'fa fa-volume-mute';
+    }
+
+    mtplAlerts.show(
+        'success',
+        next ? 'Notification sound enabled' : 'Notification sound muted',
+        'Sound'
+    );
+}
+
 var alarmTypes = {
     success: new Audio(base_url + "assets/audio/Success.mp3"),
     warning: new Audio(base_url + "assets/audio/Warning.mp3"),
@@ -292,7 +322,10 @@ var alarmTypes = {
 };
 
 function playAlarm(type) {
-    if (alarmTypes[type]) {
+    // Guard: respect the standalone sound toggle flag
+    if (!window._notificationSoundEnabled) return;
+
+    if (alarmTypes[type] && (typeof notificationSound !== 'undefined' ? notificationSound : true)) {
         alarmTypes[type].currentTime = 0;
         alarmTypes[type].play();
     }

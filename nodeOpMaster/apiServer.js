@@ -95,6 +95,97 @@ app.get("/api/test", async (req, res) => {
     res.json({ success: true, userId: wsServer.userId });
 });
 
+app.get("/api/systemInfo", authenticateToken, async (req, res) => {
+    try {
+        const os = require("os");
+        const { execSync } = require("child_process");
+        const path = require("path");
+
+        // OS info
+        const platform = os.platform();
+        const osRelease = os.release();
+        const hostname = os.hostname();
+        const arch = os.arch();
+        let osName = platform;
+        try {
+            osName = execSync("lsb_release -ds 2>/dev/null || cat /etc/os-release 2>/dev/null | grep PRETTY_NAME | cut -d= -f2 | tr -d '\"' || echo 'Unknown'", { encoding: "utf-8" }).trim();
+        } catch (e) { }
+
+        // Uptime
+        const uptimeSec = os.uptime();
+        const days = Math.floor(uptimeSec / 86400);
+        const hours = Math.floor((uptimeSec % 86400) / 3600);
+        const minutes = Math.floor((uptimeSec % 3600) / 60);
+        const uptime = `${days}d ${hours}h ${minutes}m`;
+
+        // CPU
+        const cpus = os.cpus();
+        const cpuModel = cpus[0] ? cpus[0].model : "Unknown";
+        const cpuCores = cpus.length;
+        let cpuUsage = 0;
+        try {
+            // get 1-second CPU usage snapshot
+            const loadAvg = os.loadavg();
+            cpuUsage = Math.min(100, (loadAvg[0] / cpuCores * 100)).toFixed(1);
+        } catch (e) { }
+
+        // RAM
+        const totalMem = os.totalmem();
+        const freeMem = os.freemem();
+        const usedMem = totalMem - freeMem;
+        const ramTotal = (totalMem / 1073741824).toFixed(2) + " GB";
+        const ramUsed = (usedMem / 1073741824).toFixed(2) + " GB";
+        const ramFree = (freeMem / 1073741824).toFixed(2) + " GB";
+        const ramPercent = ((usedMem / totalMem) * 100).toFixed(1);
+
+        // HDD
+        let hddInfo = { total: "N/A", used: "N/A", free: "N/A", percent: "N/A" };
+        try {
+            const dfOutput = execSync("df -BG / | tail -1", { encoding: "utf-8" }).trim();
+            const parts = dfOutput.split(/\s+/);
+            hddInfo = {
+                total: parts[1],
+                used: parts[2],
+                free: parts[3],
+                percent: parts[4]
+            };
+        } catch (e) { }
+
+        // Version control info
+        const projectRoot = path.resolve(__dirname, "..");
+        let branch = "N/A", lastCommit = "N/A", lastUpdated = "N/A", commitHash = "N/A", tagVersion = null;
+        try {
+            branch = execSync(`git -C "${projectRoot}" rev-parse --abbrev-ref HEAD 2>/dev/null`, { encoding: "utf-8" }).trim();
+            lastCommit = execSync(`git -C "${projectRoot}" log -1 --pretty=format:"%s" 2>/dev/null`, { encoding: "utf-8" }).trim();
+            commitHash = execSync(`git -C "${projectRoot}" log -1 --pretty=format:"%h" 2>/dev/null`, { encoding: "utf-8" }).trim();
+            lastUpdated = execSync(`git -C "${projectRoot}" log -1 --pretty=format:"%ci" 2>/dev/null`, { encoding: "utf-8" }).trim();
+        } catch (e) { }
+
+        // Get latest git tag as version number (if any tags exist)
+        try {
+            tagVersion = execSync(`git -C "${projectRoot}" describe --tags --abbrev=0 2>/dev/null`, { encoding: "utf-8" }).trim();
+        } catch (e) { tagVersion = null; }
+
+        // Node.js version
+        const nodeVersion = process.version;
+
+        res.json({
+            success: true,
+            data: {
+                os: { name: osName, release: osRelease, hostname, arch, platform },
+                uptime,
+                cpu: { model: cpuModel, cores: cpuCores, usage: cpuUsage + "%" },
+                ram: { total: ramTotal, used: ramUsed, free: ramFree, usage: ramPercent + "%" },
+                hdd: hddInfo,
+                version: { branch, lastCommit, commitHash, lastUpdated, tagVersion },
+                nodeVersion
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 app.listen(config.api.port, () => {
     console.log("✅ HTTP API server listening on port :", config.api.port);
 });

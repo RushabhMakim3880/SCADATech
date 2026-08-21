@@ -27,4 +27,7 @@ $routes->group('api/OpMasterFront', ['namespace' => '\Modules\Backend\OpMaster\C
 
     // get allTagDetails
     $routes->get('allTagDetails', 'OpMasterFront::allTagDetails');
+
+    // get systemInfo
+    $routes->get('systemInfo', 'OpMasterFront::systemInfo');
 });

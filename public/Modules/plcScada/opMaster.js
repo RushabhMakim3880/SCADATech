@@ -2693,3 +2693,206 @@ function getCurrentDateInfo() {
         year: now.getFullYear()
     };
 }
+
+
+/**
+ * Shows a Bootstrap modal with system information fetched from the backend.
+ * Displays OS, uptime, CPU/RAM/HDD config & utilisation, and version info.
+ */
+function showSystemInfoModal() {
+    // Remove any prior instance
+    const prev = document.getElementById('systemInfoModal');
+    if (prev) prev.remove();
+
+    const modalHtml = `
+    <div class="modal fade" id="systemInfoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white py-2">
+                    <h6 class="modal-title"><i class="fa fa-server me-2"></i>System Information</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="systemInfoBody" style="max-height: 90vh; overflow-y: auto;">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <div class="mt-2 text-muted small">Loading system information...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    const modalEl = document.getElementById('systemInfoModal');
+    const bsModal = new bootstrap.Modal(modalEl);
+    modalEl.addEventListener('hidden.bs.modal', () => modalEl.remove());
+    bsModal.show();
+
+    // Fetch system info
+    apiCall('GET', 'api/OpMasterFront/systemInfo').then(function (response) {
+        const body = document.getElementById('systemInfoBody');
+        if (!body) return;
+
+        if (!response.status || !response.data) {
+            body.innerHTML = `<div class="alert alert-danger mb-0">
+                <i class="fa fa-exclamation-triangle me-2"></i>Failed to load system info: ${response.message || 'Unknown error'}
+            </div>`;
+            return;
+        }
+
+        const d = response.data;
+
+        // Helper to create a progress bar
+        function progressBar(percent, color) {
+            const p = parseFloat(percent) || 0;
+            return `<div class="progress" style="height: 18px;">
+                <div class="progress-bar bg-${color}" style="width: ${p}%">${p}%</div>
+            </div>`;
+        }
+
+        // Determine RAM/CPU bar colors
+        const ramPct = parseFloat(d.ram?.usage) || 0;
+        const ramColor = ramPct > 85 ? 'danger' : ramPct > 60 ? 'warning' : 'success';
+        const cpuPct = parseFloat(d.cpu?.usage) || 0;
+        const cpuColor = cpuPct > 85 ? 'danger' : cpuPct > 60 ? 'warning' : 'info';
+        const hddPct = parseFloat(d.hdd?.percent) || 0;
+        const hddColor = hddPct > 85 ? 'danger' : hddPct > 60 ? 'warning' : 'primary';
+
+        body.innerHTML = `
+            <div class="row g-3">
+                <!-- OS & Uptime -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header py-1 bg-light"><small class="fw-bold"><i class="fa fa-desktop me-1"></i>System</small></div>
+                        <div class="card-body py-2">
+                            <table class="table table-sm table-borderless mb-0">
+                                <tr><td class="text-muted" style="width:40%">OS</td><td>${d.os?.name || 'N/A'}</td></tr>
+                                <tr><td class="text-muted">Hostname</td><td>${d.os?.hostname || 'N/A'}</td></tr>
+                                <tr><td class="text-muted">Architecture</td><td>${d.os?.arch || 'N/A'}</td></tr>
+                                <tr><td class="text-muted">Kernel</td><td>${d.os?.release || 'N/A'}</td></tr>
+                                <tr><td class="text-muted">Uptime</td><td><span class="badge bg-success">${d.uptime || 'N/A'}</span></td></tr>
+                                <tr><td class="text-muted">Node.js</td><td>${d.nodeVersion || 'N/A'}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CPU -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header py-1 bg-light"><small class="fw-bold"><i class="fa fa-microchip me-1"></i>CPU</small></div>
+                        <div class="card-body py-2">
+                            <table class="table table-sm table-borderless mb-2">
+                                <tr><td class="text-muted" style="width:40%">Model</td><td>${d.cpu?.model || 'N/A'}</td></tr>
+                                <tr><td class="text-muted">Cores</td><td>${d.cpu?.cores || 'N/A'}</td></tr>
+                            </table>
+                            <small class="text-muted">Usage</small>
+                            ${progressBar(cpuPct, cpuColor)}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RAM -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header py-1 bg-light"><small class="fw-bold"><i class="fa fa-memory me-1"></i>Memory</small></div>
+                        <div class="card-body py-2">
+                            <table class="table table-sm table-borderless mb-2">
+                                <tr><td class="text-muted" style="width:40%">Total</td><td>${d.ram?.total || 'N/A'}</td></tr>
+                                <tr><td class="text-muted">Used</td><td>${d.ram?.used || 'N/A'}</td></tr>
+                                <tr><td class="text-muted">Free</td><td>${d.ram?.free || 'N/A'}</td></tr>
+                            </table>
+                            <small class="text-muted">Usage</small>
+                            ${progressBar(ramPct, ramColor)}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HDD -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header py-1 bg-light"><small class="fw-bold"><i class="fa fa-hard-drive me-1"></i>Storage</small></div>
+                        <div class="card-body py-2">
+                            <table class="table table-sm table-borderless mb-2">
+                                <tr><td class="text-muted" style="width:40%">Total</td><td>${d.hdd?.total || 'N/A'}</td></tr>
+                                <tr><td class="text-muted">Used</td><td>${d.hdd?.used || 'N/A'}</td></tr>
+                                <tr><td class="text-muted">Free</td><td>${d.hdd?.free || 'N/A'}</td></tr>
+                            </table>
+                            <small class="text-muted">Usage</small>
+                            ${progressBar(hddPct, hddColor)}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header py-1 bg-light"><small class="fw-bold"><i class="fa fa-database me-1"></i>Database</small></div>
+                        <div class="card-body py-2">
+                            <table class="table table-sm table-borderless mb-0">
+                                <tr><td class="text-muted" style="width:40%">Name</td><td>${d.database?.name || 'N/A'}</td></tr>
+                                <tr><td class="text-muted">Disk Usage</td><td><span class="badge bg-secondary">${d.database?.size || 'N/A'}</span></td></tr>
+                                <tr><td class="text-muted">Tables</td><td>${d.database?.tableCount ?? 'N/A'}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Version Info -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header py-1 bg-light"><small class="fw-bold"><i class="fa fa-code-branch me-1"></i>Version</small></div>
+                        <div class="card-body py-2">
+                            <table class="table table-sm table-borderless mb-0">
+                                ${d.version?.tagVersion ? `<tr><td class="text-muted" style="width:25%">Version</td><td><span class="badge bg-success">${d.version.tagVersion}</span></td></tr>` : ''}
+                                <tr><td class="text-muted" style="width:25%">Branch</td><td><span class="badge bg-info text-dark">${d.version?.branch || 'N/A'}</span></td></tr>
+                                <tr><td class="text-muted">Last Update</td><td>${d.version?.lastCommit || 'N/A'} <span class="text-muted small">(${d.version?.commitHash || ''})</span></td></tr>
+                                <tr><td class="text-muted">Updated At</td><td>${d.version?.lastUpdated || 'N/A'}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    }).catch(function (error) {
+        const body = document.getElementById('systemInfoBody');
+        if (body) {
+            body.innerHTML = `<div class="alert alert-danger mb-0">
+                <i class="fa fa-exclamation-triangle me-2"></i>Error: ${error.message || 'Failed to fetch system info'}
+            </div>`;
+        }
+    });
+}
+
+/****************************************************************
+    Alert Sound Functionality       
+*****************************************************************/
+
+// --- Standalone sound toggle flag (independent of mtplAlerts cached config) ---
+// Initialise from localStorage, fallback to appSettings default
+(function initSoundFlag() {
+    const saved = localStorage.getItem('notificationSoundEnabled');
+    if (saved !== null) {
+        window._notificationSoundEnabled = saved === '1';
+    } else {
+        window._notificationSoundEnabled = parseInt(window.appSettings?.notificationPlaySound) ? true : false;
+    }
+})();
+
+function toggleNotificationSound() {
+    const next = !window._notificationSoundEnabled;
+    window._notificationSoundEnabled = next;
+    localStorage.setItem('notificationSoundEnabled', next ? '1' : '0');
+
+    // Update button icon
+    const icon = document.getElementById('soundToggleIcon');
+    if (icon) {
+        icon.className = next ? 'fa fa-volume-up' : 'fa fa-volume-mute';
+    }
+
+    mtplAlerts.show(
+        'success',
+        next ? 'Notification sound enabled' : 'Notification sound muted',
+        'Sound'
+    );
+}

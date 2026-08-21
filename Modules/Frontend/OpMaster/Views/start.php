@@ -185,8 +185,22 @@
 <!-- BEGIN #content -->
 <div id="content" class="app-content">
 
-    <div style="position: fixed;top:50px;left:10px;">
-        <strong>ID:</strong> <?= getenv("scadaId"); ?></br>
+    <div id="infoStrip" style="position: fixed; top: 40px; left: 0px; z-index: 1000; font-size: 12px;">
+        <div class="d-flex align-items-center gap-2 bg-white bg-opacity-75 rounded px-2 py-1 shadow-sm">
+            <span><strong>ID:</strong> <?= getenv("scadaId"); ?></span>
+            <span class="text-muted">|</span>
+            <span id="liveClock" style="font-family: monospace;">--:--:--</span>
+            <span class="text-muted">|</span>
+            [<span class="userProfileName"></span>]
+            <button class="btn btn-sm btn-outline-secondary py-0 px-1" onclick="toggleNotificationSound()"
+                title="Toggle notification sound">
+                <i id="soundToggleIcon" class="fa fa-volume-up"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-primary py-0 px-1" onclick="showSystemInfoModal()"
+                title="System Information">
+                <i class="fa fa-info-circle"></i>
+            </button>
+        </div>
     </div>
 
     <div class="">
@@ -750,4 +764,47 @@ if ($isIpc) {
 
 <script>
     disAllowedTags = <?php echo json_encode($disAllowedTags); ?>;
+
+    // ---- Live Clock with configurable format ----
+    // Format tokens: {YYYY} {MM} {DD} {DAY} {MMM} {MMMM} {hh} {mm} {ss} {A}
+    // Change this string to adjust display format
+    var clockFormat = '{DAY}, {DD} {MMM} {YYYY} · {hh}:{mm}:{ss} {A}';
+
+    (function updateClock() {
+        const el = document.getElementById('liveClock');
+        if (el) {
+            const now = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const monthsFull = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            let h = now.getHours();
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12; // 12hr format
+
+            const output = clockFormat
+                .replace('{YYYY}', now.getFullYear())
+                .replace('{MM}', pad(now.getMonth() + 1))
+                .replace('{DD}', pad(now.getDate()))
+                .replace('{DAY}', days[now.getDay()])
+                .replace('{MMMM}', monthsFull[now.getMonth()])
+                .replace('{MMM}', months[now.getMonth()])
+                .replace('{hh}', pad(h))
+                .replace('{mm}', pad(now.getMinutes()))
+                .replace('{ss}', pad(now.getSeconds()))
+                .replace('{A}', ampm);
+
+            el.textContent = output;
+        }
+        setTimeout(updateClock, 1000);
+    })();
+
+    // Set initial sound icon based on saved preference
+    document.addEventListener('DOMContentLoaded', function () {
+        const saved = localStorage.getItem('notificationSoundEnabled');
+        const icon = document.getElementById('soundToggleIcon');
+        if (icon && saved === '0') {
+            icon.className = 'fa fa-volume-mute';
+        }
+    });
 </script>

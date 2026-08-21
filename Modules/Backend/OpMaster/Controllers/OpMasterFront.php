@@ -280,4 +280,19 @@ class OpMasterFront extends ApiBaseController
         }
         return $this->respond(['status' => true, 'data' => $myTags], 200);
     }
+
+    public function systemInfo()
+    {
+        try {
+            $data = nodejsApi("get", "/api/systemInfo");
+
+            if (@$data['json']['success']) {
+                return $this->respond(['status' => true, 'data' => $data['json']['data']], 200);
+            } else {
+                return $this->respond(['status' => false, 'message' => 'Failed to retrieve system info'], 500);
+            }
+        } catch (\Exception $e) {
+            return $this->respond(['status' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
 }
