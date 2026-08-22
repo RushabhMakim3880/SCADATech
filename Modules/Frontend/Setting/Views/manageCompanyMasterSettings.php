@@ -51,6 +51,18 @@ use App\Libraries\UserPermissionLib;
                                 <input type="text" class="form-control text-center numberInput virtualNumKeypad" name="sideAThicknessMax" id="sideAThicknessMax" placeholder="Enter Max">
                             </td>
                         </tr>
+                        <tr>
+                            <th class="fw-bold align-middle text-start">DA MINIMUM BACKMARK</th>
+                            <td colspan="2">
+                                <input type="text" class="form-control text-center numberInput virtualNumKeypad" name="daMinimumBackmark" id="daMinimumBackmark" placeholder="Enter DA Minimum Backmark (Default: 20)">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="fw-bold align-middle text-start">DB MINIMUM BACKMARK</th>
+                            <td colspan="2">
+                                <input type="text" class="form-control text-center numberInput virtualNumKeypad" name="dbMinimumBackmark" id="dbMinimumBackmark" placeholder="Enter DB Minimum Backmark (Default: 20)">
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

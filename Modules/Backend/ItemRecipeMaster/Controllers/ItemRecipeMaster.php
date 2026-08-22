@@ -75,6 +75,22 @@ class ItemRecipeMaster extends ApiBaseController
         $sideAThicknessMin = (isset($companySettings['sideAThicknessMin']) && $companySettings['sideAThicknessMin'] !== '') ? (float)$companySettings['sideAThicknessMin'] : ((isset($companySettings['sideAThickness_min']) && $companySettings['sideAThickness_min'] !== '') ? (float)$companySettings['sideAThickness_min'] : 6);
         $sideAThicknessMax = (isset($companySettings['sideAThicknessMax']) && $companySettings['sideAThicknessMax'] !== '') ? (float)$companySettings['sideAThicknessMax'] : ((isset($companySettings['sideAThickness_max']) && $companySettings['sideAThickness_max'] !== '') ? (float)$companySettings['sideAThickness_max'] : 16);
 
+        $daMinBackmark = (isset($companySettings['daMinimumBackmark']) && $companySettings['daMinimumBackmark'] !== '')
+            ? (float)$companySettings['daMinimumBackmark']
+            : ((isset($companySettings['da_minimum_backmark']) && $companySettings['da_minimum_backmark'] !== '')
+                ? (float)$companySettings['da_minimum_backmark']
+                : ((isset($companySettings['DA MINIMUM BACKMARK']) && $companySettings['DA MINIMUM BACKMARK'] !== '')
+                    ? (float)$companySettings['DA MINIMUM BACKMARK']
+                    : 20));
+
+        $dbMinBackmark = (isset($companySettings['dbMinimumBackmark']) && $companySettings['dbMinimumBackmark'] !== '')
+            ? (float)$companySettings['dbMinimumBackmark']
+            : ((isset($companySettings['db_minimum_backmark']) && $companySettings['db_minimum_backmark'] !== '')
+                ? (float)$companySettings['db_minimum_backmark']
+                : ((isset($companySettings['DB MINIMUM BACKMARK']) && $companySettings['DB MINIMUM BACKMARK'] !== '')
+                    ? (float)$companySettings['DB MINIMUM BACKMARK']
+                    : 20));
+
         $sideAWidthRules = 'required|decimal';
         if ($sideAWidthMin > 0) {
             $sideAWidthRules .= '|greater_than_equal_to[' . $sideAWidthMin . ']';
@@ -185,14 +201,14 @@ class ItemRecipeMaster extends ApiBaseController
                     if ($jsonInput['sideAWidth'] <= 50) {
                         $minY = ($step['opValue'] / 2) + $jsonInput['sideAThickness'];
                     } else {
-                        $minY = 20 + $jsonInput['sideAThickness'];
+                        $minY = $daMinBackmark + $jsonInput['sideAThickness'];
                     }
                     $maxY = $jsonInput['sideAWidth'] - ($step['opValue'] / 2);
                 } else {
                     if ($jsonInput['sideBWidth'] <= 50) {
                         $minY = ($step['opValue'] / 2) + $jsonInput['sideAThickness'];
                     } else {
-                        $minY = 20 + $jsonInput['sideAThickness'];
+                        $minY = $dbMinBackmark + $jsonInput['sideAThickness'];
                     }
                     $maxY = $jsonInput['sideBWidth'] - ($step['opValue'] / 2);
                 }
