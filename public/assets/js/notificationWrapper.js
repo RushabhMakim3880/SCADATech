@@ -115,13 +115,13 @@ const mtplAlerts = (function () {
          * Show confirmation dialog
          * @param {string} message - Confirmation message
          * @param {function} onConfirm - Callback for when user confirms
-         * @param {function} onCancel - Callback for when user cancels
+         * @param {function} [onCancel] - Callback for when user cancels
          * @param {object} [tempConfig] - Temporary configuration for this confirmation
          */
         confirm(message, onConfirm, onCancel, tempConfig = {}) {
             const config = { ...currentConfig, ...tempConfig };
 
-            if (config.notificationLibrary === 'SweetAlert2') {
+            if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     title: 'Confirm',
                     text: message,
@@ -129,7 +129,7 @@ const mtplAlerts = (function () {
                     showCancelButton: true,
                     confirmButtonText: 'Yes',
                     cancelButtonText: 'No',
-                    position: config.position.replace('-', ' '),
+                    position: (config.position && typeof config.position === 'string') ? config.position.replace('-', ' ') : undefined,
                 }).then((result) => {
                     if (result.isConfirmed) {
                         if (onConfirm) onConfirm();
@@ -138,7 +138,50 @@ const mtplAlerts = (function () {
                     }
                 });
             } else {
-                console.error('Confirmation dialogs are only supported with SweetAlert2 in this wrapper.');
+                if (window.confirm(message)) {
+                    if (onConfirm) onConfirm();
+                } else {
+                    if (onCancel) onCancel();
+                }
+            }
+        },
+
+        /**
+         * Show input prompt dialog in UI instead of browser native prompt
+         * @param {string} title - Prompt title
+         * @param {string} message - Prompt message/description
+         * @param {function} onConfirm - Callback receiving the input string
+         * @param {string} [defaultValue] - Default text in input field
+         * @param {object} [tempConfig] - Temporary configuration
+         */
+        prompt(title, message, onConfirm, defaultValue = '', tempConfig = {}) {
+            const config = { ...currentConfig, ...tempConfig };
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: title || 'Enter Value',
+                    html: message || '',
+                    input: 'text',
+                    inputValue: defaultValue || '',
+                    showCancelButton: true,
+                    confirmButtonText: 'OK',
+                    cancelButtonText: 'Cancel',
+                    focusConfirm: false,
+                    inputValidator: (value) => {
+                        if (value === null || value === undefined || value.trim() === '') {
+                            return 'Please enter a value!';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed && result.value !== undefined && result.value !== null) {
+                        if (onConfirm) onConfirm(result.value.trim());
+                    }
+                });
+            } else {
+                let val = window.prompt((title ? title + "\n" : "") + (message ? message.replace(/<[^>]*>?/gm, '') : "Enter value:"), defaultValue);
+                if (val !== null && val.trim() !== '') {
+                    if (onConfirm) onConfirm(val.trim());
+                }
             }
         },
     };

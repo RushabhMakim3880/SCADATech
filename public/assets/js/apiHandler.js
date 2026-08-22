@@ -1569,78 +1569,71 @@ $(function () {
         let tagId = $btn.data('tagid');
         let tagName = $btn.data('tagname') || ('Tag #' + tagId);
 
-        let val = prompt('Enter value for tag "' + tagName + '" (ID: ' + tagId + '):');
-        if (val !== null && val.trim() !== '') {
-            skipPreloader = true;
-            let payload = {};
-            payload[tagId] = val.trim();
-            apiCall('POST', 'api/OpMasterFront/writeTags', payload).then(function (response) {
-                if (response && response.status) {
-                    mtplAlerts.show('success', response.message || 'Tag value written successfully!', 'Success');
-                } else {
-                    let errMsg = (response && (response.errorMessage || response.message)) ? (response.errorMessage || response.message) : 'Failed to write tag';
-                    mtplAlerts.show('error', errMsg, 'Error');
+        mtplAlerts.prompt(
+            'Write Scada Tag Value',
+            'Enter value for tag <strong>"' + tagName + '"</strong> (ID: ' + tagId + '):',
+            function (val) {
+                if (val !== null && val !== undefined && val.trim() !== '') {
+                    skipPreloader = true;
+                    let payload = {};
+                    payload[tagId] = val.trim();
+                    apiCall('POST', 'api/OpMasterFront/writeTags', payload).then(function (response) {
+                        if (response && response.status) {
+                            mtplAlerts.show('success', response.message || 'Tag value written successfully!', 'Success');
+                        } else {
+                            let errMsg = (response && (response.errorMessage || response.message)) ? (response.errorMessage || response.message) : 'Failed to write tag';
+                            mtplAlerts.show('error', errMsg, 'Error');
+                        }
+                    }).catch(function (err) {
+                        mtplAlerts.show('error', 'Error writing tag value', 'Error');
+                    });
                 }
-            }).catch(function (err) {
-                mtplAlerts.show('error', 'Error writing tag value', 'Error');
-            });
-        }
+            }
+        );
     });
 
-    jQuery(document).on("click", ".apiAction", function () {
+    jQuery(document).on("click", ".apiAction", function (e) {
         let $clickedElement = $(this); // Store reference to $(this)
         let endpoint = $clickedElement.data('endpoint');
-        let confirm = $clickedElement.data('confirm');
+        let confirmMsg = $clickedElement.data('confirm');
         let reload = $clickedElement.data('reload');
         let reloadView = $clickedElement.data('reloadview');
 
-        // console.log("reload", reload);
+        let executeAction = function () {
+            apiCall('GET', endpoint).then(function (response) {
+                if ($clickedElement.closest(".manageDataTable").length) {
+                    $clickedElement.closest(".manageDataTable table").DataTable?.()?.ajax?.reload?.(null, false);
+                    $clickedElement.closest(".manageDataTable").data('reload')?.();
+                }
+                else if (jQuery(".manageDataTable").length) {
+                    jQuery(".manageDataTable table").DataTable?.()?.ajax?.reload?.(null, false);
+                    jQuery(".manageDataTable").data('reload')?.();
+                }
 
-        if (confirm) {
-            if (!window.confirm(confirm)) {
-                return false;
-            }
+                if (reload) {
+                    mtplAlerts.show('info', 'Reloading...', 'Success');
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                }
+
+                if (reloadView) {
+                    if (typeof reloadView == 'string' && reloadView != "" && reloadView.toLowerCase() != "true") {
+                        loadView(reloadView);
+                    }
+                    else {
+                        loadView();
+                    }
+                }
+            });
+        };
+
+        if (confirmMsg) {
+            e.preventDefault();
+            mtplAlerts.confirm(confirmMsg, executeAction);
+        } else {
+            executeAction();
         }
-
-        apiCall('GET', endpoint).then(function (response) {
-            // if (response.message != "") {
-            //     mtplAlerts.show('success', response.message, 'Success');
-            // }
-
-            // check if clicked element is within datatable
-            if ($clickedElement.closest(".manageDataTable").length) {
-                // console.log("YES");
-                // $clickedElement.closest(".manageDataTable table").DataTable().ajax.reload(null, false);
-                $clickedElement.closest(".manageDataTable table").DataTable?.()?.ajax?.reload?.(null, false);
-                $clickedElement.closest(".manageDataTable").data('reload')?.();
-
-            }
-            else if (jQuery(".manageDataTable").length) {
-                // console.log("YES");
-                // jQuery(".manageDataTable table").DataTable().ajax.reload(null, false);
-                jQuery(".manageDataTable table").DataTable?.()?.ajax?.reload?.(null, false);
-                jQuery(".manageDataTable").data('reload')?.();
-            }
-            else {
-                // console.log("NO");
-            }
-
-            if (reload) {
-                mtplAlerts.show('info', 'Reloading...', 'Success');
-                setTimeout(function () {
-                    location.reload();
-                }, 1000);
-            }
-
-            if (reloadView) {
-                if (typeof reloadView == 'string' && reloadView != "" && reloadView.toLowerCase() != "true") {
-                    loadView(reloadView);
-                }
-                else {
-                    loadView();
-                }
-            }
-        });
     });
 });
 
