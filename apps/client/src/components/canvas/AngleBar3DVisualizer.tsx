@@ -42,7 +42,7 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const activeRecipe = recipe && recipe.steps && recipe.steps.length > 0 ? recipe : DEFAULT_DEMO_RECIPE;
+  const activeRecipe = recipe ? recipe : DEFAULT_DEMO_RECIPE;
 
   const lengthMm = activeRecipe.totalLength || 1500;
   const widthA = activeRecipe.angleWidthA || 75;

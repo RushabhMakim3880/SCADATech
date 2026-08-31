@@ -9,6 +9,8 @@ interface AngleBarVisualizerProps {
   activeFeedPosition?: number;
   highlightStepIndex?: number;
   onSelectStep?: (stepIndex: number) => void;
+  onCanvasClick?: (x: number, y: number, side: 'A' | 'B') => void;
+  onStepDrag?: (stepIndex: number, newX: number, newY: number, side: 'A' | 'B') => void;
 }
 
 export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
@@ -16,6 +18,8 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
   activeFeedPosition = 0,
   highlightStepIndex,
   onSelectStep,
+  onCanvasClick,
+  onStepDrag,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -33,8 +37,9 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
   // Interaction Refs
   const isDragging = useRef(false);
   const dragStart = useRef({ x: 0, y: 0 });
+  const draggedStepIndex = useRef<number | null>(null);
 
-  const hasValidRecipe = Boolean(recipe && recipe.steps && recipe.steps.length > 0);
+  const hasValidRecipe = Boolean(recipe);
   const lengthMm = recipe?.totalLength || 1500;
   const widthA = recipe?.angleWidthA || 75;
   const widthB = recipe?.angleWidthB || 75;
@@ -422,6 +427,33 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    if (recipe && recipe.steps) {
+      const centerY = rect.height / 2 + panY;
+      const scale = zoom;
+      const foundIndex = recipe.steps.findIndex((step) => {
+        const opX = panX + step.xPosition * scale;
+        let opY = centerY;
+        if (step.side === 'A') {
+          opY = isFlipped ? centerY + step.yPosition * scale : centerY - step.yPosition * scale;
+        } else if (step.side === 'B') {
+          opY = isFlipped ? centerY - step.yPosition * scale : centerY + step.yPosition * scale;
+        }
+        const dist = Math.hypot(mouseX - opX, mouseY - opY);
+        return dist < Math.max(10, 15 * scale);
+      });
+
+      if (foundIndex >= 0 && onStepDrag) {
+        draggedStepIndex.current = foundIndex;
+        return;
+      }
+    }
+
     isDragging.current = true;
     dragStart.current = { x: e.clientX, y: e.clientY };
   };
@@ -429,6 +461,34 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    if (draggedStepIndex.current !== null && onStepDrag) {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      const scale = zoom;
+      const clickX = (mouseX - panX) / scale;
+      const centerY = rect.height / 2 + panY;
+      
+      let side: 'A' | 'B' = recipe?.steps[draggedStepIndex.current].side as 'A' | 'B' || 'A';
+      let clickY = 0;
+
+      if (mouseY < centerY) {
+        side = isFlipped ? 'B' : 'A';
+        clickY = Math.abs(centerY - mouseY) / scale;
+      } else {
+        side = isFlipped ? 'A' : 'B';
+        clickY = Math.abs(mouseY - centerY) / scale;
+      }
+
+      const safeX = Math.max(0, Math.min(lengthMm, clickX));
+      const maxW = side === 'A' ? widthA : widthB;
+      const safeY = Math.max(0, Math.min(maxW, clickY));
+
+      onStepDrag(draggedStepIndex.current, safeX, safeY, side);
+      return;
+    }
 
     if (isDragging.current) {
       const dx = e.clientX - dragStart.current.x;
@@ -478,12 +538,50 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     }
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const wasDraggingStep = draggedStepIndex.current !== null;
+    draggedStepIndex.current = null;
+    
+    const wasDraggingCanvas = isDragging.current && (Math.abs(e.clientX - dragStart.current.x) > 5 || Math.abs(e.clientY - dragStart.current.y) > 5);
     isDragging.current = false;
+
+    if (!wasDraggingCanvas && !wasDraggingStep && onCanvasClick && !hoveredStep && recipe) {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      const scale = zoom;
+      const clickX = (mouseX - panX) / scale;
+      
+      // Ensure click is within bar length
+      if (clickX >= 0 && clickX <= lengthMm) {
+        const centerY = rect.height / 2 + panY;
+        let side: 'A' | 'B' | null = null;
+        let clickY = 0;
+
+        // Check if click is on Top Flange
+        if (mouseY < centerY && mouseY >= centerY - (isFlipped ? widthB : widthA) * scale) {
+          side = isFlipped ? 'B' : 'A';
+          clickY = Math.abs(centerY - mouseY) / scale;
+        } 
+        // Check if click is on Bottom Flange
+        else if (mouseY > centerY && mouseY <= centerY + (isFlipped ? widthA : widthB) * scale) {
+          side = isFlipped ? 'A' : 'B';
+          clickY = Math.abs(mouseY - centerY) / scale;
+        }
+
+        if (side) {
+          onCanvasClick(clickX, clickY, side);
+        }
+      }
+    }
   };
 
   const handleMouseLeave = () => {
     isDragging.current = false;
+    draggedStepIndex.current = null;
     setHoveredStep(null);
   };
 

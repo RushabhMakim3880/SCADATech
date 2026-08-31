@@ -480,6 +480,32 @@ export const RecipeMasterView: React.FC = () => {
                       setHighlightedStep(idx);
                       // In a real app, this might scroll the table to the selected step
                     }}
+                    onCanvasClick={(x, y, side) => {
+                      const newStep: ItemRecipeStep = {
+                        id: `step-${Date.now()}`,
+                        stepNumber: selectedRecipe.steps.length + 1,
+                        operationType: 'PUNCH',
+                        side: side,
+                        xPosition: Math.round(x * 10) / 10,
+                        yPosition: Math.round(y * 10) / 10,
+                        toolSize: 18.0,
+                        isCutOff: false,
+                      };
+                      setSelectedRecipe({
+                        ...selectedRecipe,
+                        steps: [...selectedRecipe.steps, newStep],
+                      });
+                    }}
+                    onStepDrag={(idx, x, y, side) => {
+                      const updated = [...selectedRecipe.steps];
+                      updated[idx] = {
+                        ...updated[idx],
+                        xPosition: Math.round(x * 10) / 10,
+                        yPosition: Math.round(y * 10) / 10,
+                        side: side,
+                      };
+                      setSelectedRecipe({ ...selectedRecipe, steps: updated });
+                    }}
                   />
                 </div>
               </div>
@@ -488,13 +514,26 @@ export const RecipeMasterView: React.FC = () => {
               <div className="pt-3 border-t border-slate-200">
                 <div className="flex items-center justify-between mb-2">
                   <label className="font-bold text-xs text-slate-800">Item Recipe Operations Table</label>
-                  <button
-                    onClick={handleAddStep}
-                    type="button"
-                    className="btn-ca btn-ca-primary text-xs py-1"
-                  >
-                    <Plus className="w-3.5 h-3.5" /> Add Step Operation
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        if (confirm("Are you sure you want to clear all steps?")) {
+                          setSelectedRecipe({ ...selectedRecipe, steps: [] });
+                        }
+                      }}
+                      type="button"
+                      className="btn-ca btn-ca-danger text-xs py-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Clear All
+                    </button>
+                    <button
+                      onClick={handleAddStep}
+                      type="button"
+                      className="btn-ca btn-ca-primary text-xs py-1"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Add Step Operation
+                    </button>
+                  </div>
                 </div>
 
                 <table className="table-custom border">

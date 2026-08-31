@@ -9,6 +9,8 @@ interface AngleBarViewerProps {
   activeFeedPosition?: number;
   highlightStepIndex?: number;
   onSelectStep?: (stepIndex: number) => void;
+  onCanvasClick?: (x: number, y: number, side: 'A' | 'B') => void;
+  onStepDrag?: (stepIndex: number, newX: number, newY: number, side: 'A' | 'B') => void;
 }
 
 export const AngleBarViewer: React.FC<AngleBarViewerProps> = (props) => {
