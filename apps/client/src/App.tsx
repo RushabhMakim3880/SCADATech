@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { AppLayout } from './components/layout/AppLayout.js';
 import { ActiveTab } from './components/layout/Sidebar.js';
 import { DashboardView } from './views/DashboardView.js';
+import { ManualControlView } from './views/ManualControlView.js';
+import { MachineSetupView } from './views/MachineSetupView.js';
+import { TagMasterView } from './views/TagMasterView.js';
 import { usePlcStore } from './stores/usePlcStore.js';
 import { wsClient } from './services/wsClient.js';
 
@@ -57,17 +60,22 @@ export const App: React.FC = () => {
   return (
     <AppLayout activeTab={activeTab} onTabChange={setActiveTab}>
       {activeTab === 'PRODUCTION' && <DashboardView />}
-      {activeTab === 'MANUAL' && <DashboardView />}
-      {activeTab !== 'PRODUCTION' && activeTab !== 'MANUAL' && (
-        <div className="p-8 flex flex-col items-center justify-center h-full text-center text-slate-400">
-          <div className="text-xl font-bold text-slate-200 mb-2">
-            {activeTab.replace('_', ' ')} Module
+      {activeTab === 'MANUAL' && <ManualControlView />}
+      {activeTab === 'MACHINE_SETUP' && <MachineSetupView />}
+      {activeTab === 'TAGS' && <TagMasterView />}
+      {activeTab !== 'PRODUCTION' &&
+        activeTab !== 'MANUAL' &&
+        activeTab !== 'MACHINE_SETUP' &&
+        activeTab !== 'TAGS' && (
+          <div className="p-8 flex flex-col items-center justify-center h-full text-center text-slate-400">
+            <div className="text-xl font-bold text-slate-200 mb-2">
+              {activeTab.replace('_', ' ')} Module
+            </div>
+            <p className="text-sm max-w-md">
+              This module is being transitioned in the upcoming phase of the TypeScript Full-Stack migration roadmap.
+            </p>
           </div>
-          <p className="text-sm max-w-md">
-            This module is being transitioned in the upcoming phase of the TypeScript Full-Stack migration roadmap.
-          </p>
-        </div>
-      )}
+        )}
     </AppLayout>
   );
 };
