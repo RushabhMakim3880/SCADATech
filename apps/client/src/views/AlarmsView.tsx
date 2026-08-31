@@ -2,14 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { usePlcStore } from '../stores/usePlcStore.js';
 import { AlarmDefinition, ActiveAlarm } from '@innovance-hmi/shared';
 import {
-  AlertOctagon,
-  ShieldAlert,
-  AlertTriangle,
-  Info,
-  CheckCircle,
   RefreshCw,
-  Clock,
-  Wrench,
 } from 'lucide-react';
 
 interface AlarmLogItem {
@@ -64,162 +57,131 @@ export const AlarmsView: React.FC = () => {
     }
   };
 
-  const getSeverityBadge = (severity: string) => {
-    switch (severity) {
-      case 'EMERGENCY':
-        return (
-          <span className="px-3 py-1 rounded-lg bg-rose-950 text-rose-300 border border-rose-500/80 font-mono font-extrabold text-xs flex items-center gap-1.5 shadow-neon-rose">
-            <ShieldAlert className="w-3.5 h-3.5" /> EMERGENCY
-          </span>
-        );
-      case 'CRITICAL':
-        return (
-          <span className="px-3 py-1 rounded-lg bg-rose-950/80 text-rose-400 border border-rose-600 font-mono font-bold text-xs flex items-center gap-1.5">
-            <AlertOctagon className="w-3.5 h-3.5" /> CRITICAL
-          </span>
-        );
-      case 'WARNING':
-        return (
-          <span className="px-3 py-1 rounded-lg bg-amber-950 text-neon-amber border border-amber-500/80 font-mono font-bold text-xs flex items-center gap-1.5 shadow-neon-amber">
-            <AlertTriangle className="w-3.5 h-3.5" /> WARNING
-          </span>
-        );
-      default:
-        return (
-          <span className="px-3 py-1 rounded-lg bg-cyan-950 text-neon-cyan border border-cyan-500/80 font-mono font-bold text-xs flex items-center gap-1.5 shadow-neon-cyan">
-            <Info className="w-3.5 h-3.5" /> INFO
-          </span>
-        );
-    }
-  };
-
   return (
-    <div className="p-6 space-y-6 flex-1 overflow-y-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-scada-750 pb-4">
+    <div className="p-4 space-y-4 flex-1 overflow-y-auto">
+      {/* Top Header */}
+      <div className="flex items-center justify-between pb-2 border-b border-slate-300">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-100 flex items-center gap-2.5">
-            <AlertOctagon className="w-6 h-6 text-neon-rose" />
-            Machine Safety Alarms, Interlocks & Diagnostics Hub
-          </h2>
-          <p className="text-xs text-slate-400 font-mono">
-            Real-time safety interlock trip monitor, hydraulic pressure warnings, and fault resolution guides.
+          <h2 className="text-lg font-bold text-slate-800">Alarm Configuration & Historical Event Logs (AalarmModules)</h2>
+          <p className="text-xs text-slate-500">
+            Real-time machine fault monitoring, safety trip acknowledgment, and maintenance logs.
           </p>
         </div>
 
         <button
           onClick={fetchAlarmsData}
-          className="scada-btn-secondary px-4 py-2 text-xs font-mono"
+          className="btn-ca btn-ca-default"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          REFRESH ALARM AUDIT
+          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh Logs
         </button>
       </div>
 
       {/* Active Triggered Alarms Banner */}
-      <div className="scada-panel p-6 space-y-4 border-rose-500/40 bg-gradient-to-br from-scada-900 via-scada-900 to-rose-950/30">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-extrabold text-slate-100 uppercase tracking-wider font-mono flex items-center gap-2.5">
-            <ShieldAlert className="w-5 h-5 text-neon-rose" />
-            ACTIVE MACHINE FAULTS & TRIPS ({activeAlarms.length})
-          </h3>
+      <div className="panel">
+        <div className="panel-heading bg-red-700 text-white">
+          <span>Active Machine Alarms ({activeAlarms.length})</span>
           {activeAlarms.length === 0 && (
-            <span className="flex items-center gap-1.5 text-xs text-neon-emerald font-mono font-bold bg-emerald-950/80 px-3 py-1 rounded-lg border border-emerald-500/40">
-              <CheckCircle className="w-4 h-4" /> ALL SAFETY INTERLOCKS NORMAL
+            <span className="text-xs bg-emerald-700 text-white px-2 py-0.5 rounded font-bold">
+              All Interlocks Normal
             </span>
           )}
         </div>
 
-        {activeAlarms.length > 0 ? (
-          <div className="space-y-3">
-            {activeAlarms.map((alarm) => (
-              <div
-                key={alarm.id}
-                className="p-4 rounded-xl bg-rose-950/50 border border-rose-500/80 flex items-center justify-between font-mono shadow-neon-rose"
-              >
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-3">
-                    {getSeverityBadge(alarm.severity)}
-                    <span className="font-extrabold text-sm text-slate-100">{alarm.alarmName}</span>
-                    <span className="text-xs text-neon-rose font-bold">({alarm.alarmCode})</span>
-                  </div>
-                  <p className="text-xs text-slate-300">{alarm.description}</p>
-                </div>
-
-                <button
-                  onClick={() => handleAcknowledge(alarm)}
-                  className="scada-btn-primary px-5 py-2 text-xs font-mono"
+        <div className="panel-body">
+          {activeAlarms.length > 0 ? (
+            <div className="space-y-2">
+              {activeAlarms.map((alarm) => (
+                <div
+                  key={alarm.id}
+                  className="p-3 rounded bg-red-50 border border-red-300 flex items-center justify-between"
                 >
-                  ACKNOWLEDGE
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="p-8 text-center text-slate-500 font-mono text-xs">
-            No active safety trips or machine alarms detected on Innovance PLC gateway.
-          </div>
-        )}
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="badge bg-red-600 text-white px-2 py-0.5 rounded text-xs font-bold">
+                        {alarm.severity}
+                      </span>
+                      <span className="font-bold text-sm text-red-900">{alarm.alarmName}</span>
+                      <span className="text-xs text-red-700">({alarm.alarmCode})</span>
+                    </div>
+                    <p className="text-xs text-slate-600 mt-1">{alarm.description}</p>
+                  </div>
+
+                  <button
+                    onClick={() => handleAcknowledge(alarm)}
+                    className="btn-ca btn-ca-primary"
+                  >
+                    Acknowledge
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-4 text-center text-slate-500 text-xs">
+              No active alarms or safety interlock trips detected on the machine bus.
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Configured Alarm Rules & Troubleshooting Matrix */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Definitions & Corrective Actions */}
-        <div className="scada-panel p-6 space-y-4">
-          <h3 className="text-sm font-extrabold text-slate-100 uppercase tracking-wider font-mono flex items-center gap-2">
-            <Wrench className="w-4 h-4 text-cyan-400" />
-            Safety Interlock Matrix & Corrective Actions
-          </h3>
+      {/* Alarm Definitions & History Tables */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Alarm Definitions */}
+        <div className="panel">
+          <div className="panel-heading">
+            <span>Configured Alarm Definitions & Actions</span>
+          </div>
 
-          <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
-            {definitions.map((def) => (
-              <div
-                key={def.id}
-                className="p-3.5 rounded-xl bg-scada-950 border border-scada-750 text-xs font-mono space-y-2"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-extrabold text-slate-200">{def.alarmName}</span>
-                  {getSeverityBadge(def.severity)}
-                </div>
-                <div className="text-[11px] text-slate-400">{def.description}</div>
-                {def.correctiveAction && (
-                  <div className="text-[11px] text-neon-cyan bg-cyan-950/60 p-2.5 rounded-lg border border-cyan-500/40">
-                    🔧 FIX: {def.correctiveAction}
-                  </div>
-                )}
-              </div>
-            ))}
+          <div className="panel-body p-0 max-h-72 overflow-y-auto">
+            <table className="table-custom">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Alarm Name</th>
+                  <th>Severity</th>
+                  <th>Corrective Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {definitions.map((def) => (
+                  <tr key={def.id}>
+                    <td className="font-bold text-slate-800">{def.alarmCode}</td>
+                    <td>{def.alarmName}</td>
+                    <td>
+                      <span className="badge bg-slate-200 text-slate-700 px-2 py-0.5 rounded text-[11px]">
+                        {def.severity}
+                      </span>
+                    </td>
+                    <td className="text-xs text-slate-600">{def.correctiveAction || '--'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
         {/* Historical Alarm Log */}
-        <div className="scada-panel p-6 space-y-4">
-          <h3 className="text-sm font-extrabold text-slate-100 uppercase tracking-wider font-mono flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-slate-400" /> Historical Alarm Audit Trail
-            </span>
-            <span className="text-slate-400 text-xs">{logs.length} Logged Events</span>
-          </h3>
+        <div className="panel">
+          <div className="panel-heading">
+            <span>Historical Alarm Event Logs</span>
+          </div>
 
-          <div className="max-h-80 overflow-y-auto">
-            <table className="w-full text-left text-xs font-mono">
-              <thead className="bg-scada-950 text-slate-400 sticky top-0 border-b border-scada-750">
+          <div className="panel-body p-0 max-h-72 overflow-y-auto">
+            <table className="table-custom">
+              <thead>
                 <tr>
-                  <th className="p-2.5 pl-3">Code</th>
-                  <th className="p-2.5">Name</th>
-                  <th className="p-2.5">Severity</th>
-                  <th className="p-2.5 pr-3 text-right">Timestamp</th>
+                  <th>Code</th>
+                  <th>Name</th>
+                  <th>Severity</th>
+                  <th>Triggered Time</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-scada-750/40">
+              <tbody>
                 {logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-scada-850/60 transition-all">
-                    <td className="p-2.5 pl-3 font-bold text-slate-300">{log.alarmCode}</td>
-                    <td className="p-2.5 text-slate-200 truncate max-w-[150px]">{log.alarmName}</td>
-                    <td className="p-2.5">{getSeverityBadge(log.severity)}</td>
-                    <td className="p-2.5 pr-3 text-right text-slate-400 text-[10px]">
-                      {new Date(log.triggeredAt).toLocaleTimeString()}
-                    </td>
+                  <tr key={log.id}>
+                    <td className="font-bold text-slate-800">{log.alarmCode}</td>
+                    <td>{log.alarmName}</td>
+                    <td>{log.severity}</td>
+                    <td className="text-xs text-slate-500">{new Date(log.triggeredAt).toLocaleTimeString()}</td>
                   </tr>
                 ))}
               </tbody>

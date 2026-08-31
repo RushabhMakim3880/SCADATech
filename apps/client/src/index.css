@@ -4,196 +4,213 @@
 
 @layer base {
   body {
-    background-color: #06090e;
-    color: #f1f5f9;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    user-select: none;
-    overflow: hidden;
-    -webkit-font-smoothing: antialiased;
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(0, 240, 255, 0.04) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(0, 255, 157, 0.03) 0px, transparent 50%),
-      linear-gradient(to bottom, #06090e, #090e17);
+    background-color: #d9e0e7;
+    color: #242a30;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    user-select: auto;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
   }
 }
 
-/* Glassmorphic Industrial Panels */
-.scada-panel {
-  background: linear-gradient(to bottom, rgba(11, 17, 26, 0.95), rgba(6, 9, 14, 0.95));
-  border: 1px solid rgba(29, 44, 66, 0.7);
-  border-radius: 0.75rem;
-  backdrop-filter: blur(16px);
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+/* Color Admin Layout Containers */
+.app-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e7eb;
+  height: 50px;
 }
 
-.scada-panel-accent {
-  background: linear-gradient(to bottom, #101926, #0b111a);
-  border: 1px solid rgba(0, 240, 255, 0.3);
-  border-radius: 0.75rem;
-  box-shadow: 0 0 25px -5px rgba(0, 240, 255, 0.15), inset 0 1px 0 0 rgba(0, 240, 255, 0.2);
+.app-sidebar {
+  background: #2d353c;
+  width: 230px;
 }
 
-/* Digital Readout (DRO) Cluster */
-.scada-dro {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  background-color: rgba(0, 0, 0, 0.85);
-  border: 1px solid rgba(30, 41, 59, 0.9);
-  border-radius: 0.5rem;
-  position: relative;
-  overflow: hidden;
-  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.6);
+.app-content {
+  background: #d9e0e7;
+  min-height: calc(100vh - 50px);
 }
 
-.scada-dro::after {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
-  background-size: 100% 3px, 6px 100%;
-  pointer-events: none;
-  opacity: 0.6;
+/* Color Admin Panel Cards */
+.panel {
+  background: #ffffff;
+  border-radius: 4px;
+  border: none;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
-.scada-dro-cyan {
-  color: #00f0ff;
-  border-color: rgba(8, 51, 68, 0.7);
-  text-shadow: 0 0 12px rgba(0, 240, 255, 0.65);
-}
-
-.scada-dro-emerald {
-  color: #00ff9d;
-  border-color: rgba(6, 78, 59, 0.7);
-  text-shadow: 0 0 12px rgba(0, 255, 157, 0.65);
-}
-
-.scada-dro-amber {
-  color: #ffb703;
-  border-color: rgba(120, 53, 15, 0.7);
-  text-shadow: 0 0 12px rgba(255, 183, 3, 0.65);
-}
-
-.scada-dro-purple {
-  color: #c084fc;
-  border-color: rgba(88, 28, 135, 0.7);
-  text-shadow: 0 0 12px rgba(181, 23, 158, 0.65);
-}
-
-/* Premium Industrial Tactile Buttons */
-.scada-btn {
-  padding: 0.75rem 1rem;
-  font-weight: 700;
-  border-radius: 0.75rem;
-  transition: all 150ms ease-in-out;
+.panel-heading {
+  background: #242a30;
+  color: #ffffff;
+  padding: 10px 15px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  font-weight: 600;
+  font-size: 13px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  user-select: none;
+  justify-content: space-between;
+}
+
+.panel-body {
+  padding: 15px;
+}
+
+/* KPI Widget Stats (Exact Color Admin Classes) */
+.widget-stats {
   position: relative;
-  overflow: hidden;
-}
-
-.scada-btn:active {
-  transform: scale(0.97);
-}
-
-.scada-btn:disabled {
-  opacity: 0.4;
-  pointer-events: none;
-}
-
-.scada-btn-primary {
-  background: linear-gradient(to bottom, #06b6d4, #0e7490);
-  color: #020617;
-  font-weight: 800;
-  border: 1px solid rgba(103, 232, 249, 0.4);
-  box-shadow: 0 4px 15px 0 rgba(0, 240, 255, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
-}
-.scada-btn-primary:hover {
-  background: linear-gradient(to bottom, #22d3ee, #0891b2);
-}
-
-.scada-btn-success {
-  background: linear-gradient(to bottom, #10b981, #047857);
-  color: #020617;
-  font-weight: 800;
-  border: 1px solid rgba(110, 231, 183, 0.4);
-  box-shadow: 0 4px 15px 0 rgba(0, 255, 157, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
-}
-.scada-btn-success:hover {
-  background: linear-gradient(to bottom, #34d399, #059669);
-}
-
-.scada-btn-danger {
-  background: linear-gradient(to bottom, #f43f5e, #be123c);
   color: #ffffff;
-  font-weight: 800;
-  border: 1px solid rgba(253, 164, 175, 0.4);
-  box-shadow: 0 4px 15px 0 rgba(255, 0, 85, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
-}
-.scada-btn-danger:hover {
-  background: linear-gradient(to bottom, #fb7185, #e11d48);
-}
-
-.scada-btn-amber {
-  background: linear-gradient(to bottom, #f59e0b, #b45309);
-  color: #020617;
-  font-weight: 800;
-  border: 1px solid rgba(252, 211, 77, 0.4);
-  box-shadow: 0 4px 15px 0 rgba(255, 183, 3, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
-}
-.scada-btn-amber:hover {
-  background: linear-gradient(to bottom, #fbbf24, #d97706);
-}
-
-.scada-btn-secondary {
-  background: linear-gradient(to bottom, #162233, #0b111a);
-  color: #e2e8f0;
-  border: 1px solid rgba(38, 56, 82, 0.8);
-  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
-}
-.scada-btn-secondary:hover {
-  background: linear-gradient(to bottom, #1d2c42, #101926);
-}
-
-/* Pulsing LED status indicators */
-.led-indicator {
-  width: 0.625rem;
-  height: 0.625rem;
-  border-radius: 9999px;
-  display: inline-block;
-}
-.led-emerald {
-  background-color: #00ff9d;
-  box-shadow: 0 0 10px #00ff9d, 0 0 20px #00ff9d;
-}
-.led-rose {
-  background-color: #ff0055;
-  box-shadow: 0 0 10px #ff0055, 0 0 20px #ff0055;
-}
-.led-amber {
-  background-color: #ffb703;
-  box-shadow: 0 0 10px #ffb703, 0 0 20px #ffb703;
-}
-.led-cyan {
-  background-color: #00f0ff;
-  box-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-::-webkit-scrollbar-track {
-  background: #06090e;
-}
-::-webkit-scrollbar-thumb {
-  background: #1d2c42;
+  padding: 15px;
   border-radius: 4px;
+  margin-bottom: 15px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #263852;
+
+.widget-stats.bg-blue {
+  background: #348fe2 !important;
+}
+
+.widget-stats.bg-green {
+  background: #00acac !important;
+}
+
+.widget-stats.bg-orange {
+  background: #f59c1a !important;
+}
+
+.widget-stats.bg-red {
+  background: #ff5b57 !important;
+}
+
+.widget-stats.bg-purple {
+  background: #727cb6 !important;
+}
+
+.widget-stats.bg-black {
+  background: #2d353c !important;
+}
+
+.widget-stats .stats-icon {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  font-size: 42px;
+  opacity: 0.25;
+}
+
+.widget-stats .stats-info h4 {
+  font-size: 12px;
+  margin: 0 0 5px 0;
+  color: rgba(255, 255, 255, 0.75);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.widget-stats .stats-info p {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* DataTables Styling */
+.table-custom {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  font-size: 13px;
+}
+
+.table-custom th {
+  background: #f8f9fa;
+  color: #242a30;
+  font-weight: 600;
+  border-bottom: 2px solid #dee2e6;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.table-custom td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e9ecef;
+  color: #495057;
+  vertical-align: middle;
+}
+
+.table-custom tbody tr:hover {
+  background-color: #f1f3f5;
+}
+
+/* Standard Bootstrap Action Buttons */
+.btn-ca {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 3px;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+.btn-ca-primary {
+  background: #348fe2;
+  color: #ffffff;
+  border: 1px solid #348fe2;
+}
+.btn-ca-primary:hover {
+  background: #2772b8;
+}
+
+.btn-ca-success {
+  background: #00acac;
+  color: #ffffff;
+  border: 1px solid #00acac;
+}
+.btn-ca-success:hover {
+  background: #008a8a;
+}
+
+.btn-ca-warning {
+  background: #f59c1a;
+  color: #ffffff;
+  border: 1px solid #f59c1a;
+}
+.btn-ca-warning:hover {
+  background: #c87a0c;
+}
+
+.btn-ca-danger {
+  background: #ff5b57;
+  color: #ffffff;
+  border: 1px solid #ff5b57;
+}
+.btn-ca-danger:hover {
+  background: #cc403d;
+}
+
+.btn-ca-default {
+  background: #f2f3f4;
+  color: #333333;
+  border: 1px solid #ccd0d4;
+}
+.btn-ca-default:hover {
+  background: #e2e4e6;
+}
+
+.form-control-ca {
+  background: #ffffff;
+  border: 1px solid #dcdfe2;
+  border-radius: 3px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: #333333;
+  width: 100%;
+}
+.form-control-ca:focus {
+  border-color: #348fe2;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(52, 143, 226, 0.2);
 }

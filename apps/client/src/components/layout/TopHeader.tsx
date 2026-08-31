@@ -1,118 +1,105 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { usePlcStore } from '../../stores/usePlcStore.js';
-import { Activity, ShieldAlert, Cpu, AlertTriangle, ShieldCheck, Clock } from 'lucide-react';
+import {
+  Bell,
+  Search,
+  User,
+  Activity,
+  Cpu,
+} from 'lucide-react';
 
 export const TopHeader: React.FC = () => {
-  const { isConnected, isSimulator, mode, setMode, eStopOk, activeAlarms, hydraulicPressureBar } = usePlcStore();
-  const [timeStr, setTimeStr] = useState<string>('');
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setTimeStr(now.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const { isConnected, isSimulator, activeAlarms, hydraulicPressureBar, feedPositionMm, mode, setMode } = usePlcStore();
 
   return (
-    <header className="h-18 bg-scada-900/90 border-b border-scada-750/80 px-6 py-3 flex items-center justify-between select-none backdrop-blur-xl relative z-20 shadow-2xl">
-      {/* Brand & Machine Title with Metallic Badge */}
-      <div className="flex items-center gap-4">
-        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-400 via-cyan-600 to-blue-700 flex items-center justify-center font-black text-slate-950 text-xl tracking-tighter shadow-neon-cyan border border-cyan-300/40">
-          6H
+    <header className="app-header flex items-center justify-between px-4 select-none z-30 relative shadow-sm">
+      {/* Brand Logo & Title */}
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded bg-cyan-600 flex items-center justify-center font-bold text-white text-sm">
+          HPT
         </div>
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-sm font-black tracking-widest text-slate-100 uppercase">
-              INNOVANCE CNC ANGLE LINE
-            </h1>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950/90 text-neon-cyan border border-cyan-500/40 font-mono font-bold tracking-wider shadow-sm">
-              SERIES 6-HEAD
-            </span>
-          </div>
-          <p className="text-[11px] text-slate-400 font-mono tracking-tight flex items-center gap-2">
-            <span>STATION: #01</span>
-            <span>•</span>
-            <span className="text-slate-300">SKIPPER PUNCH & SHEAR HMI</span>
-          </p>
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-sm text-slate-800 tracking-tight">
+            HPT Innovance Angle Punching
+          </span>
+          <span className="text-[10px] bg-slate-200 text-slate-700 font-semibold px-2 py-0.5 rounded">
+            v1.0
+          </span>
         </div>
       </div>
 
-      {/* Center: Hardware Segmented Mode Rocker Selector */}
-      <div className="flex items-center bg-scada-950/90 p-1.5 rounded-xl border border-scada-750/90 shadow-inner-dark">
-        {(['MANUAL', 'SEMI_AUTO', 'AUTO'] as const).map((m) => {
-          const isActive = mode === m;
-          return (
+      {/* Center Live DRO and Mode Controls */}
+      <div className="flex items-center gap-4 text-xs font-sans">
+        {/* Machine Mode Switcher */}
+        <div className="flex items-center bg-slate-100 p-1 rounded border border-slate-300">
+          {(['MANUAL', 'SEMI_AUTO', 'AUTO'] as const).map((m) => (
             <button
               key={m}
               onClick={() => setMode(m)}
-              className={`px-5 py-2 text-xs font-mono font-extrabold rounded-lg transition-all duration-200 flex items-center gap-2 relative ${
-                isActive
+              className={`px-3 py-1 font-bold text-xs rounded transition-all ${
+                mode === m
                   ? m === 'AUTO'
-                    ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-slate-950 shadow-neon-emerald border border-emerald-300/50'
-                    : 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-neon-cyan border border-cyan-300/50'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-scada-850/60'
+                    ? 'bg-teal-600 text-white shadow-sm'
+                    : 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span className={isActive ? (m === 'AUTO' ? 'led-emerald' : 'led-cyan') : 'w-2 h-2 rounded-full bg-slate-700'} />
-              <span>{m.replace('_', ' ')}</span>
+              {m.replace('_', ' ')}
             </button>
-          );
-        })}
+          ))}
+        </div>
+
+        {/* Live DRO Feed Position */}
+        <div className="flex items-center gap-2 bg-slate-800 text-white px-3 py-1 rounded font-mono text-xs shadow-inner">
+          <span className="text-slate-400">FEED (X):</span>
+          <span className="text-cyan-400 font-bold text-sm">{feedPositionMm.toFixed(2)} mm</span>
+        </div>
+
+        {/* Hydraulic Pressure */}
+        <div className="flex items-center gap-2 bg-slate-100 px-3 py-1 rounded border border-slate-300 text-xs">
+          <Activity className="w-3.5 h-3.5 text-amber-600" />
+          <span className="text-slate-500 font-semibold">HPU:</span>
+          <span className="font-bold text-slate-800">{hydraulicPressureBar.toFixed(1)} bar</span>
+        </div>
       </div>
 
-      {/* Right: Live Telemetry HUD & Safety Interlocks */}
-      <div className="flex items-center gap-3.5 text-xs font-mono">
-        {/* Hydraulic Pressure Widget */}
-        <div className="flex items-center gap-2.5 bg-scada-950/90 px-3.5 py-2 rounded-xl border border-scada-750/80 shadow-inner-dark">
-          <Activity className="w-4 h-4 text-neon-amber animate-pulse" />
-          <div>
-            <div className="text-[9px] text-slate-400 font-bold tracking-wider">HPU PRESSURE</div>
-            <div className="text-neon-amber font-extrabold text-xs">
-              {hydraulicPressureBar.toFixed(1)} <span className="text-[10px] text-slate-400 font-normal">BAR</span>
-            </div>
+      {/* Right User & System Status Area */}
+      <div className="flex items-center gap-4 text-xs">
+        {/* Search */}
+        <div className="hidden md:flex items-center bg-slate-100 px-2.5 py-1 rounded border border-slate-300">
+          <Search className="w-3.5 h-3.5 text-slate-400 mr-2" />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="bg-transparent border-none text-xs text-slate-800 placeholder-slate-400 focus:outline-none w-28"
+          />
+        </div>
+
+        {/* PLC Status Indicator */}
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-100 border border-slate-300">
+          <Cpu className="w-3.5 h-3.5 text-slate-600" />
+          <span className="font-bold text-slate-700">
+            {isConnected ? (isSimulator ? 'SIMULATOR' : 'OPC-UA LIVE') : 'OFFLINE'}
+          </span>
+          <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+        </div>
+
+        {/* Alarms Bell */}
+        <div className="relative cursor-pointer p-1">
+          <Bell className="w-4 h-4 text-slate-600 hover:text-slate-900" />
+          {activeAlarms.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              {activeAlarms.length}
+            </span>
+          )}
+        </div>
+
+        {/* User Profile */}
+        <div className="flex items-center gap-2 pl-2 border-l border-slate-300 cursor-pointer">
+          <div className="w-7 h-7 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold text-xs">
+            <User className="w-4 h-4" />
           </div>
-        </div>
-
-        {/* E-Stop Safety Status */}
-        <div
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border font-bold transition-all ${
-            eStopOk
-              ? 'bg-emerald-950/50 border-emerald-500/40 text-neon-emerald shadow-sm'
-              : 'bg-rose-950/80 border-rose-500 text-rose-300 animate-pulse-fast shadow-neon-rose'
-          }`}
-        >
-          {eStopOk ? <ShieldCheck className="w-4 h-4 text-neon-emerald" /> : <ShieldAlert className="w-4 h-4 text-neon-rose" />}
-          <span>{eStopOk ? 'E-STOP OK' : 'E-STOP TRIPPED'}</span>
-        </div>
-
-        {/* PLC Gateway Watchdog */}
-        <div
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border ${
-            isConnected
-              ? 'bg-scada-950/80 border-scada-700 text-neon-cyan'
-              : 'bg-amber-950/60 border-amber-500/60 text-amber-300'
-          }`}
-        >
-          <Cpu className="w-4 h-4" />
-          <span className="font-bold">{isConnected ? (isSimulator ? 'VIRTUAL PLC' : 'PLC ONLINE') : 'OFFLINE'}</span>
-          <span className={isConnected ? 'led-cyan' : 'led-amber'} />
-        </div>
-
-        {/* Live Alarms Badge */}
-        {activeAlarms.length > 0 && (
-          <div className="flex items-center gap-2 bg-rose-950/90 text-rose-200 px-3.5 py-2 rounded-xl border border-rose-500/80 shadow-neon-rose animate-bounce">
-            <AlertTriangle className="w-4 h-4 text-neon-rose" />
-            <span className="font-black">{activeAlarms.length} ALARM</span>
-          </div>
-        )}
-
-        {/* Digital Clock */}
-        <div className="flex items-center gap-2 bg-scada-950/90 px-3.5 py-2 rounded-xl border border-scada-750/80 text-slate-300 font-extrabold shadow-inner-dark">
-          <Clock className="w-3.5 h-3.5 text-cyan-400" />
-          <span>{timeStr}</span>
+          <span className="font-semibold text-slate-700 hidden sm:inline">Admin User</span>
         </div>
       </div>
     </header>
