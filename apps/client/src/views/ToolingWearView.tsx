@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Wrench,
   RotateCcw,
@@ -19,19 +19,39 @@ interface ToolStation {
   lastRegrindDate: string;
 }
 
+const STORAGE_KEY = 'hpt_tooling_wear_master';
+
+const INITIAL_STATIONS: ToolStation[] = [
+  { id: '1', headName: 'DA1', stationType: 'PUNCH_A', flangeSide: 'A', toolSize: 18, toolShape: 'ROUND', currentStrokes: 0, maxStrokesLife: 25000, lastRegrindDate: new Date().toISOString().split('T')[0] },
+  { id: '2', headName: 'DA2', stationType: 'PUNCH_A', flangeSide: 'A', toolSize: 22, toolShape: 'ROUND', currentStrokes: 0, maxStrokesLife: 25000, lastRegrindDate: new Date().toISOString().split('T')[0] },
+  { id: '3', headName: 'DA3', stationType: 'PUNCH_A', flangeSide: 'A', toolSize: 14, toolShape: 'ROUND', currentStrokes: 0, maxStrokesLife: 25000, lastRegrindDate: new Date().toISOString().split('T')[0] },
+  { id: '4', headName: 'DB1', stationType: 'PUNCH_B', flangeSide: 'B', toolSize: 18, toolShape: 'ROUND', currentStrokes: 0, maxStrokesLife: 25000, lastRegrindDate: new Date().toISOString().split('T')[0] },
+  { id: '5', headName: 'DB2', stationType: 'PUNCH_B', flangeSide: 'B', toolSize: 22, toolShape: 'ROUND', currentStrokes: 0, maxStrokesLife: 25000, lastRegrindDate: new Date().toISOString().split('T')[0] },
+  { id: '6', headName: 'DB3', stationType: 'PUNCH_B', flangeSide: 'B', toolSize: 26, toolShape: 'OBLONG', currentStrokes: 0, maxStrokesLife: 20000, lastRegrindDate: new Date().toISOString().split('T')[0] },
+  { id: '7', headName: 'Marking', stationType: 'MARKING', flangeSide: 'A', toolSize: 0, toolShape: 'STAMP CASSETTE', currentStrokes: 0, maxStrokesLife: 100000, lastRegrindDate: new Date().toISOString().split('T')[0] },
+  { id: '8', headName: 'Cutter', stationType: 'CUTTER', flangeSide: 'NA', toolSize: 0, toolShape: 'SHEAR BLADE', currentStrokes: 0, maxStrokesLife: 40000, lastRegrindDate: new Date().toISOString().split('T')[0] },
+];
+
 export const ToolingWearView: React.FC = () => {
-  const [stations, setStations] = useState<ToolStation[]>([
-    { id: '1', headName: 'DA1', stationType: 'PUNCH_A', flangeSide: 'A', toolSize: 18, toolShape: 'ROUND', currentStrokes: 8420, maxStrokesLife: 25000, lastRegrindDate: '2026-08-15' },
-    { id: '2', headName: 'DA2', stationType: 'PUNCH_A', flangeSide: 'A', toolSize: 22, toolShape: 'ROUND', currentStrokes: 21850, maxStrokesLife: 25000, lastRegrindDate: '2026-07-10' },
-    { id: '3', headName: 'DA3', stationType: 'PUNCH_A', flangeSide: 'A', toolSize: 14, toolShape: 'ROUND', currentStrokes: 3200, maxStrokesLife: 25000, lastRegrindDate: '2026-08-20' },
-    { id: '4', headName: 'DB1', stationType: 'PUNCH_B', flangeSide: 'B', toolSize: 18, toolShape: 'ROUND', currentStrokes: 9140, maxStrokesLife: 25000, lastRegrindDate: '2026-08-15' },
-    { id: '5', headName: 'DB2', stationType: 'PUNCH_B', flangeSide: 'B', toolSize: 22, toolShape: 'ROUND', currentStrokes: 14300, maxStrokesLife: 25000, lastRegrindDate: '2026-08-01' },
-    { id: '6', headName: 'DB3', stationType: 'PUNCH_B', flangeSide: 'B', toolSize: 26, toolShape: 'OBLONG', currentStrokes: 1800, maxStrokesLife: 20000, lastRegrindDate: '2026-08-25' },
-    { id: '7', headName: 'Marking', stationType: 'MARKING', flangeSide: 'A', toolSize: 0, toolShape: 'STAMP CASSETTE', currentStrokes: 42300, maxStrokesLife: 100000, lastRegrindDate: '2026-06-01' },
-    { id: '8', headName: 'Cutter', stationType: 'CUTTER', flangeSide: 'NA', toolSize: 0, toolShape: 'SHEAR BLADE', currentStrokes: 34100, maxStrokesLife: 40000, lastRegrindDate: '2026-07-20' },
-  ]);
+  const [stations, setStations] = useState<ToolStation[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn('Failed to parse tooling wear from storage', e);
+    }
+    return INITIAL_STATIONS;
+  });
 
   const [resetSuccess, setResetSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stations));
+    } catch (e) {
+      console.error('Failed to persist tooling wear', e);
+    }
+  }, [stations]);
 
   const handleResetCounter = (id: string, headName: string) => {
     if (!window.confirm(`Are you sure you want to reset the stroke counter for ${headName} after tool replacement/regrind?`)) return;
@@ -42,6 +62,12 @@ export const ToolingWearView: React.FC = () => {
     setTimeout(() => setResetSuccess(null), 3000);
   };
 
+  const handleUpdateToolSize = (id: string, newSize: number) => {
+    setStations((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, toolSize: newSize } : s))
+    );
+  };
+
   const totalHits = stations.reduce((acc, s) => acc + s.currentStrokes, 0);
 
   return (
@@ -49,7 +75,7 @@ export const ToolingWearView: React.FC = () => {
       {/* Top Header */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-300">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Tooling Life & Stroke Wear Monitor (Peddinghaus/Voortman Standard)</h2>
+          <h2 className="text-lg font-bold text-slate-800">Tooling Life & Stroke Wear Monitor (HPT Standard)</h2>
           <p className="text-xs text-slate-500">
             Real-time punch die stroke tracking, regrind maintenance thresholds, and blade life wear analytics.
           </p>
@@ -72,7 +98,7 @@ export const ToolingWearView: React.FC = () => {
       {/* Grid of Tooling Stations */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stations.map((st) => {
-          const wearPct = Math.min(100, Math.round((st.currentStrokes / st.maxStrokesLife) * 100));
+          const wearPct = st.maxStrokesLife > 0 ? Math.min(100, Math.round((st.currentStrokes / st.maxStrokesLife) * 100)) : 0;
           const isCritical = wearPct >= 85;
           const isWarning = wearPct >= 65 && wearPct < 85;
 
@@ -105,65 +131,69 @@ export const ToolingWearView: React.FC = () => {
                   <span
                     className={`px-2 py-0.5 rounded text-[10px] font-black ${
                       isCritical
-                        ? 'bg-red-600 text-white animate-pulse'
+                        ? 'bg-red-600 text-white'
                         : isWarning
-                        ? 'bg-amber-500 text-white'
-                        : 'bg-emerald-600 text-white'
+                        ? 'bg-amber-500 text-slate-900'
+                        : 'bg-emerald-100 text-emerald-800'
                     }`}
                   >
                     {isCritical ? 'REGRIND DUE' : isWarning ? 'WEAR WARNING' : 'HEALTHY'}
                   </span>
                 </div>
 
-                {/* Specs */}
-                <div className="bg-white p-2.5 rounded border border-slate-200 space-y-1 text-xs my-3">
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Installed Die:</span>
-                    <span className="font-bold text-slate-800">{st.toolSize > 0 ? `Ø${st.toolSize} mm` : st.toolShape}</span>
+                {/* Tool Specs */}
+                <div className="space-y-1 my-3 bg-slate-50 p-2.5 rounded border border-slate-200 text-xs">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">Installed Die Size:</span>
+                    {st.toolSize > 0 ? (
+                      <div className="flex items-center gap-1">
+                        <span className="text-slate-400">Ø</span>
+                        <input
+                          type="number"
+                          value={st.toolSize}
+                          onChange={(e) => handleUpdateToolSize(st.id, parseFloat(e.target.value) || 0)}
+                          className="form-control-ca w-16 py-0.5 text-xs text-right font-bold"
+                        />
+                        <span className="text-slate-500">mm</span>
+                      </div>
+                    ) : (
+                      <span className="font-bold text-slate-700">{st.toolShape}</span>
+                    )}
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Profile:</span>
-                    <span className="font-semibold text-slate-700">{st.toolShape}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Last Service:</span>
-                    <span className="font-mono text-slate-600">{st.lastRegrindDate}</span>
+                    <span className="text-slate-500">Last Service / Regrind:</span>
+                    <span className="font-mono text-slate-700">{st.lastRegrindDate}</span>
                   </div>
                 </div>
 
-                {/* Wear Progress Bar */}
-                <div className="space-y-1.5 my-2">
+                {/* Stroke Progress Bar */}
+                <div className="space-y-1">
                   <div className="flex justify-between text-xs font-bold">
-                    <span className="text-slate-600">Stroke Wear</span>
-                    <span className={isCritical ? 'text-red-700' : isWarning ? 'text-amber-700' : 'text-emerald-700'}>
+                    <span className="text-slate-600">Stroke Wear Progress</span>
+                    <span className={isCritical ? 'text-red-600' : isWarning ? 'text-amber-600' : 'text-slate-800'}>
                       {wearPct}% ({st.currentStrokes.toLocaleString()} / {st.maxStrokesLife.toLocaleString()})
                     </span>
                   </div>
-                  <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden border border-slate-300">
+                  <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
                     <div
                       style={{ width: `${wearPct}%` }}
-                      className={`h-full transition-all duration-500 ${
-                        isCritical
-                          ? 'bg-red-600'
-                          : isWarning
-                          ? 'bg-amber-500'
-                          : 'bg-emerald-500'
+                      className={`h-full transition-all ${
+                        isCritical ? 'bg-red-600' : isWarning ? 'bg-amber-500' : 'bg-blue-600'
                       }`}
                     />
-                  </div>
-                  <div className="text-[10px] text-slate-500 text-right">
-                    Remaining: {(st.maxStrokesLife - st.currentStrokes).toLocaleString()} strokes
                   </div>
                 </div>
               </div>
 
-              {/* Reset Button */}
-              <button
-                onClick={() => handleResetCounter(st.id, st.headName)}
-                className="btn-ca btn-ca-default w-full text-xs py-1.5 justify-center mt-2 border-slate-300 hover:bg-slate-100"
-              >
-                <RotateCcw className="w-3.5 h-3.5" /> Reset Counter After Regrind
-              </button>
+              {/* Action Button */}
+              <div className="pt-4 mt-3 border-t border-slate-200 flex justify-end">
+                <button
+                  onClick={() => handleResetCounter(st.id, st.headName)}
+                  className="btn-ca btn-ca-default text-xs py-1 px-2.5 flex items-center gap-1.5"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" /> Reset Counter After Regrind
+                </button>
+              </div>
             </div>
           );
         })}

@@ -19,28 +19,6 @@ interface AngleBarVisualizerProps {
   onSelectStep?: (stepIndex: number) => void;
 }
 
-const DEFAULT_DEMO_RECIPE: ItemRecipe = {
-  id: 'demo-recipe',
-  itemCode: 'L75x75x6 - 1500mm',
-  itemName: 'Transmission Tower Standard Angle',
-  totalLength: 1500.0,
-  angleWidthA: 75.0,
-  angleWidthB: 75.0,
-  thickness: 6.0,
-  measurementType: 'ABSOLUTE',
-  isActive: true,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  steps: [
-    { id: 's1', stepNumber: 1, operationType: 'PUNCH', side: 'A', xPosition: 120.0, yPosition: 35.0, toolSize: 18.0, isCutOff: false },
-    { id: 's2', stepNumber: 2, operationType: 'PUNCH', side: 'A', xPosition: 350.0, yPosition: 35.0, toolSize: 18.0, isCutOff: false },
-    { id: 's3', stepNumber: 3, operationType: 'MARK', side: 'A', xPosition: 500.0, yPosition: 35.0, markingText: 'T1-L15', isCutOff: false },
-    { id: 's4', stepNumber: 4, operationType: 'PUNCH', side: 'B', xPosition: 200.0, yPosition: 35.0, toolSize: 18.0, isCutOff: false },
-    { id: 's5', stepNumber: 5, operationType: 'PUNCH', side: 'B', xPosition: 450.0, yPosition: 35.0, toolSize: 18.0, isCutOff: false },
-    { id: 's6', stepNumber: 6, operationType: 'CUT', side: 'NA', xPosition: 1500.0, yPosition: 0, isCutOff: true },
-  ],
-};
-
 export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
   recipe,
   activeFeedPosition = 0,
@@ -49,8 +27,6 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-
-  const activeRecipe = recipe && recipe.steps && recipe.steps.length > 0 ? recipe : DEFAULT_DEMO_RECIPE;
 
   // Viewport transformations
   const [zoom, setZoom] = useState<number>(1.0);
@@ -61,9 +37,10 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
   const [hoveredStep, setHoveredStep] = useState<any | null>(null);
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
 
-  const lengthMm = activeRecipe.totalLength || 1500;
-  const widthA = activeRecipe.angleWidthA || 75;
-  const widthB = activeRecipe.angleWidthB || 75;
+  const hasValidRecipe = Boolean(recipe && recipe.steps && recipe.steps.length > 0);
+  const lengthMm = recipe?.totalLength || 1500;
+  const widthA = recipe?.angleWidthA || 75;
+  const widthB = recipe?.angleWidthB || 75;
 
   const handleReset = () => {
     setZoom(1.0);
@@ -75,7 +52,6 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
   const handleFit = useCallback(() => {
     if (!containerRef.current) return;
     const width = containerRef.current.clientWidth;
-    // Leave 200px margin for datum text and left axis
     const targetScale = (width - 220) / lengthMm;
     setZoom(Math.max(0.12, Math.min(2.5, targetScale)));
     setPanX(50);
@@ -121,10 +97,22 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     }
     ctx.stroke();
 
-    // 3. Geometry Setup with comfortable visual flange heights
+    // If no recipe is loaded, render clear industrial standby screen
+    if (!hasValidRecipe) {
+      ctx.fillStyle = '#64748b';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('STANDBY: NO PRODUCTION RECIPE LOADED', w / 2, h / 2 - 10);
+      ctx.font = '11px sans-serif';
+      ctx.fillStyle = '#475569';
+      ctx.fillText('Select a recipe from Item Recipe Master or Import Tekla DSTV (.nc1) file to start', w / 2, h / 2 + 15);
+      ctx.textAlign = 'left';
+      return;
+    }
+
+    // 3. Geometry Setup
     const centerY = h / 2 + panY - 8;
     const scaleX = zoom;
-    // Visual flange height
     const flangeVisualHeight = Math.max(50, Math.min(80, 65 * Math.max(0.85, zoom)));
     const scaleY = flangeVisualHeight / widthA;
 
@@ -138,14 +126,12 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     const bottomFlangeY = centerY + bottomFlangeHeight;
 
     // 4. Render Steel Angle Bar Flanges (Metallic Gradient)
-    // Top Flange
     const topGradient = ctx.createLinearGradient(0, topFlangeY, 0, centerY);
     topGradient.addColorStop(0, '#1c2836');
     topGradient.addColorStop(1, '#27384c');
     ctx.fillStyle = topGradient;
     ctx.fillRect(startX, topFlangeY, barPixelLength, topFlangeHeight);
 
-    // Bottom Flange
     const bottomGradient = ctx.createLinearGradient(0, centerY, 0, bottomFlangeY);
     bottomGradient.addColorStop(0, '#27384c');
     bottomGradient.addColorStop(1, '#1c2836');
@@ -167,12 +153,12 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Datum Label with plenty of room
+    // Datum Label
     ctx.font = 'bold 9px monospace';
     ctx.fillStyle = '#f59e0b';
     ctx.fillText('◄ BEND HEEL DATUM', startX + barPixelLength + 10, centerY + 3);
 
-    // 6. Dimension Annotations with guaranteed clearance
+    // 6. Dimension Annotations
     if (showDimensions) {
       ctx.font = 'bold 11px sans-serif';
       ctx.fillStyle = '#7dd3fc';
@@ -195,13 +181,10 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
         ctx.strokeStyle = '#94a3b8';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        // Left tick
         ctx.moveTo(startX, dimY - 5);
         ctx.lineTo(startX, dimY + 5);
-        // Right tick
         ctx.moveTo(startX + barPixelLength, dimY - 5);
         ctx.lineTo(startX + barPixelLength, dimY + 5);
-        // Horizontal line
         ctx.moveTo(startX, dimY);
         ctx.lineTo(startX + barPixelLength, dimY);
         ctx.stroke();
@@ -215,8 +198,8 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     }
 
     // 7. Render Punch Holes, Markings, and Cut Lines
-    if (activeRecipe.steps) {
-      activeRecipe.steps.forEach((step, idx) => {
+    if (recipe && recipe.steps) {
+      recipe.steps.forEach((step, idx) => {
         const isHighlight = highlightStepIndex === idx;
         const opX = startX + step.xPosition * scaleX;
 
@@ -232,7 +215,6 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
         }
 
         if (step.operationType === 'CUT' || step.isCutOff) {
-          // Hydraulic Shear Cut Line
           ctx.strokeStyle = '#ff3366';
           ctx.lineWidth = isHighlight ? 4 : 2.5;
           ctx.beginPath();
@@ -244,7 +226,6 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
           ctx.font = 'bold 10px monospace';
           ctx.fillText('SHEAR CUT', opX - 28, topFlangeY - 10);
         } else if (step.operationType === 'MARK') {
-          // Marking Stamp
           const boxW = 50;
           const boxH = 18;
           ctx.fillStyle = isHighlight ? '#fbbf24' : '#f59e0b';
@@ -259,10 +240,8 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
           ctx.fillText(step.markingText || 'T1-L15', opX, opY + 3.5);
           ctx.textAlign = 'left';
         } else {
-          // Punch Hole Die
           const radius = Math.max(7, Math.min(15, ((step.toolSize || 18) / 2) * scaleY * 1.25));
 
-          // Outer Glow / Ring
           ctx.fillStyle = step.side === 'A' ? '#00e5ff' : '#00e676';
           ctx.strokeStyle = isHighlight ? '#ffffff' : '#0f172a';
           ctx.lineWidth = isHighlight ? 3 : 2;
@@ -290,7 +269,7 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
       });
     }
 
-    // 8. Live Animated Carriage Feed Laser Line
+    // 8. Live Real-time Feed Laser Position from PLC
     if (activeFeedPosition >= 0) {
       const laserX = startX + activeFeedPosition * scaleX;
       ctx.strokeStyle = '#00ffcc';
@@ -303,7 +282,6 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
       ctx.stroke();
       ctx.shadowBlur = 0;
 
-      // Laser Tag Badge placed above without covering text
       ctx.fillStyle = '#00ffcc';
       ctx.fillRect(laserX - 32, 6, 64, 18);
       ctx.fillStyle = '#0a0e14';
@@ -312,12 +290,12 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
       ctx.fillText(`X: ${activeFeedPosition.toFixed(1)}mm`, laserX, 19);
       ctx.textAlign = 'left';
     }
-  }, [activeRecipe, activeFeedPosition, highlightStepIndex, zoom, panX, panY, isFlipped, showDimensions, widthA, widthB, lengthMm]);
+  }, [recipe, hasValidRecipe, activeFeedPosition, highlightStepIndex, zoom, panX, panY, isFlipped, showDimensions, widthA, widthB, lengthMm]);
 
   // Mouse Move Tooltip
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas || !activeRecipe.steps) return;
+    if (!canvas || !recipe || !recipe.steps) return;
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
@@ -329,7 +307,7 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     const scaleY = flangeVisualHeight / widthA;
     const startX = panX;
 
-    const foundIndex = activeRecipe.steps.findIndex((step) => {
+    const foundIndex = recipe.steps.findIndex((step) => {
       const opX = startX + step.xPosition * scaleX;
       let opY = centerY;
       if (step.side === 'A') {
@@ -342,7 +320,7 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     });
 
     if (foundIndex >= 0) {
-      setHoveredStep(activeRecipe.steps[foundIndex]);
+      setHoveredStep(recipe.steps[foundIndex]);
       if (onSelectStep) onSelectStep(foundIndex);
     } else {
       setHoveredStep(null);
@@ -397,7 +375,7 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
         </div>
       </div>
 
-      {/* 2. Canvas with generous height */}
+      {/* 2. Canvas */}
       <canvas
         ref={canvasRef}
         onMouseMove={handleMouseMove}
