@@ -129,7 +129,7 @@ class Home extends BaseController
 
         $emailService = new \App\Libraries\EmailService();
 
-        $to = 'mindstien@gmail.com';
+        $to = 'admin@example.com';
         $subject = 'Test Email via AWS SES';
         $message = '<p>This is a test email sent using AWS SES via CodeIgniter 4.</p>';
         $attachments = [

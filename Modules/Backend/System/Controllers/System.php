@@ -856,7 +856,7 @@ class System extends ApiBaseController
         } elseif ($projectName === 'vimox') {
             $data = [
                 'status' => true,
-                'apiUrl' => 'https://vimox2.mindstien.com/',
+                'apiUrl' => 'https://vimox.devapp.co.in/',
             ];
         } elseif ($projectName === 'envitro') {
             $data = [

@@ -168,7 +168,7 @@ class Tools extends BaseController
         $emailData = [
             'subject'    => "Welcome To Leadman",
             'body'       => $emailBody,
-            'recipientEmail'         => "mindstien@gmail.com",
+            'recipientEmail'         => "admin@example.com",
             'attempts'   => 0,  // Initially setting attempts to 0
             'isSent'     => 0,  // Initially setting isSent to 0
             'remarks'    => "",
