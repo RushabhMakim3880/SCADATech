@@ -1,68 +1,184 @@
-# CodeIgniter 4 Application Starter
+# HPT Innovance 6-Head CNC Angle Punching, Marking & Shearing SCADA System
 
-## What is CodeIgniter?
+> **Client:** Hydro Power Tech Engineering (HPT) — Ravki Industrial Area, Rajkot, Gujarat  
+> **Application:** Heavy Industrial SCADA & Touchscreen Kiosk HMI for CNC Transmission Tower Angle Steel Processing Lines (HPT-HA Series: HA-122, HA-163, HA-203, HA-253)
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+---
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+## 📋 System Overview
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+The **HPT Innovance SCADA System** is an enterprise-grade, touchscreen-optimized industrial control and telemetry platform. It is engineered specifically for automated 6-head CNC angle punching, character stamping, and single-cut hydraulic shearing lines powered by **Innovance H3U / H5U PLCs** and **IS620N / IS810N Servo Systems**.
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+It replaces legacy desktop software with a modern, high-speed, 20Hz reactive TypeScript & React architecture matching global structural steel benchmarks (**Ficep Polaris & Steel Projects**, **Voortman VACAM**, and **Peddinghaus Raptor**).
 
-## Installation & updates
+```mermaid
+graph TD
+    subgraph Shopfloor Hardware [Hydro Power Tech Machine Hardware]
+        PLC["Innovance H3U / H5U PLC (EtherCAT / Modbus TCP)"]
+        SERVO["Carriage Feed Servo (Princher X Axis)"]
+        HPU["Main Hydraulic Power Unit (145 bar)"]
+        HEADS["6x Punch Cylinders (DA1-DA3, DB1-DB3)"]
+        MARK["Hydraulic Stamping Cassette"]
+        SHEAR["Hydraulic Shear Unit"]
+    end
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+    subgraph Server Gateway [Node.js Fastify & WebSocket Server]
+        MODBUS["Modbus TCP / Serial PLC Driver"]
+        SIM["High-Fidelity Real-time PLC Simulator"]
+        TAGS["20Hz Reactive Tag Engine (UI & System Tags)"]
+        WS["Bidirectional WebSocket Gateway"]
+        DB["SQLite & JSON Recipe Persistence"]
+    end
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+    subgraph Client HMI [React 19 + TypeScript + Tailwind CSS]
+        PROD["Manage Production & 2D CAD Blueprint"]
+        NEST["Linear Multibar Nesting & Scrap Minimizer"]
+        RECIPE["Recipe Master & DSTV / NC1 CAD Importer"]
+        RULES["IS 802 / ASTM Tower Rule Validator"]
+        OEE["Shift Production & Metric Tonnage Analytics"]
+        IO["32-Channel PLC I/O Diagnostics Matrix"]
+        WEAR["Tooling Life & Stroke Wear Monitor"]
+    end
 
-## Setup
+    PLC <--> MODBUS
+    SIM <--> TAGS
+    MODBUS <--> TAGS
+    TAGS <--> WS
+    WS <--> Client HMI
+    DB <--> Server Gateway
+```
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+---
 
-## Important Change with index.php
+## ✨ Core Key Features
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+### 1. 📐 2D Angle Bar Visual Blueprint & Carriage Laser Track
+* Unfolded 2D orthographic steel CAD visualizer displaying Flange A (top) and Flange B (bottom) along the central **Bend Heel Datum Line**.
+* Vivid color-coded tooling stations:
+  * 🔵 **Flange A Punch Dies (DA1–DA3)**: Glowing Cyan rings ($\varnothing 14 - \varnothing 32\text{mm}$) with center crosshairs.
+  * 🟢 **Flange B Punch Dies (DB1–DB3)**: Glowing Emerald Green rings.
+  * 🟡 **Marking Stamp Cassette**: Amber identification tag box.
+  * 🔴 **Hydraulic Cutter**: Solid neon red shear cut line.
+* Proportional flange scaling and real-time carriage laser feed line (`X: 0.00 mm`).
+* Full CAD toolbar: *Pan, Zoom In/Out, Fit Viewport, Flip Flanges A/B, and Dimension Toggles*.
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+### 2. 📁 Tekla DSTV / NC1 CAD File Importer
+* Drag-and-drop parser for standard **Tekla Structures, SDS/2, and Bocad `.nc1` structural steel files**.
+* Automatically parses `ST` (Header), `BO` (Holes), `SI` (Stamp text), and `IK` (Cut blocks), converting them into an active recipe with 1-click.
 
-**Please** read the user guide for a better explanation of how CI4 works!
+### 3. 🛡️ Transmission Tower Design Rule Checker (IS 802 / ASTM A394)
+* Automated engineering rule verification preventing bolt tear-out under high electrical line tension:
+  * **Min Edge Distance**: $e_{min} \ge 1.5 \times \text{die diameter}$ from angle toe tip.
+  * **Min Heel Gauge**: $g_{min} \ge 1.5 \times \text{die diameter} + \text{thickness}$ from bend heel fold.
+  * **Min Pitch Spacing**: $p_{min} \ge 2.5 \times \text{die diameter}$ between consecutive holes.
+* Configurable rule multipliers for specific tower client specifications (KEC, Kalpataru, L&T).
 
-## Repository Management
+### 4. 🧩 Multibar Linear Nesting & Scrap Minimizer
+* Linear First-Fit Decreasing (FFD) multibar nesting algorithm.
+* Automatically packs batch work orders into standard commercial raw stock bars ($6\text{m}, 9\text{m}, 12\text{m}$) with **$<1.2\%$ remnant scrap**.
+* Configurable shear kerf blade loss and carriage gripper clamp dead-zones.
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+### 5. ⚡ PLC Hardware I/O Signal Diagnostics Matrix
+* Live visual status for **32 Digital Inputs ($X0–X37$)** and **32 Digital Outputs ($Y0–Y37$)** for Innovance H3U/H5U PLCs.
+* Instant visual LED feedback for limit switches, proximity sensors, hydraulic pressure switches, and solenoid valves.
+* **Field Force Mode**: Manual override triggers for field commissioning and maintenance without opening the electrical cabinet.
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+### 6. 📊 Shift Production & Metric Tonnage OEE Analytics
+* **Processed Metric Tonnage Calculator**: $\text{Tons} = \sum (\text{Length [m]} \times \text{Weight/m [kg]}) / 1000$.
+* Shift tracking (Shift A, Shift B, Shift C) with runtime vs idle vs fault downtime breakdown.
+* Full OEE Score (Availability $\times$ Performance $\times$ Quality).
+* 1-click **Export Shift Production CSV** and **Printable Report**.
 
-## Server Requirements
+### 7. ⚙️ Tooling Life & Stroke Wear Monitor
+* Stroke telemetry tracking for all 6 punch dies, marking cassette, and shear blade.
+* Visual wear progress bars with **Regrind Due Alerts** at $>85\%$ wear.
+* 1-click **Reset Counter after Regrind/Change**.
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+### 8. 📄 Workshop Production Job Card & Cutting Sheet
+* Generates formatted, printable shopfloor work orders with tower item details, material grade (IS 2062 E250 / E350), tooling die schedule, and sign-off blocks.
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+---
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
+## 🏗️ Monorepo Workspace Structure
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+```
+hptinnovanceanglepunchinghead6.test/
+├── apps/
+│   ├── client/                  # React 19 + Vite + Tailwind CSS + Lucide Icons
+│   │   ├── src/
+│   │   │   ├── components/      # UI components (Canvas CAD, DataTables, Keypads, Modals)
+│   │   │   ├── views/           # SCADA Views (LiveProduction, RecipeMaster, OEE, IO, etc.)
+│   │   │   ├── stores/          # Zustand Reactive PLC & Tag Stores
+│   │   │   └── services/        # WebSocket client & API drivers
+│   │   └── package.json
+│   ├── server/                  # Fastify + WebSocket Server + Modbus TCP & Simulator Engine
+│   │   ├── src/
+│   │   │   ├── plc/             # Innovance Modbus TCP driver & 20Hz Simulator
+│   │   │   ├── routes/          # REST API (Recipes, Production, Tags, Alarms, Logs)
+│   │   │   └── database/        # SQLite Persistence Engine
+│   │   └── package.json
+│   └── desktop/                 # Electron Kiosk Desktop Wrapper
+│       ├── src/                 # Main process, kiosk window manager, hardware serial bridge
+│       └── package.json
+├── packages/
+│   └── shared/                  # Shared TypeScript models, Tag interfaces, Recipe schemas
+├── docs/                        # Architecture guides & Operator manual
+└── package.json                 # Root monorepo workspace configuration
+```
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+---
+
+## 🚀 Quick Start Guide
+
+### Prerequisites
+* **Node.js**: v20.x or higher
+* **npm**: v10.x or higher
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/RushabhMakim3880/SCADATech.git
+cd SCADATech
+
+# Install all monorepo dependencies
+npm install
+```
+
+### Running in Development Mode
+To launch the complete SCADA suite (Client UI + WebSocket Server + Real-time PLC Simulator):
+```bash
+npm run dev
+```
+* **Client HMI**: [`http://localhost:3000`](http://localhost:3000)
+* **REST & WebSocket API**: [`http://localhost:5000`](http://localhost:5000)
+
+### Building for Production
+```bash
+npm run build
+```
+
+---
+
+## 🔌 PLC Communication Configuration
+
+To connect to a physical **Innovance H3U / H5U PLC**:
+1. Open `apps/server/src/config/plcConfig.json` (or configure via **PLC & Ui Tag Master** view in the UI).
+2. Set the connection parameters:
+   * **Protocol**: `Modbus TCP` (Default Port: `502`) or `EtherCAT / Serial RTU`
+   * **PLC IP Address**: `192.168.1.10`
+   * **Polling Scan Rate**: `50 ms` ($20\text{ Hz}$)
+   * **Carriage Feed Axis Address**: Register `D1000` (Double Word 32-bit Float)
+   * **Firing Solenoids**: Registers `M100 - M115`
+
+---
+
+## 📜 Compliance & Standards
+* **IS 802**: Indian Standard for Use of Structural Steel in Overhead Transmission Line Towers.
+* **IS 2062**: Hot Rolled Medium and High Tensile Structural Steel specifications.
+* **ASTM A394**: Standard Specification for Steel Transmission Tower Bolts and Shear Tolerances.
+
+---
+
+## 👥 Authors & Credits
+* **Developed for**: Hydro Power Tech Engineering (HPT), Rajkot, Gujarat
+* **Engineering & SCADA Development**: Mindstien Technologies / Rushabh Makim

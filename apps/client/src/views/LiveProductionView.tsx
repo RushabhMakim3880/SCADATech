@@ -14,6 +14,7 @@ import {
   Activity,
   StepForward,
   AlertOctagon,
+  ArrowRight,
 } from 'lucide-react';
 
 interface ProductionCycleEntity {
@@ -121,7 +122,7 @@ export const LiveProductionView: React.FC = () => {
             if (currentStepIdx + 1 < activeCycle.operations.length) {
               setCurrentStepIdx((idx) => idx + 1);
               if (autoStepMode) {
-                setIsRunning(false); // Stop for single step debug
+                setIsRunning(false);
               }
             } else {
               setIsRunning(false);
@@ -168,8 +169,8 @@ export const LiveProductionView: React.FC = () => {
   ) || recipes[0];
 
   const totalSteps = activeCycle?.operations.length || 1;
+  const stockBarLen = activeCycle?.stockBarLength || 6000;
 
-  // Multi-Axis DRO Table Matrix Data (from original autoControl.php)
   const axes = [
     { name: 'PRINCHER (X)', machinePos: feedPositionMm, workPos: feedPositionMm, speed: feedSpeedMPerMin },
     { name: 'FLANGE A (Y1)', machinePos: 35.0, workPos: 35.0, speed: 0.0 },
@@ -180,7 +181,7 @@ export const LiveProductionView: React.FC = () => {
 
   return (
     <div className="p-4 space-y-4 flex-1 overflow-y-auto">
-      {/* 1. Original 4 Color Admin KPI Stat Widgets */}
+      {/* 1. KPI Stat Widgets */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="widget-stats bg-blue">
           <div className="stats-icon"><Clock className="w-12 h-12" /></div>
@@ -231,10 +232,37 @@ export const LiveProductionView: React.FC = () => {
         </div>
       )}
 
-      {/* 2. Live 2D Angle Bar Blueprint Visualizer Panel */}
+      {/* Raw Stock Infeed Buffer Track */}
+      <div className="panel p-3">
+        <div className="flex items-center justify-between mb-1.5 text-xs font-bold text-slate-700">
+          <div className="flex items-center gap-2">
+            <ArrowRight className="w-4 h-4 text-blue-600 animate-pulse" />
+            <span>RAW STOCK INFEED TRACK & BUFFER MONITOR</span>
+          </div>
+          <div className="flex items-center gap-3 font-mono text-[11px]">
+            <span>Raw Bar: <b className="text-slate-900">{stockBarLen} mm</b></span>
+            <span>Feed Position: <b className="text-cyan-600">{feedPositionMm.toFixed(1)} mm</b></span>
+            <span>Remaining: <b className="text-emerald-700">{Math.max(0, stockBarLen - feedPositionMm).toFixed(1)} mm</b></span>
+          </div>
+        </div>
+
+        <div className="w-full h-5 bg-slate-800 rounded overflow-hidden relative border border-slate-700 p-0.5 flex items-center">
+          <div
+            style={{ width: `${Math.min(100, (feedPositionMm / stockBarLen) * 100)}%` }}
+            className="h-full bg-gradient-to-r from-blue-600 to-cyan-400 rounded transition-all duration-300 flex items-center justify-end pr-1 text-[9px] font-black text-slate-900"
+          >
+            {((feedPositionMm / stockBarLen) * 100).toFixed(0)}%
+          </div>
+          <div className="absolute right-3 text-[10px] font-bold text-slate-400 font-mono">
+            {stockBarLen} mm Total Stock Bar
+          </div>
+        </div>
+      </div>
+
+      {/* 2. 2D Angle Bar Blueprint Visualizer Panel */}
       <div className="panel">
         <div className="panel-heading">
-          <span>Manage Production • 2D Angle Bar Visualizer & Live Carriage Track</span>
+          <span>Manage Production • 2D Angle Bar Blueprint Visualizer & Live Carriage Track</span>
           <div className="flex items-center gap-2">
             <span className="digital-dro-val text-xs text-cyan-300">
               DRO: {feedPositionMm.toFixed(2)} mm
@@ -320,7 +348,7 @@ export const LiveProductionView: React.FC = () => {
 
       {/* 3. Multi-Axis DRO Matrix & Operations DataTable */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Multi-Axis DRO Matrix (from original autoControl.php) */}
+        {/* Multi-Axis DRO Matrix */}
         <div className="panel">
           <div className="panel-heading">
             <span>Position and Speed Matrix (DRO)</span>

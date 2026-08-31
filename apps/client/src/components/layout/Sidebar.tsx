@@ -8,13 +8,19 @@ import {
   Wrench,
   BarChart3,
   User,
+  Activity,
+  Cpu,
+  TrendingUp,
 } from 'lucide-react';
 
 export type ActiveTab =
   | 'PRODUCTION'
+  | 'OEE_ANALYTICS'
   | 'ALIGNMENT'
   | 'RECIPES'
   | 'MANUAL'
+  | 'IO_DIAGNOSTICS'
+  | 'TOOLING_WEAR'
   | 'MACHINE_SETUP'
   | 'TAGS'
   | 'ALARMS';
@@ -30,6 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
       header: 'MAIN NAVIGATION',
       items: [
         { id: 'PRODUCTION' as const, label: 'Manage Production', icon: BarChart3 },
+        { id: 'OEE_ANALYTICS' as const, label: 'Shift & OEE Telemetry', icon: TrendingUp },
         { id: 'ALIGNMENT' as const, label: 'Manage Program Align', icon: Layers },
         { id: 'RECIPES' as const, label: 'Item Recipe Master', icon: FileCode },
         { id: 'MANUAL' as const, label: 'Manual Operations', icon: Sliders },
@@ -38,6 +45,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
     {
       header: 'PLC & SYSTEM MASTER',
       items: [
+        { id: 'IO_DIAGNOSTICS' as const, label: 'PLC I/O Diagnostics (X/Y)', icon: Cpu },
+        { id: 'TOOLING_WEAR' as const, label: 'Tooling Wear & Life', icon: Activity },
         { id: 'MACHINE_SETUP' as const, label: 'Machine Master Settings', icon: Wrench },
         { id: 'TAGS' as const, label: 'PLC & Ui Tag Master', icon: Tag },
         { id: 'ALARMS' as const, label: 'Alarm Config & Logs', icon: AlertTriangle },
@@ -54,8 +63,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
             <User className="w-5 h-5 text-slate-300" />
           </div>
           <div>
-            <div className="font-bold text-white text-xs">Rushabh Makim</div>
-            <div className="text-[11px] text-slate-400">Administrator</div>
+            <div className="font-bold text-white text-xs">HydroPower Tech (HPT)</div>
+            <div className="text-[11px] text-slate-400">Plant Operator • Rajkot</div>
           </div>
         </div>
 

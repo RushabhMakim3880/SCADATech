@@ -6,6 +6,9 @@ import { ManualControlView } from './views/ManualControlView.js';
 import { RecipeMasterView } from './views/RecipeMasterView.js';
 import { NestingAlignmentView } from './views/NestingAlignmentView.js';
 import { MachineSetupView } from './views/MachineSetupView.js';
+import { ToolingWearView } from './views/ToolingWearView.js';
+import { IoDiagnosticsView } from './views/IoDiagnosticsView.js';
+import { OeeAnalyticsView } from './views/OeeAnalyticsView.js';
 import { TagMasterView } from './views/TagMasterView.js';
 import { AlarmsView } from './views/AlarmsView.js';
 import { usePlcStore } from './stores/usePlcStore.js';
@@ -63,9 +66,12 @@ export const App: React.FC = () => {
   return (
     <AppLayout activeTab={activeTab} onTabChange={setActiveTab}>
       {activeTab === 'PRODUCTION' && <LiveProductionView />}
+      {activeTab === 'OEE_ANALYTICS' && <OeeAnalyticsView />}
       {activeTab === 'MANUAL' && <ManualControlView />}
       {activeTab === 'RECIPES' && <RecipeMasterView />}
       {activeTab === 'ALIGNMENT' && <NestingAlignmentView />}
+      {activeTab === 'IO_DIAGNOSTICS' && <IoDiagnosticsView />}
+      {activeTab === 'TOOLING_WEAR' && <ToolingWearView />}
       {activeTab === 'MACHINE_SETUP' && <MachineSetupView />}
       {activeTab === 'TAGS' && <TagMasterView />}
       {activeTab === 'ALARMS' && <AlarmsView />}

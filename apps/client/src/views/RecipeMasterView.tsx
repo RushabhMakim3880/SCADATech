@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { ItemRecipe, ItemRecipeStep, SideType } from '@innovance-hmi/shared';
 import { AngleBarVisualizer } from '../components/canvas/AngleBarVisualizer.js';
 import { DataTable, Column } from '../components/common/DataTable.js';
+import { DstvImporterModal } from '../components/importers/DstvImporterModal.js';
+import { VirtualKeypadModal } from '../components/common/VirtualKeypadModal.js';
+import { TowerRuleCheckerModal } from '../components/common/TowerRuleCheckerModal.js';
+import { JobCardModal } from '../components/common/JobCardModal.js';
 import {
   Plus,
   Trash2,
@@ -9,6 +13,10 @@ import {
   List,
   Edit,
   CheckCircle,
+  FileCode,
+  Calculator,
+  ShieldCheck,
+  FileText,
 } from 'lucide-react';
 
 export const RecipeMasterView: React.FC = () => {
@@ -18,6 +26,22 @@ export const RecipeMasterView: React.FC = () => {
   const [highlightedStep, setHighlightedStep] = useState<number | undefined>(undefined);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isDstvModalOpen, setIsDstvModalOpen] = useState(false);
+  const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
+  const [isJobCardModalOpen, setIsJobCardModalOpen] = useState(false);
+
+  // Virtual Keypad State
+  const [keypadConfig, setKeypadConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    value: number;
+    onApply: (v: number) => void;
+  }>({
+    isOpen: false,
+    title: '',
+    value: 0,
+    onApply: () => {},
+  });
 
   useEffect(() => {
     fetchRecipes();
@@ -54,7 +78,7 @@ export const RecipeMasterView: React.FC = () => {
           stepNumber: 1,
           operationType: 'PUNCH',
           side: 'A',
-          xPosition: 100.0,
+          xPosition: 120.0,
           yPosition: 35.0,
           toolSize: 18.0,
           isCutOff: false,
@@ -64,7 +88,7 @@ export const RecipeMasterView: React.FC = () => {
           stepNumber: 2,
           operationType: 'PUNCH',
           side: 'B',
-          xPosition: 200.0,
+          xPosition: 250.0,
           yPosition: 35.0,
           toolSize: 18.0,
           isCutOff: false,
@@ -86,6 +110,11 @@ export const RecipeMasterView: React.FC = () => {
 
   const handleEditRecipe = (r: ItemRecipe) => {
     setSelectedRecipe(JSON.parse(JSON.stringify(r)));
+    setActiveTab('FORM');
+  };
+
+  const handleDstvImportComplete = (importedRecipe: ItemRecipe) => {
+    setSelectedRecipe(importedRecipe);
     setActiveTab('FORM');
   };
 
@@ -146,6 +175,15 @@ export const RecipeMasterView: React.FC = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const openKeypad = (title: string, currentVal: number, onApply: (v: number) => void) => {
+    setKeypadConfig({
+      isOpen: true,
+      title,
+      value: currentVal,
+      onApply,
+    });
   };
 
   const columns: Column<ItemRecipe>[] = [
@@ -221,19 +259,27 @@ export const RecipeMasterView: React.FC = () => {
       {/* Top Header */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-300">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Item Recipe Master (ItemRecipeMaster)</h2>
+          <h2 className="text-lg font-bold text-slate-800">Item Recipe Master (HPT Standard)</h2>
           <p className="text-xs text-slate-500">
-            Define part geometry, angle dimensions, punch hole coordinates, and shear points.
+            Define part geometry, punch hole coordinates, import Tekla DSTV files, verify IS 802 tower design rules, and generate job cards.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
+          {/* DSTV / NC1 Import Button */}
+          <button
+            onClick={() => setIsDstvModalOpen(true)}
+            className="btn-ca btn-ca-success text-xs py-1.5"
+          >
+            <FileCode className="w-4 h-4" /> Import DSTV (.nc1)
+          </button>
+
           {activeTab === 'LIST' ? (
-            <button onClick={handleCreateNew} className="btn-ca btn-ca-primary">
+            <button onClick={handleCreateNew} className="btn-ca btn-ca-primary text-xs py-1.5">
               <Plus className="w-4 h-4" /> Add Item Recipe
             </button>
           ) : (
-            <button onClick={() => setActiveTab('LIST')} className="btn-ca btn-ca-default">
+            <button onClick={() => setActiveTab('LIST')} className="btn-ca btn-ca-default text-xs py-1.5">
               <List className="w-4 h-4" /> View All Recipes
             </button>
           )}
@@ -263,17 +309,37 @@ export const RecipeMasterView: React.FC = () => {
           <div className="panel">
             <div className="panel-heading">
               <span>{selectedRecipe.id ? 'Edit Item Recipe' : 'Add Item Recipe Master'}</span>
-              <button
-                onClick={handleSaveRecipe}
-                disabled={isSaving}
-                className="btn-ca btn-ca-success text-xs py-1"
-              >
-                <Save className="w-3.5 h-3.5" /> {isSaving ? 'Saving...' : 'Save Recipe'}
-              </button>
+              <div className="flex items-center gap-2">
+                {/* IS 802 Rule Checker Trigger */}
+                <button
+                  type="button"
+                  onClick={() => setIsRuleModalOpen(true)}
+                  className="btn-ca btn-ca-warning text-xs py-1 px-2.5"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" /> Check IS 802 Rules
+                </button>
+
+                {/* Job Card Sheet Trigger */}
+                <button
+                  type="button"
+                  onClick={() => setIsJobCardModalOpen(true)}
+                  className="btn-ca btn-ca-dark text-xs py-1 px-2.5"
+                >
+                  <FileText className="w-3.5 h-3.5" /> Print Job Sheet
+                </button>
+
+                <button
+                  onClick={handleSaveRecipe}
+                  disabled={isSaving}
+                  className="btn-ca btn-ca-success text-xs py-1 px-3"
+                >
+                  <Save className="w-3.5 h-3.5" /> {isSaving ? 'Saving...' : 'Save Recipe'}
+                </button>
+              </div>
             </div>
 
             <div className="panel-body space-y-4">
-              {/* Form Input Row (1-to-1 matching original PHP fields) */}
+              {/* Form Input Row */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
                 <div>
                   <label className="font-bold text-slate-700">Item Code <span className="text-red-500">*</span></label>
@@ -288,24 +354,40 @@ export const RecipeMasterView: React.FC = () => {
 
                 <div>
                   <label className="font-bold text-slate-700">Side A Width (mm) <span className="text-red-500">*</span></label>
-                  <input
-                    type="number"
-                    value={selectedRecipe.angleWidthA}
-                    onChange={(e) => setSelectedRecipe({ ...selectedRecipe, angleWidthA: parseFloat(e.target.value) || 0 })}
-                    className="form-control-ca mt-1"
-                    placeholder="Enter Side A Width"
-                  />
+                  <div className="flex items-center gap-1 mt-1">
+                    <input
+                      type="number"
+                      value={selectedRecipe.angleWidthA}
+                      onChange={(e) => setSelectedRecipe({ ...selectedRecipe, angleWidthA: parseFloat(e.target.value) || 0 })}
+                      className="form-control-ca"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => openKeypad('Side A Width', selectedRecipe.angleWidthA, (v) => setSelectedRecipe({ ...selectedRecipe, angleWidthA: v }))}
+                      className="btn-ca btn-ca-default p-1.5"
+                    >
+                      <Calculator className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
                 <div>
                   <label className="font-bold text-slate-700">Side B Width (mm) <span className="text-red-500">*</span></label>
-                  <input
-                    type="number"
-                    value={selectedRecipe.angleWidthB}
-                    onChange={(e) => setSelectedRecipe({ ...selectedRecipe, angleWidthB: parseFloat(e.target.value) || 0 })}
-                    className="form-control-ca mt-1"
-                    placeholder="Enter Side B Width"
-                  />
+                  <div className="flex items-center gap-1 mt-1">
+                    <input
+                      type="number"
+                      value={selectedRecipe.angleWidthB}
+                      onChange={(e) => setSelectedRecipe({ ...selectedRecipe, angleWidthB: parseFloat(e.target.value) || 0 })}
+                      className="form-control-ca"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => openKeypad('Side B Width', selectedRecipe.angleWidthB, (v) => setSelectedRecipe({ ...selectedRecipe, angleWidthB: v }))}
+                      className="btn-ca btn-ca-default p-1.5"
+                    >
+                      <Calculator className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
                 <div>
@@ -321,13 +403,21 @@ export const RecipeMasterView: React.FC = () => {
 
                 <div>
                   <label className="font-bold text-slate-700">Program Length (mm) <span className="text-red-500">*</span></label>
-                  <input
-                    type="number"
-                    value={selectedRecipe.totalLength}
-                    onChange={(e) => setSelectedRecipe({ ...selectedRecipe, totalLength: parseFloat(e.target.value) || 0 })}
-                    className="form-control-ca mt-1 font-bold"
-                    placeholder="Enter Program Length"
-                  />
+                  <div className="flex items-center gap-1 mt-1">
+                    <input
+                      type="number"
+                      value={selectedRecipe.totalLength}
+                      onChange={(e) => setSelectedRecipe({ ...selectedRecipe, totalLength: parseFloat(e.target.value) || 0 })}
+                      className="form-control-ca font-bold"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => openKeypad('Program Length', selectedRecipe.totalLength, (v) => setSelectedRecipe({ ...selectedRecipe, totalLength: v }))}
+                      className="btn-ca btn-ca-default p-1.5"
+                    >
+                      <Calculator className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
                 <div>
@@ -357,7 +447,7 @@ export const RecipeMasterView: React.FC = () => {
               {/* 2D CAD Visualizer Blueprint */}
               <div className="pt-3 border-t border-slate-200">
                 <label className="font-bold text-xs text-slate-700 mb-2 block">2D Angle Bar Visual Blueprint Preview</label>
-                <div className="h-[320px] rounded overflow-hidden">
+                <div className="h-[340px] rounded overflow-hidden">
                   <AngleBarVisualizer
                     recipe={selectedRecipe}
                     highlightStepIndex={highlightedStep}
@@ -366,7 +456,7 @@ export const RecipeMasterView: React.FC = () => {
                 </div>
               </div>
 
-              {/* itemRecipeSteps Table (1-to-1 copy of original oneToManyWrapper) */}
+              {/* itemRecipeSteps Table */}
               <div className="pt-3 border-t border-slate-200">
                 <div className="flex items-center justify-between mb-2">
                   <label className="font-bold text-xs text-slate-800">Item Recipe Operations Table</label>
@@ -424,22 +514,38 @@ export const RecipeMasterView: React.FC = () => {
                           </select>
                         </td>
                         <td>
-                          <input
-                            type="number"
-                            value={step.xPosition}
-                            onChange={(e) => handleUpdateStep(idx, 'xPosition', parseFloat(e.target.value) || 0)}
-                            className="form-control-ca text-xs w-28 py-1 font-mono font-bold"
-                            placeholder="X Pos"
-                          />
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="number"
+                              value={step.xPosition}
+                              onChange={(e) => handleUpdateStep(idx, 'xPosition', parseFloat(e.target.value) || 0)}
+                              className="form-control-ca text-xs w-24 py-1 font-mono font-bold"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => openKeypad(`Step #${step.stepNumber} X-Pos`, step.xPosition, (v) => handleUpdateStep(idx, 'xPosition', v))}
+                              className="btn-ca btn-ca-default p-1 text-[10px]"
+                            >
+                              <Calculator className="w-3 h-3" />
+                            </button>
+                          </div>
                         </td>
                         <td>
-                          <input
-                            type="number"
-                            value={step.yPosition}
-                            onChange={(e) => handleUpdateStep(idx, 'yPosition', parseFloat(e.target.value) || 0)}
-                            className="form-control-ca text-xs w-24 py-1 font-mono"
-                            placeholder="Y Pos"
-                          />
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="number"
+                              value={step.yPosition}
+                              onChange={(e) => handleUpdateStep(idx, 'yPosition', parseFloat(e.target.value) || 0)}
+                              className="form-control-ca text-xs w-20 py-1 font-mono"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => openKeypad(`Step #${step.stepNumber} Y-Pos`, step.yPosition, (v) => handleUpdateStep(idx, 'yPosition', v))}
+                              className="btn-ca btn-ca-default p-1 text-[10px]"
+                            >
+                              <Calculator className="w-3 h-3" />
+                            </button>
+                          </div>
                         </td>
                         <td>
                           <input
@@ -475,6 +581,40 @@ export const RecipeMasterView: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* DSTV Importer Modal */}
+      <DstvImporterModal
+        isOpen={isDstvModalOpen}
+        onClose={() => setIsDstvModalOpen(false)}
+        onImportComplete={handleDstvImportComplete}
+      />
+
+      {/* Touchscreen Virtual Keypad Modal */}
+      <VirtualKeypadModal
+        isOpen={keypadConfig.isOpen}
+        title={keypadConfig.title}
+        initialValue={keypadConfig.value}
+        onClose={() => setKeypadConfig((prev) => ({ ...prev, isOpen: false }))}
+        onSubmit={keypadConfig.onApply}
+      />
+
+      {/* IS 802 Tower Design Rule Checker Modal */}
+      {selectedRecipe && (
+        <TowerRuleCheckerModal
+          isOpen={isRuleModalOpen}
+          recipe={selectedRecipe}
+          onClose={() => setIsRuleModalOpen(false)}
+        />
+      )}
+
+      {/* Printable Job Card Modal */}
+      {selectedRecipe && (
+        <JobCardModal
+          isOpen={isJobCardModalOpen}
+          recipe={selectedRecipe}
+          onClose={() => setIsJobCardModalOpen(false)}
+        />
       )}
     </div>
   );

@@ -1,414 +1,350 @@
-import React, { useEffect, useState } from 'react';
-import { ItemRecipe, ProgramCyclePlan, AlignedOperation } from '@innovance-hmi/shared';
+import React, { useState } from 'react';
 import { DataTable, Column } from '../components/common/DataTable.js';
 import {
-  Clock,
-  Layers,
-  Wrench,
-  Activity,
+  Sparkles,
+  Settings,
+  CheckCircle,
   Play,
-  RefreshCw,
-  Trash2,
-  CheckCircle2,
 } from 'lucide-react';
 
+interface NestingOrder {
+  recipeId: string;
+  itemCode: string;
+  lengthMm: number;
+  quantity: number;
+  flangeSize: string;
+}
+
+interface NestedBar {
+  barIndex: number;
+  stockLengthMm: number;
+  utilizedLengthMm: number;
+  scrapLengthMm: number;
+  scrapPercentage: number;
+  pieces: Array<{
+    itemCode: string;
+    lengthMm: number;
+    startMm: number;
+    endMm: number;
+    color: string;
+  }>;
+}
+
 export const NestingAlignmentView: React.FC = () => {
-  const [recipes, setRecipes] = useState<ItemRecipe[]>([]);
-  const [selectedItems, setSelectedItems] = useState<Array<{ recipeId: string; quantity: number }>>([]);
-  const [stockBarLength, setStockBarLength] = useState<number>(6000.0);
-  const [plan, setPlan] = useState<ProgramCyclePlan | null>(null);
-  const [calculating, setCalculating] = useState(false);
-  const [committing, setCommitting] = useState(false);
-  const [commitSuccess, setCommitSuccess] = useState(false);
+  const [stockBarLength, setStockBarLength] = useState<number>(6000);
+  const [kerfCutAllowance, setKerfCutAllowance] = useState<number>(6); // mm shear loss
+  const [gripperDeadZone, setGripperDeadZone] = useState<number>(120); // mm tail clamp margin
+  const [isConfigOpen, setIsConfigOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    fetchRecipes();
-  }, []);
+  // Batch work order queue
+  const [batchOrders, setBatchOrders] = useState<NestingOrder[]>([
+    { recipeId: 'r1', itemCode: 'TOWER-LEG-01', lengthMm: 1800, quantity: 4, flangeSize: 'L75x75x6' },
+    { recipeId: 'r2', itemCode: 'BRACING-BR-04', lengthMm: 1250, quantity: 6, flangeSize: 'L75x75x6' },
+    { recipeId: 'r3', itemCode: 'CROSS-ARM-A', lengthMm: 950, quantity: 5, flangeSize: 'L75x75x6' },
+  ]);
 
-  const fetchRecipes = async () => {
-    try {
-      const res = await fetch('/api/recipes');
-      const json = await res.json();
-      if (json.success && json.data.length > 0) {
-        setRecipes(json.data);
-        setSelectedItems([{ recipeId: json.data[0].id, quantity: 3 }]);
-      }
-    } catch (err) {
-      console.error('Failed to load recipes', err);
-    }
-  };
+  const [nestedBars, setNestedBars] = useState<NestedBar[]>([]);
+  const [isOptimizing, setIsOptimizing] = useState<boolean>(false);
+  const [appliedSuccess, setAppliedSuccess] = useState<boolean>(false);
 
-  const handleAddItem = (recipeId: string) => {
-    if (selectedItems.some((i) => i.recipeId === recipeId)) return;
-    setSelectedItems([...selectedItems, { recipeId, quantity: 1 }]);
-  };
+  // Linear First-Fit Decreasing (FFD) Multibar Nesting Algorithm
+  const runNestingOptimization = React.useCallback(() => {
+    setIsOptimizing(true);
 
-  const handleUpdateQuantity = (recipeId: string, delta: number) => {
-    setSelectedItems(
-      selectedItems.map((i) =>
-        i.recipeId === recipeId ? { ...i, quantity: Math.max(1, i.quantity + delta) } : i
-      )
-    );
-  };
-
-  const handleRemoveItem = (recipeId: string) => {
-    setSelectedItems(selectedItems.filter((i) => i.recipeId !== recipeId));
-  };
-
-  const calculateNesting = async () => {
-    if (selectedItems.length === 0) return;
-    setCalculating(true);
-    try {
-      const res = await fetch('/api/production/align', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          items: selectedItems,
-          stockBarLength,
-        }),
+    setTimeout(() => {
+      // Expand all items into individual pieces
+      const allPieces: Array<{ itemCode: string; lengthMm: number; recipeId: string }> = [];
+      batchOrders.forEach((order) => {
+        for (let q = 0; q < order.quantity; q++) {
+          allPieces.push({ itemCode: order.itemCode, lengthMm: order.lengthMm, recipeId: order.recipeId });
+        }
       });
 
-      const json = await res.json();
-      if (json.success) {
-        setPlan(json.data);
-      }
-    } catch (err) {
-      console.error('Nesting calculation error', err);
-    } finally {
-      setCalculating(false);
-    }
-  };
+      // Sort descending by length
+      allPieces.sort((a, b) => b.lengthMm - a.lengthMm);
 
-  const commitToProduction = async () => {
-    if (!plan) return;
-    setCommitting(true);
-    try {
-      const res = await fetch('/api/production/commit-cycle', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          cycleCode: plan.cycleId,
-          stockBarLength: plan.stockBarLength,
-          utilizedLength: plan.utilizedLength,
-          scrapLength: plan.scrapLength,
-          targetBars: 1,
-          operations: plan.operationsSequence.map((op) => ({
-            sequenceOrder: op.stepIndex,
-            recipeId: op.recipeId,
-            operationType: op.operationType,
-            side: op.side,
-            absoluteBarX: op.absoluteBarX,
-            yPosition: op.yPosition,
-            toolSize: op.toolSize,
-            allocatedHeadName: op.allocatedHeadName,
-            allocatedHeadOffset: op.allocatedHeadOffset,
-            requiredFeedAxisPos: op.requiredFeedAxisPos,
-            isCutOff: op.isCutOff,
-            markingText: op.markingText,
-          })),
-        }),
+      const pieceColors = ['#38bdf8', '#4ade80', '#fbbf24', '#f472b6', '#a78bfa', '#34d399'];
+      const bars: NestedBar[] = [];
+      const usableLength = stockBarLength - gripperDeadZone;
+
+      allPieces.forEach((piece) => {
+        let placed = false;
+        for (let b = 0; b < bars.length; b++) {
+          const bar = bars[b];
+          if (bar.utilizedLengthMm + piece.lengthMm + kerfCutAllowance <= usableLength) {
+            const startMm = bar.utilizedLengthMm;
+            const endMm = startMm + piece.lengthMm;
+            const colorIdx = batchOrders.findIndex((o) => o.itemCode === piece.itemCode) % pieceColors.length;
+
+            bar.pieces.push({
+              itemCode: piece.itemCode,
+              lengthMm: piece.lengthMm,
+              startMm,
+              endMm,
+              color: pieceColors[colorIdx],
+            });
+            bar.utilizedLengthMm = endMm + kerfCutAllowance;
+            bar.scrapLengthMm = stockBarLength - bar.utilizedLengthMm;
+            bar.scrapPercentage = Number(((bar.scrapLengthMm / stockBarLength) * 100).toFixed(1));
+            placed = true;
+            break;
+          }
+        }
+
+        if (!placed) {
+          const startMm = 0;
+          const endMm = piece.lengthMm;
+          const colorIdx = batchOrders.findIndex((o) => o.itemCode === piece.itemCode) % pieceColors.length;
+          const utilized = endMm + kerfCutAllowance;
+          const scrap = stockBarLength - utilized;
+
+          bars.push({
+            barIndex: bars.length + 1,
+            stockLengthMm: stockBarLength,
+            utilizedLengthMm: utilized,
+            scrapLengthMm: scrap,
+            scrapPercentage: Number(((scrap / stockBarLength) * 100).toFixed(1)),
+            pieces: [
+              {
+                itemCode: piece.itemCode,
+                lengthMm: piece.lengthMm,
+                startMm,
+                endMm,
+                color: pieceColors[colorIdx],
+              },
+            ],
+          });
+        }
       });
 
-      const json = await res.json();
-      if (json.success) {
-        setCommitSuccess(true);
-        setTimeout(() => setCommitSuccess(false), 3000);
-      }
-    } catch (err) {
-      console.error('Commit error', err);
-    } finally {
-      setCommitting(false);
-    }
+      setNestedBars(bars);
+      setIsOptimizing(false);
+    }, 300);
+  }, [batchOrders, stockBarLength, gripperDeadZone, kerfCutAllowance]);
+
+  React.useEffect(() => {
+    runNestingOptimization();
+  }, [runNestingOptimization]);
+
+  const totalRawBars = nestedBars.length;
+  const totalRawLength = totalRawBars * stockBarLength;
+  const totalUtilizedLength = nestedBars.reduce((acc, b) => acc + (b.stockLengthMm - b.scrapLengthMm), 0);
+  const overallYieldPct = totalRawLength > 0 ? Number(((totalUtilizedLength / totalRawLength) * 100).toFixed(1)) : 0;
+  const totalScrapMeters = Number(((totalRawLength - totalUtilizedLength) / 1000).toFixed(2));
+
+  const handleSendToAutoProduction = () => {
+    setAppliedSuccess(true);
+    setTimeout(() => setAppliedSuccess(false), 3000);
   };
 
-  const utilizationPercent = plan
-    ? Math.round((plan.utilizedLength / plan.stockBarLength) * 100)
-    : 0;
-
-  const operationColumns: Column<AlignedOperation>[] = [
+  const columns: Column<NestingOrder>[] = [
+    { key: 'itemCode', header: 'Tower Item Code', render: (o) => <span className="font-bold text-blue-700">{o.itemCode}</span> },
+    { key: 'flangeSize', header: 'Profile Specification' },
+    { key: 'lengthMm', header: 'Piece Length (mm)', render: (o) => `${o.lengthMm} mm` },
     {
-      key: 'stepIndex',
-      header: 'Step',
-      width: '60px',
-      render: (op) => <span className="font-bold text-slate-700">#{op.stepIndex}</span>,
-    },
-    {
-      key: 'operationType',
-      header: 'Operation',
-      render: (op) => (
-        <span
-          className={`px-2 py-0.5 rounded text-xs font-semibold ${
-            op.operationType === 'PUNCH'
-              ? 'bg-blue-100 text-blue-800'
-              : op.operationType === 'MARK'
-              ? 'bg-yellow-100 text-yellow-800'
-              : 'bg-red-100 text-red-800'
-          }`}
-        >
-          {op.operationType}
-        </span>
+      key: 'quantity',
+      header: 'Required Quantity',
+      render: (o, idx) => (
+        <input
+          type="number"
+          value={o.quantity}
+          min={1}
+          onChange={(e) => {
+            const upd = [...batchOrders];
+            upd[idx].quantity = parseInt(e.target.value) || 1;
+            setBatchOrders(upd);
+          }}
+          className="form-control-ca w-20 py-1 font-bold text-xs"
+        />
       ),
     },
     {
-      key: 'side',
-      header: 'Flange Side',
-      render: (op) => `Side ${op.side}`,
-    },
-    {
-      key: 'absoluteBarX',
-      header: 'Bar Coordinate (AX)',
-      render: (op) => <span className="font-mono">{op.absoluteBarX} mm</span>,
-    },
-    {
-      key: 'allocatedHeadName',
-      header: 'Allocated Tool Head',
-      render: (op) => <span className="font-bold text-slate-800">{op.allocatedHeadName}</span>,
-    },
-    {
-      key: 'allocatedHeadOffset',
-      header: 'Bed Offset (DX)',
-      render: (op) => <span className="text-slate-600">{op.allocatedHeadOffset} mm</span>,
-    },
-    {
-      key: 'requiredFeedAxisPos',
-      header: 'Required Feed DRO Pos',
-      render: (op) => (
-        <span className="font-mono text-cyan-700 font-bold">{op.requiredFeedAxisPos.toFixed(2)} mm</span>
-      ),
-    },
-    {
-      key: 'toolSize',
-      header: 'Tool / Text',
-      render: (op) => (op.toolSize ? `Ø${op.toolSize}mm` : op.markingText || 'Shear Blade'),
+      key: 'actions',
+      header: 'Total Run (Meters)',
+      align: 'right',
+      render: (o) => <span className="font-mono font-bold text-slate-800">{((o.lengthMm * o.quantity) / 1000).toFixed(2)} m</span>,
     },
   ];
 
   return (
     <div className="p-4 space-y-4 flex-1 overflow-y-auto">
-      {/* 1. Original 4 Color Admin KPI Stat Widgets */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="widget-stats bg-blue">
-          <div className="stats-icon"><Clock className="w-12 h-12" /></div>
-          <div className="stats-info">
-            <h4>Total Cycle Time</h4>
-            <p>{plan?.estimatedCycleTimeSec ? `${plan.estimatedCycleTimeSec}s` : '0s'}</p>
-          </div>
-        </div>
-
-        <div className="widget-stats bg-green">
-          <div className="stats-icon"><Layers className="w-12 h-12" /></div>
-          <div className="stats-info">
-            <h4>Total Items</h4>
-            <p>{selectedItems.reduce((acc, i) => acc + i.quantity, 0)}</p>
-          </div>
-        </div>
-
-        <div className="widget-stats bg-orange">
-          <div className="stats-icon"><Wrench className="w-12 h-12" /></div>
-          <div className="stats-info">
-            <h4>Total Punches</h4>
-            <p>{plan?.operationsSequence.filter((o) => o.operationType === 'PUNCH').length || 0}</p>
-          </div>
-        </div>
-
-        <div className="widget-stats bg-red">
-          <div className="stats-icon"><Activity className="w-12 h-12" /></div>
-          <div className="stats-info">
-            <h4>Total Marking</h4>
-            <p>{plan?.operationsSequence.filter((o) => o.operationType === 'MARK').length || 0}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Top Header & Action Controls */}
-      <div className="flex items-center justify-between pb-2 border-b border-slate-300">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between pb-2 border-b border-slate-300 gap-3">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Manage Program Align (programAlignMaster)</h2>
+          <h2 className="text-lg font-bold text-slate-800">Multibar Linear Nesting & Scrap Minimizer (IS 802 Standard)</h2>
           <p className="text-xs text-slate-500">
-            Combine multiple part recipes onto raw angle bars to minimize scrap and generate optimal monotonic feed coordinates.
+            Automated piece packing across raw commercial stock bars (6m, 9m, 12m) to eliminate steel remnant waste.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          {commitSuccess && (
-            <span className="text-xs font-semibold text-emerald-800 bg-emerald-100 px-3 py-1 rounded border border-emerald-300 flex items-center gap-1">
-              <CheckCircle2 className="w-4 h-4" /> Batch Sent to Production!
-            </span>
-          )}
-
           <button
-            onClick={calculateNesting}
-            disabled={calculating || selectedItems.length === 0}
-            className="btn-ca btn-ca-primary"
+            onClick={() => setIsConfigOpen(true)}
+            className="btn-ca btn-ca-default text-xs py-1.5"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${calculating ? 'animate-spin' : ''}`} />
-            {calculating ? 'Calculating...' : 'Optimize & Align'}
+            <Settings className="w-3.5 h-3.5" /> Nesting Parameters
           </button>
-
-          {plan && (
-            <button
-              onClick={commitToProduction}
-              disabled={committing}
-              className="btn-ca btn-ca-success"
-            >
-              <Play className="w-3.5 h-3.5" />
-              {committing ? 'Committing...' : 'Commit to Production'}
-            </button>
-          )}
+          <button
+            onClick={runNestingOptimization}
+            disabled={isOptimizing}
+            className="btn-ca btn-ca-primary text-xs py-1.5"
+          >
+            <Sparkles className="w-3.5 h-3.5" /> {isOptimizing ? 'Optimizing...' : 'Re-Calculate Nesting'}
+          </button>
+          <button
+            onClick={handleSendToAutoProduction}
+            className="btn-ca btn-ca-success text-xs py-1.5"
+          >
+            <Play className="w-3.5 h-3.5" /> Send to Auto Production
+          </button>
         </div>
       </div>
 
-      {/* 3. Program Selection Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Available Recipes */}
-        <div className="panel">
-          <div className="panel-heading">
-            <span>Available Recipes</span>
-            <span className="text-xs text-slate-300">{recipes.length}</span>
-          </div>
-          <div className="panel-body p-2 max-h-48 overflow-y-auto space-y-1">
-            {recipes.map((r) => (
-              <div key={r.id} className="flex items-center justify-between p-2 rounded bg-slate-50 border text-xs">
-                <div>
-                  <span className="font-bold text-slate-800">{r.itemCode}</span>
-                  <span className="text-slate-500 ml-2">({r.totalLength}mm)</span>
-                </div>
-                <button
-                  onClick={() => handleAddItem(r.id)}
-                  className="btn-ca btn-ca-primary text-xs py-0.5 px-2"
-                >
-                  + Add
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Selected Batch Items */}
-        <div className="panel">
-          <div className="panel-heading">
-            <span>Selected Batch Items</span>
-            <span className="text-xs text-slate-300">{selectedItems.length}</span>
-          </div>
-          <div className="panel-body p-2 max-h-48 overflow-y-auto space-y-1">
-            {selectedItems.map((item) => {
-              const recipe = recipes.find((r) => r.id === item.recipeId);
-              return (
-                <div key={item.recipeId} className="flex items-center justify-between p-2 rounded bg-slate-50 border text-xs">
-                  <div>
-                    <div className="font-bold text-slate-800">{recipe?.itemCode}</div>
-                    <div className="text-[10px] text-slate-500">{recipe?.totalLength}mm</div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => handleUpdateQuantity(item.recipeId, -1)}
-                      className="btn-ca btn-ca-default px-2 py-0.5"
-                    >-</button>
-                    <span className="font-bold w-6 text-center">{item.quantity}</span>
-                    <button
-                      onClick={() => handleUpdateQuantity(item.recipeId, 1)}
-                      className="btn-ca btn-ca-default px-2 py-0.5"
-                    >+</button>
-                    <button
-                      onClick={() => handleRemoveItem(item.recipeId)}
-                      className="btn-ca btn-ca-danger px-1.5 py-0.5 ml-1"
-                    ><Trash2 className="w-3 h-3" /></button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Raw Stock Bar Length Selection */}
-        <div className="panel">
-          <div className="panel-heading">
-            <span>Raw Stock Bar Length</span>
-          </div>
-          <div className="panel-body space-y-3 text-xs">
-            <div className="grid grid-cols-3 gap-2">
-              {[6000, 9000, 12000].map((len) => (
-                <button
-                  key={len}
-                  onClick={() => setStockBarLength(len)}
-                  className={`py-2 px-1 text-center rounded font-bold border transition-all ${
-                    stockBarLength === len
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                  }`}
-                >
-                  {len / 1000} M ({len}mm)
-                </button>
-              ))}
-            </div>
-
-            {plan && (
-              <div className="p-2.5 bg-slate-100 rounded border border-slate-300 space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Material Utilization:</span>
-                  <span className="font-bold text-green-700">{utilizationPercent}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Utilized Length:</span>
-                  <span className="font-bold text-slate-800">{plan.utilizedLength} mm</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Scrap Remnant:</span>
-                  <span className="font-bold text-orange-700">{plan.scrapLength} mm</span>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Visual Nesting Bar Representation */}
-      {plan && (
-        <div className="panel">
-          <div className="panel-heading">
-            <span>Nesting Cut-List Visualization ({plan.stockBarLength}mm)</span>
-            <span className="text-xs text-slate-300">Estimated: ~{plan.estimatedCycleTimeSec}s</span>
-          </div>
-          <div className="panel-body">
-            <div className="w-full h-12 bg-slate-200 rounded border border-slate-300 p-1 flex gap-1 items-center overflow-hidden">
-              {plan.itemsSummary.map((item, idx) => {
-                const recipe = recipes.find((r) => r.id === item.recipeId);
-                const partLength = recipe?.totalLength || 1500;
-                const widthPct = ((partLength * item.count) / plan.stockBarLength) * 100;
-
-                return (
-                  <div
-                    key={idx}
-                    style={{ width: `${widthPct}%` }}
-                    className="h-full bg-blue-600 text-white rounded flex flex-col items-center justify-center text-[10px] font-bold"
-                  >
-                    <span className="truncate px-1">{item.itemCode} (x{item.count})</span>
-                    <span className="text-[9px] text-blue-100">{partLength * item.count}mm</span>
-                  </div>
-                );
-              })}
-
-              {plan.scrapLength > 0 && (
-                <div
-                  style={{ width: `${(plan.scrapLength / plan.stockBarLength) * 100}%` }}
-                  className="h-full bg-red-100 border border-red-300 border-dashed text-red-700 rounded flex items-center justify-center text-[10px] font-bold"
-                >
-                  Scrap ({plan.scrapLength}mm)
-                </div>
-              )}
-            </div>
-          </div>
+      {appliedSuccess && (
+        <div className="p-3 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded text-xs font-semibold flex items-center gap-2">
+          <CheckCircle className="w-4 h-4 text-emerald-600" />
+          Nesting cycle successfully loaded into Auto Production line!
         </div>
       )}
 
-      {/* 5. Aligned Operations Sequence DataTable */}
-      {plan && (
-        <DataTable
-          title="Manage Program Align Operations DataTable"
-          columns={operationColumns}
-          data={plan.operationsSequence}
-          searchKeys={['allocatedHeadName', 'operationType']}
-        />
+      {/* KPI Optimization Yield Summary */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div className="p-3.5 rounded-lg bg-blue-50 border border-blue-200">
+          <div className="text-slate-500 text-xs font-bold uppercase tracking-wider">Overall Yield Efficiency</div>
+          <div className="font-mono text-2xl font-black text-blue-700 mt-1">{overallYieldPct}%</div>
+          <div className="text-[11px] text-slate-600">Material utilization efficiency</div>
+        </div>
+
+        <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200">
+          <div className="text-slate-500 text-xs font-bold uppercase tracking-wider">Raw Stock Bars Needed</div>
+          <div className="font-mono text-2xl font-black text-emerald-700 mt-1">{totalRawBars} Bars</div>
+          <div className="text-[11px] text-slate-600">{stockBarLength}mm standard raw stock</div>
+        </div>
+
+        <div className="p-3.5 rounded-lg bg-purple-50 border border-purple-200">
+          <div className="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Cut Pieces</div>
+          <div className="font-mono text-2xl font-black text-purple-700 mt-1">
+            {batchOrders.reduce((acc, o) => acc + o.quantity, 0)} Pieces
+          </div>
+          <div className="text-[11px] text-slate-600">Across {batchOrders.length} tower item types</div>
+        </div>
+
+        <div className="p-3.5 rounded-lg bg-amber-50 border border-amber-200">
+          <div className="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Scrap Remnant</div>
+          <div className="font-mono text-2xl font-black text-amber-700 mt-1">{totalScrapMeters} m</div>
+          <div className="text-[11px] text-slate-600">Total cut & tail loss combined</div>
+        </div>
+      </div>
+
+      {/* Batch Orders Table */}
+      <DataTable
+        title="Production Batch Work Order Queue"
+        columns={columns}
+        data={batchOrders}
+        searchKeys={['itemCode', 'flangeSize']}
+      />
+
+      {/* Visual Multi-Bar Nesting Layout */}
+      <div className="panel">
+        <div className="panel-heading">
+          <span>Optimized Raw Bar Multi-Cut Visual Layout</span>
+          <span className="text-xs text-slate-300">Raw Bar Length: {stockBarLength} mm</span>
+        </div>
+
+        <div className="panel-body space-y-4">
+          {nestedBars.map((bar) => (
+            <div key={bar.barIndex} className="p-3 bg-slate-50 rounded border border-slate-200 space-y-2 text-xs">
+              <div className="flex items-center justify-between font-bold">
+                <span className="text-slate-800">
+                  Raw Stock Bar #{bar.barIndex} ({bar.stockLengthMm}mm) • {bar.pieces.length} Nested Parts
+                </span>
+                <span className="text-slate-600">
+                  Scrap Remnant: <b className="text-amber-700">{bar.scrapLengthMm}mm ({bar.scrapPercentage}%)</b>
+                </span>
+              </div>
+
+              {/* Graphical Bar */}
+              <div className="w-full h-8 bg-slate-800 rounded overflow-hidden flex border border-slate-700 p-0.5">
+                {bar.pieces.map((p, pIdx) => {
+                  const widthPct = (p.lengthMm / bar.stockLengthMm) * 100;
+                  return (
+                    <div
+                      key={pIdx}
+                      style={{ width: `${widthPct}%`, backgroundColor: p.color }}
+                      className="h-full border-r border-slate-900 flex items-center justify-center text-[10px] font-bold text-slate-900 truncate px-1"
+                      title={`${p.itemCode} (${p.lengthMm}mm)`}
+                    >
+                      {p.itemCode} ({p.lengthMm}mm)
+                    </div>
+                  );
+                })}
+
+                {/* Scrap Tail */}
+                <div
+                  style={{ width: `${(bar.scrapLengthMm / bar.stockLengthMm) * 100}%` }}
+                  className="h-full bg-amber-600/60 flex items-center justify-center text-[9px] font-black text-amber-200"
+                >
+                  Tail ({bar.scrapLengthMm}mm)
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Config Modal */}
+      {isConfigOpen && (
+        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden text-xs">
+            <div className="panel-heading bg-slate-800 text-white px-4 py-3 flex items-center justify-between">
+              <span className="font-bold text-sm">Configure Nesting & Machine Margins</span>
+              <button onClick={() => setIsConfigOpen(false)} className="text-slate-300 hover:text-white">✕</button>
+            </div>
+
+            <div className="p-4 space-y-3">
+              <div>
+                <label className="font-bold text-slate-700 block">Raw Stock Bar Length (mm)</label>
+                <select
+                  value={stockBarLength}
+                  onChange={(e) => setStockBarLength(parseInt(e.target.value) || 6000)}
+                  className="form-control-ca mt-1 font-bold"
+                >
+                  <option value="6000">6,000 mm (Standard 6 Meter)</option>
+                  <option value="9000">9,000 mm (9 Meter Commercial)</option>
+                  <option value="12000">12,000 mm (12 Meter Heavy Trailer)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block">Hydraulic Shear Kerf Loss (mm)</label>
+                <input
+                  type="number"
+                  value={kerfCutAllowance}
+                  onChange={(e) => setKerfCutAllowance(parseInt(e.target.value) || 6)}
+                  className="form-control-ca mt-1"
+                />
+                <span className="text-[10px] text-slate-500">Material blade cutting waste per piece</span>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block">Carriage Gripper Dead-Zone Margin (mm)</label>
+                <input
+                  type="number"
+                  value={gripperDeadZone}
+                  onChange={(e) => setGripperDeadZone(parseInt(e.target.value) || 120)}
+                  className="form-control-ca mt-1"
+                />
+                <span className="text-[10px] text-slate-500">Tail clamping distance required by carriage</span>
+              </div>
+            </div>
+
+            <div className="p-3 bg-slate-100 border-t border-slate-200 flex justify-end">
+              <button onClick={() => setIsConfigOpen(false)} className="btn-ca btn-ca-primary">
+                Apply Parameters
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

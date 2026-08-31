@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { usePlcStore } from '../stores/usePlcStore.js';
 import { wsClient } from '../services/wsClient.js';
+import { VirtualKeypadModal } from '../components/common/VirtualKeypadModal.js';
 import {
   Power,
   RotateCcw,
@@ -10,6 +11,7 @@ import {
   ArrowLeft,
   Activity,
   Droplets,
+  Calculator,
 } from 'lucide-react';
 
 export const ManualControlView: React.FC = () => {
@@ -27,6 +29,9 @@ export const ManualControlView: React.FC = () => {
   const [headLubRunning, setHeadLubRunning] = useState<boolean>(false);
   const [oilCircRunning, setOilCircRunning] = useState<boolean>(false);
   const [princherGoTarget, setPrincherGoTarget] = useState<number>(500.0);
+
+  // Keypad State
+  const [isKeypadOpen, setIsKeypadOpen] = useState(false);
 
   const handleStepJog = (direction: 'FWD' | 'REV') => {
     const delta = direction === 'FWD' ? stepIncrement : -stepIncrement;
@@ -165,6 +170,14 @@ export const ManualControlView: React.FC = () => {
                   placeholder="Target MM"
                 />
                 <button
+                  type="button"
+                  onClick={() => setIsKeypadOpen(true)}
+                  className="btn-ca btn-ca-default p-2"
+                  title="Open Keypad"
+                >
+                  <Calculator className="w-4 h-4" />
+                </button>
+                <button
                   onClick={handlePrincherGo}
                   className="btn-ca btn-ca-primary whitespace-nowrap py-1.5 px-3"
                 >
@@ -284,6 +297,15 @@ export const ManualControlView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Keypad Modal */}
+      <VirtualKeypadModal
+        isOpen={isKeypadOpen}
+        title="Enter Princher Target (MM)"
+        initialValue={princherGoTarget}
+        onClose={() => setIsKeypadOpen(false)}
+        onSubmit={(v) => setPrincherGoTarget(v)}
+      />
     </div>
   );
 };
