@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { usePlcStore } from '../stores/usePlcStore.js';
 import { AlarmDefinition, ActiveAlarm } from '@innovance-hmi/shared';
+import { DataTable, Column } from '../components/common/DataTable.js';
 import {
   RefreshCw,
+  AlertTriangle,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface AlarmLogItem {
@@ -57,21 +60,73 @@ export const AlarmsView: React.FC = () => {
     }
   };
 
+  const defColumns: Column<AlarmDefinition>[] = [
+    {
+      key: 'alarmCode',
+      header: 'Alarm Code',
+      render: (d) => <span className="font-mono font-bold text-slate-800">{d.alarmCode}</span>,
+    },
+    { key: 'alarmName', header: 'Alarm Description' },
+    {
+      key: 'severity',
+      header: 'Severity',
+      render: (d) => (
+        <span
+          className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+            d.severity === 'EMERGENCY'
+              ? 'bg-red-100 text-red-800'
+              : d.severity === 'WARNING'
+              ? 'bg-orange-100 text-orange-800'
+              : 'bg-blue-100 text-blue-800'
+          }`}
+        >
+          {d.severity}
+        </span>
+      ),
+    },
+    {
+      key: 'correctiveAction',
+      header: 'Corrective Action Guidance',
+      render: (d) => <span className="text-slate-600 text-xs">{d.correctiveAction || '--'}</span>,
+    },
+  ];
+
+  const logColumns: Column<AlarmLogItem>[] = [
+    {
+      key: 'alarmCode',
+      header: 'Code',
+      width: '90px',
+      render: (l) => <span className="font-mono font-bold">{l.alarmCode}</span>,
+    },
+    { key: 'alarmName', header: 'Event Message' },
+    {
+      key: 'severity',
+      header: 'Severity',
+      render: (l) => <span className="text-xs font-semibold">{l.severity}</span>,
+    },
+    {
+      key: 'triggeredAt',
+      header: 'Triggered Timestamp',
+      render: (l) => (
+        <span className="font-mono text-slate-600 text-xs">
+          {new Date(l.triggeredAt).toLocaleString()}
+        </span>
+      ),
+    },
+  ];
+
   return (
     <div className="p-4 space-y-4 flex-1 overflow-y-auto">
       {/* Top Header */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-300">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Alarm Configuration & Historical Event Logs (AalarmModules)</h2>
+          <h2 className="text-lg font-bold text-slate-800">Alarm Configuration & Event Logs (AalarmModules)</h2>
           <p className="text-xs text-slate-500">
-            Real-time machine fault monitoring, safety trip acknowledgment, and maintenance logs.
+            Real-time machine fault monitoring, safety trip acknowledgment, and historical audit logs.
           </p>
         </div>
 
-        <button
-          onClick={fetchAlarmsData}
-          className="btn-ca btn-ca-default"
-        >
+        <button onClick={fetchAlarmsData} className="btn-ca btn-ca-default">
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh Logs
         </button>
       </div>
@@ -79,10 +134,13 @@ export const AlarmsView: React.FC = () => {
       {/* Active Triggered Alarms Banner */}
       <div className="panel">
         <div className="panel-heading bg-red-700 text-white">
-          <span>Active Machine Alarms ({activeAlarms.length})</span>
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            <span>Active Machine Alarms ({activeAlarms.length})</span>
+          </div>
           {activeAlarms.length === 0 && (
-            <span className="text-xs bg-emerald-700 text-white px-2 py-0.5 rounded font-bold">
-              All Interlocks Normal
+            <span className="text-xs bg-emerald-700 text-white px-2 py-0.5 rounded font-bold flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5" /> All Safety Interlocks Normal
             </span>
           )}
         </div>
@@ -123,71 +181,21 @@ export const AlarmsView: React.FC = () => {
         </div>
       </div>
 
-      {/* Alarm Definitions & History Tables */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Alarm Definitions */}
-        <div className="panel">
-          <div className="panel-heading">
-            <span>Configured Alarm Definitions & Actions</span>
-          </div>
+      {/* Alarm Definitions & Event History DataTables */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <DataTable
+          title="Configured Alarm Definitions"
+          columns={defColumns}
+          data={definitions}
+          searchKeys={['alarmCode', 'alarmName']}
+        />
 
-          <div className="panel-body p-0 max-h-72 overflow-y-auto">
-            <table className="table-custom">
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Alarm Name</th>
-                  <th>Severity</th>
-                  <th>Corrective Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {definitions.map((def) => (
-                  <tr key={def.id}>
-                    <td className="font-bold text-slate-800">{def.alarmCode}</td>
-                    <td>{def.alarmName}</td>
-                    <td>
-                      <span className="badge bg-slate-200 text-slate-700 px-2 py-0.5 rounded text-[11px]">
-                        {def.severity}
-                      </span>
-                    </td>
-                    <td className="text-xs text-slate-600">{def.correctiveAction || '--'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Historical Alarm Log */}
-        <div className="panel">
-          <div className="panel-heading">
-            <span>Historical Alarm Event Logs</span>
-          </div>
-
-          <div className="panel-body p-0 max-h-72 overflow-y-auto">
-            <table className="table-custom">
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Name</th>
-                  <th>Severity</th>
-                  <th>Triggered Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {logs.map((log) => (
-                  <tr key={log.id}>
-                    <td className="font-bold text-slate-800">{log.alarmCode}</td>
-                    <td>{log.alarmName}</td>
-                    <td>{log.severity}</td>
-                    <td className="text-xs text-slate-500">{new Date(log.triggeredAt).toLocaleTimeString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <DataTable
+          title="Historical Alarm Audit Event Logs"
+          columns={logColumns}
+          data={logs}
+          searchKeys={['alarmCode', 'alarmName']}
+        />
       </div>
     </div>
   );
