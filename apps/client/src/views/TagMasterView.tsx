@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { wsClient } from '../services/wsClient.js';
 import { PlcTagDefinition } from '@innovance-hmi/shared';
 import { HmiAlert } from '../utils/alerts.js';
@@ -11,6 +11,7 @@ import {
   Check,
   X,
   Download,
+  Upload,
 } from 'lucide-react';
 
 interface TagFormData {
@@ -45,6 +46,7 @@ export const TagMasterView: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState<TagFormData>(EMPTY_TAG_FORM);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchTags();
@@ -168,6 +170,63 @@ export const TagMasterView: React.FC = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleImportCsv = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const text = event.target?.result as string;
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      
+      const tagsToImport = [];
+      // Skip header line 0
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        // Split by comma ignoring internal commas. Simple export split: '","'
+        const cols = line.split('","').map(c => c.replace(/^"|"$/g, ''));
+        if (cols.length >= 7) {
+          tagsToImport.push({
+            tagName: cols[0],
+            tagAddress: cols[1],
+            category: cols[2],
+            dataType: cols[3],
+            accessMode: cols[4],
+            unit: cols[5],
+            tagDescription: cols[6],
+          });
+        }
+      }
+
+      if (tagsToImport.length > 0) {
+        setIsSaving(true);
+        try {
+          const res = await fetch('/api/tags/bulk', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(tagsToImport)
+          });
+          const json = await res.json();
+          if (json.success) {
+            HmiAlert.success(`Successfully imported ${json.count} tags!`);
+            fetchTags();
+          } else {
+            HmiAlert.error('Failed to import tags: ' + json.message);
+          }
+        } catch(err) {
+          console.error(err);
+          HmiAlert.error('Import failed due to network error.');
+        } finally {
+          setIsSaving(false);
+          if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+      } else {
+         HmiAlert.warning('No valid tags found in CSV.');
+      }
+    };
+    reader.readAsText(file);
   };
 
   const columns: Column<PlcTagDefinition>[] = [
@@ -300,8 +359,18 @@ export const TagMasterView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          <input 
+            type="file" 
+            accept=".csv" 
+            ref={fileInputRef} 
+            onChange={handleImportCsv} 
+            className="hidden" 
+          />
+          <button onClick={() => fileInputRef.current?.click()} className="btn-ca btn-ca-success text-xs py-1.5" disabled={isSaving}>
+            <Upload className="w-3.5 h-3.5" /> {isSaving ? 'Importing...' : 'Import CSV'}
+          </button>
           <button onClick={handleExportCsv} className="btn-ca btn-ca-default text-xs py-1.5">
-            <Download className="w-3.5 h-3.5" /> Export Tag CSV
+            <Download className="w-3.5 h-3.5" /> Export CSV
           </button>
           <button onClick={fetchTags} className="btn-ca btn-ca-default text-xs py-1.5">
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Re-sync Tags

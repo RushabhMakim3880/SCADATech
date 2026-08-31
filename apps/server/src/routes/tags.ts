@@ -44,6 +44,57 @@ export const tagRoutes: FastifyPluginAsync = async (fastify) => {
     return reply.status(201).send({ success: true, data: tag });
   });
 
+  // POST /api/tags/bulk - Bulk create or update tags
+  fastify.post<{
+    Body: Array<{
+      plcConfigId?: string;
+      tagName: string;
+      tagAddress: string;
+      tagDescription?: string;
+      dataType: string;
+      category: string;
+      accessMode?: string;
+      unit?: string;
+    }>;
+  }>('/tags/bulk', async (request, reply) => {
+    const tags = request.body;
+    if (!Array.isArray(tags) || tags.length === 0) {
+      return reply.status(400).send({ success: false, message: 'Invalid payload' });
+    }
+
+    const defaultPlc = await prisma.plcConfig.findFirst();
+    const fallbackPlcId = defaultPlc?.id || 'default-plc';
+
+    // Using a transaction to insert all tags
+    const createdTags = await prisma.$transaction(
+      tags.map((tag) => 
+        prisma.plcTag.upsert({
+          where: { tagName: tag.tagName },
+          update: {
+            tagAddress: tag.tagAddress,
+            tagDescription: tag.tagDescription || '',
+            dataType: tag.dataType,
+            category: tag.category,
+            accessMode: tag.accessMode || 'READ_WRITE',
+            unit: tag.unit || '',
+          },
+          create: {
+            plcConfigId: tag.plcConfigId || fallbackPlcId,
+            tagName: tag.tagName,
+            tagAddress: tag.tagAddress,
+            tagDescription: tag.tagDescription || '',
+            dataType: tag.dataType,
+            category: tag.category,
+            accessMode: tag.accessMode || 'READ_WRITE',
+            unit: tag.unit || '',
+          },
+        })
+      )
+    );
+
+    return reply.status(201).send({ success: true, count: createdTags.length });
+  });
+
   // PUT /api/tags/:id - Update existing tag mapping
   fastify.put<{
     Params: { id: string };
