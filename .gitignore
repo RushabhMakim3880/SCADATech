@@ -131,3 +131,11 @@ nb-configuration.xml
 
 # Visual Studio Code
 .vscode/
+
+# TypeScript Monorepo & Build Artifacts
+dist/
+**/dist/
+**/node_modules/
+*.db
+*.db-journal
+dev.db

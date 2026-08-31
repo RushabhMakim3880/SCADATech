@@ -1,0 +1,249 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  name      String
+  role      String   @default("OPERATOR") // OPERATOR, SUPERVISOR, ADMIN
+  pinCode   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Machine {
+  id            String          @id @default(uuid())
+  machineCode   String          @unique
+  machineName   String
+  machineType   String          @default("SKIPPER") // SKIPPER, OTHER
+  headCount     Int             @default(6)
+  minAngleSize  Float           @default(40.0)
+  maxAngleSize  Float           @default(200.0)
+  minThickness  Float           @default(3.0)
+  maxThickness  Float           @default(20.0)
+  maxBarLength  Float           @default(12000.0)
+  isActive      Boolean         @default(true)
+  details       MachineDetail[]
+  setups        MachineSetup[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model MachineDetail {
+  id              String         @id @default(uuid())
+  machineId       String
+  machine         Machine        @relation(fields: [machineId], references: [id], onDelete: Cascade)
+  headName        String         // DA1, DA2, DA3, DB1, DB2, DB3, Marking, Cutter
+  headType        String         // PUNCHING, MARKING, CUTTING, DRILLING, NOTCHING
+  xPosition       Float          // Offset in mm
+  side            String         // A, B, NA
+  markingCassettes Int           @default(0)
+  toolSize        Float?         // Active tool size in mm
+  toolShape       String?        @default("ROUND") // ROUND, OBLONG, SQUARE
+  maxToolSize     Float?         @default(32.0)
+  isActive        Boolean        @default(true)
+  setups          MachineSetup[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model MachineSetup {
+  id              String        @id @default(uuid())
+  machineId       String
+  machine         Machine       @relation(fields: [machineId], references: [id], onDelete: Cascade)
+  machineDetailId String
+  machineDetail   MachineDetail @relation(fields: [machineDetailId], references: [id], onDelete: Cascade)
+  paramKey        String        // toolSize, toolShape, cassetteText
+  paramValue      String
+  updatedAt       DateTime      @updatedAt
+}
+
+model PlcConfig {
+  id          String   @id @default(uuid())
+  name        String   @default("Main Innovance PLC")
+  ipAddress   String   @default("192.168.1.10")
+  port        Int      @default(4840)
+  endpointUrl String   @default("opc.tcp://192.168.1.10:4840")
+  protocol    String   @default("OPC-UA") // OPC-UA, MODBUS_TCP
+  isSimulator Boolean  @default(true)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tags        PlcTag[]
+}
+
+model PlcTag {
+  id             String    @id @default(uuid())
+  plcConfigId    String
+  plcConfig      PlcConfig @relation(fields: [plcConfigId], references: [id], onDelete: Cascade)
+  tagName        String    @unique
+  tagAddress     String    // NodeId e.g. "ns=2;s=Application.GVL.rFeedPos"
+  tagDescription String?
+  dataType       String    // Boolean, Int16, UInt16, Int32, UInt32, Float, Double, String
+  category       String    // AXIS_DRO, HEAD_CONTROL, HYDRAULIC, CLAMP, INTERLOCK, ALARM, AUTO_CYCLE, SYSTEM
+  accessMode     String    @default("READ_WRITE") // READ, WRITE, READ_WRITE
+  unit           String?
+  scalingFactor  Float     @default(1.0)
+  offset         Float     @default(0.0)
+  pollIntervalMs Int       @default(0) // 0 for subscription
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model ItemRecipe {
+  id              String           @id @default(uuid())
+  itemCode        String           @unique
+  itemName        String
+  description     String?
+  angleWidthA     Float            @default(75.0) // Flange A (mm)
+  angleWidthB     Float            @default(75.0) // Flange B (mm)
+  thickness       Float            @default(6.0)  // Material thickness (mm)
+  totalLength     Float            @default(1500.0) // Part cut length (mm)
+  measurementType String           @default("ABSOLUTE") // ABSOLUTE, INCREMENTAL
+  isActive        Boolean          @default(true)
+  steps           ItemRecipeStep[]
+  jobCardItems    JobCardItem[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model ItemRecipeStep {
+  id                   String     @id @default(uuid())
+  recipeId             String
+  recipe               ItemRecipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  stepNumber           Int
+  operationType        String     // PUNCH, MARK, CUT, DRILL, NOTCH
+  side                 String     // A, B, NA
+  xPosition            Float      // mm along length
+  yPosition            Float      // mm along flange width
+  toolSize             Float?     // punch diameter in mm
+  toolShape            String?    @default("ROUND")
+  markingText          String?
+  markingCassetteIndex Int?
+  isCutOff             Boolean    @default(false)
+  remarks              String?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+}
+
+model JobCard {
+  id          String        @id @default(uuid())
+  jobCode     String        @unique
+  clientName  String?
+  targetDate  DateTime?
+  status      String        @default("PENDING") // DRAFT, PENDING, RUNNING, COMPLETED, CANCELLED
+  items       JobCardItem[]
+  cycles      ProgramCycle[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model JobCardItem {
+  id                String     @id @default(uuid())
+  jobCardId         String
+  jobCard           JobCard    @relation(fields: [jobCardId], references: [id], onDelete: Cascade)
+  recipeId          String
+  recipe            ItemRecipe @relation(fields: [recipeId], references: [id], onDelete: Restrict)
+  requiredQuantity  Int
+  completedQuantity Int        @default(0)
+  priority          Int        @default(1)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+}
+
+model ProgramCycle {
+  id                     String                  @id @default(uuid())
+  cycleCode              String                  @unique
+  jobCardId              String?
+  jobCard                JobCard?                @relation(fields: [jobCardId], references: [id], onDelete: SetNull)
+  stockBarLength         Float                   @default(6000.0) // Raw bar length (mm)
+  utilizedLength         Float                   @default(0.0)
+  scrapLength            Float                   @default(0.0)
+  targetBars             Int                     @default(1)
+  completedBars          Int                     @default(0)
+  status                 String                  @default("PENDING") // PENDING, RUNNING, COMPLETED, ABORTED
+  startedAt              DateTime?
+  completedAt            DateTime?
+  operations             ProgramCycleOperation[]
+  bars                   ProductionBar[]
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+}
+
+model ProgramCycleOperation {
+  id                   String       @id @default(uuid())
+  cycleId              String
+  cycle                ProgramCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  sequenceOrder        Int
+  recipeId             String
+  operationType        String       // PUNCH, MARK, CUT
+  side                 String       // A, B, NA
+  absoluteBarX         Float        // mm on raw stock
+  yPosition            Float        // mm
+  toolSize             Float?
+  allocatedHeadName    String?      // DA1, DB2, Marking, Cutter
+  allocatedHeadOffset  Float        @default(0.0) // Head DX in mm
+  requiredFeedAxisPos  Float        // Feed DRO Target Pos = BarX - HeadDX
+  isCutOff             Boolean      @default(false)
+  markingText          String?
+  status               String       @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, SKIPPED
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+}
+
+model ProductionBar {
+  id              String           @id @default(uuid())
+  cycleId         String
+  cycle           ProgramCycle     @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  barIndex        Int
+  barLength       Float
+  startedAt       DateTime         @default(now())
+  completedAt     DateTime?
+  status          String           @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED, ABORTED
+  producedUnits   ProductionUnit[]
+}
+
+model ProductionUnit {
+  id          String        @id @default(uuid())
+  barId       String
+  bar         ProductionBar @relation(fields: [barId], references: [id], onDelete: Cascade)
+  recipeId    String
+  itemCode    String
+  unitLength  Float
+  cutTime     DateTime      @default(now())
+  isGood      Boolean       @default(true)
+}
+
+model AlarmDefinition {
+  id                 String     @id @default(uuid())
+  alarmCode          String     @unique
+  alarmName          String
+  description        String
+  severity           String     @default("WARNING") // INFO, WARNING, CRITICAL, EMERGENCY
+  triggerTagAddress  String
+  expectedValue      String     @default("0")
+  correctiveAction   String?
+  isActive           Boolean    @default(true)
+  logs               AlarmLog[]
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+}
+
+model AlarmLog {
+  id                String          @id @default(uuid())
+  alarmDefinitionId String
+  alarmDefinition   AlarmDefinition @relation(fields: [alarmDefinitionId], references: [id], onDelete: Cascade)
+  alarmCode         String
+  alarmName         String
+  severity          String
+  triggeredAt       DateTime        @default(now())
+  acknowledgedAt    DateTime?
+  clearedAt         DateTime?
+  durationSeconds   Int?
+}

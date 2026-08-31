@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-100;
+  }
+}
+
+/* Custom Industrial UI utility classes */
+.dro-display {
+  @apply font-mono text-emerald-400 font-extrabold tracking-wider bg-black/70 border border-emerald-900/60 px-3 py-1.5 rounded shadow-inner;
+}
+
+.industrial-card {
+  @apply bg-slate-900/90 border border-slate-800/80 rounded-lg backdrop-blur shadow-lg;
+}
+
+.industrial-btn {
+  @apply px-4 py-3 font-semibold rounded-lg transition-all duration-150 active:scale-95 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2;
+}
+
+.industrial-btn-primary {
+  @apply industrial-btn bg-cyan-600 hover:bg-cyan-500 text-white shadow-cyan-900/40 shadow-md;
+}
+
+.industrial-btn-success {
+  @apply industrial-btn bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/40 shadow-md;
+}
+
+.industrial-btn-danger {
+  @apply industrial-btn bg-rose-600 hover:bg-rose-500 text-white shadow-rose-900/40 shadow-md;
+}
+
+.industrial-btn-amber {
+  @apply industrial-btn bg-amber-600 hover:bg-amber-500 text-white shadow-amber-900/40 shadow-md;
+}
+
+.industrial-btn-secondary {
+  @apply industrial-btn bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
