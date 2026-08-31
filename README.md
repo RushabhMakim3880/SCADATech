@@ -13,7 +13,7 @@ It replaces legacy desktop software with a modern, high-speed, 20Hz reactive Typ
 
 ```mermaid
 graph TD
-    subgraph Shopfloor Hardware [Hydro Power Tech Machine Hardware]
+    subgraph Hardware ["Hydro Power Tech Machine Hardware"]
         PLC["Innovance H3U / H5U PLC (EtherCAT / Modbus TCP)"]
         SERVO["Carriage Feed Servo (Princher X Axis)"]
         HPU["Main Hydraulic Power Unit (145 bar)"]
@@ -22,7 +22,7 @@ graph TD
         SHEAR["Hydraulic Shear Unit"]
     end
 
-    subgraph Server Gateway [Node.js Fastify & WebSocket Server]
+    subgraph Gateway ["Node.js Fastify & WebSocket Server"]
         MODBUS["Modbus TCP / Serial PLC Driver"]
         SIM["High-Fidelity Real-time PLC Simulator"]
         TAGS["20Hz Reactive Tag Engine (UI & System Tags)"]
@@ -30,7 +30,7 @@ graph TD
         DB["SQLite & JSON Recipe Persistence"]
     end
 
-    subgraph Client HMI [React 19 + TypeScript + Tailwind CSS]
+    subgraph Client ["React 19 + TypeScript + Tailwind CSS"]
         PROD["Manage Production & 2D CAD Blueprint"]
         NEST["Linear Multibar Nesting & Scrap Minimizer"]
         RECIPE["Recipe Master & DSTV / NC1 CAD Importer"]
@@ -44,8 +44,11 @@ graph TD
     SIM <--> TAGS
     MODBUS <--> TAGS
     TAGS <--> WS
-    WS <--> Client HMI
-    DB <--> Server Gateway
+    WS <--> PROD
+    WS <--> RECIPE
+    WS <--> IO
+    WS <--> OEE
+    TAGS --> DB
 ```
 
 ---
