@@ -120,8 +120,8 @@ export const AlarmsView: React.FC = () => {
       {/* Top Header */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-300">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Alarm Configuration & Event Logs (AalarmModules)</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="text-lg font-black text-slate-900">Alarm Configuration & Event Logs (AalarmModules)</h2>
+          <p className="text-xs text-slate-600 font-medium mt-0.5">
             Real-time machine fault monitoring, safety trip acknowledgment, and historical audit logs.
           </p>
         </div>

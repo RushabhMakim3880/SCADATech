@@ -222,8 +222,8 @@ export const NestingAlignmentView: React.FC = () => {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between pb-2 border-b border-slate-300 gap-3">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Multibar Linear Nesting & Scrap Minimizer (IS 802 Standard)</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="text-lg font-black text-slate-900">Multibar Linear Nesting & Scrap Minimizer (IS 802 Standard)</h2>
+          <p className="text-xs text-slate-600 font-medium mt-0.5">
             Automated piece packing across raw commercial stock bars (6m, 9m, 12m) to eliminate steel remnant waste.
           </p>
         </div>

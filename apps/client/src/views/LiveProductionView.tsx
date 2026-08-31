@@ -20,7 +20,6 @@ export const LiveProductionView: React.FC = () => {
   // PLC Store real telemetry
   const {
     isConnected,
-    isSimulator,
     feedPositionMm,
     feedSpeedMPerMin,
     hydraulicPressureBar,
@@ -81,13 +80,13 @@ export const LiveProductionView: React.FC = () => {
       {/* Top Production Control Header */}
       <div className="flex flex-wrap items-center justify-between pb-2 border-b border-slate-300 gap-3">
         <div>
-          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <h2 className="text-lg font-black text-slate-900 flex items-center gap-2">
             Manage Live CNC Production Line
-            <span className={`px-2 py-0.5 text-xs rounded font-bold ${isConnected ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
-              {isConnected ? (isSimulator ? 'SIMULATOR ACTIVE' : 'PLC ONLINE (20Hz)') : 'PLC OFFLINE'}
+            <span className={`px-2.5 py-0.5 text-xs rounded font-bold ${isConnected ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-red-100 text-red-800 border border-red-300'}`}>
+              {isConnected ? 'PLC ONLINE (20Hz)' : 'PLC OFFLINE'}
             </span>
           </h2>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-600 font-medium mt-0.5">
             Real-time feed axis servo positioning, 6-head punch sequencing, character stamping, and hydraulic shearing telemetry.
           </p>
         </div>

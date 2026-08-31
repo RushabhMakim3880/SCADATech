@@ -145,10 +145,10 @@ export const IoDiagnosticsView: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-wrap items-center justify-between pb-2 border-b border-slate-300 gap-3">
         <div>
-          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <h2 className="text-lg font-black text-slate-900 flex items-center gap-2">
             PLC Hardware I/O Signal Diagnostics (Innovance H3U/H5U)
           </h2>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-600 font-medium mt-0.5">
             Real-time visual diagnostic status of 32 Digital Inputs ($X$) and Outputs ($Y$) for instant field troubleshooting.
           </p>
         </div>

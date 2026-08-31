@@ -151,9 +151,9 @@ export const TagMasterView: React.FC = () => {
       {/* Top Header */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-300">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">PLC & Ui Tag Master (UiTagMaster)</h2>
-          <p className="text-xs text-slate-500">
-            Manage real-time OPC-UA tag addresses, data types, read/write access and live value monitors.
+          <h2 className="text-lg font-black text-slate-900">PLC & Ui Tag Master (UiTagMaster)</h2>
+          <p className="text-xs text-slate-600 font-medium mt-0.5">
+            Manage real-time Innovance Modbus TCP / OPC-UA tag registers, data types, read/write access and live value monitors.
           </p>
         </div>
 

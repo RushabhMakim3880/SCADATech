@@ -259,8 +259,8 @@ export const RecipeMasterView: React.FC = () => {
       {/* Top Header */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-300">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Item Recipe Master (HPT Standard)</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="text-lg font-black text-slate-900">Item Recipe Master (HPT Standard)</h2>
+          <p className="text-xs text-slate-600 font-medium mt-0.5">
             Define part geometry, punch hole coordinates, import Tekla DSTV files, verify IS 802 tower design rules, and generate job cards.
           </p>
         </div>

@@ -66,8 +66,8 @@ export const MachineSetupView: React.FC = () => {
       {/* Top Header */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-300">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Machine Master & Tooling Settings (MachineMaster)</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="text-lg font-black text-slate-900">Machine Master & Tooling Settings (MachineMaster)</h2>
+          <p className="text-xs text-slate-600 font-medium mt-0.5">
             Configure installed punch die diameters (Ø14 to Ø26), tool profiles, and bed offsets (DX).
           </p>
         </div>

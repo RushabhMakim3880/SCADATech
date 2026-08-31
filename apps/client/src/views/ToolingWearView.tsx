@@ -97,8 +97,8 @@ export const ToolingWearView: React.FC = () => {
       {/* Top Header */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-300">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Tooling Life & Stroke Wear Monitor (HPT Standard)</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="text-lg font-black text-slate-900">Tooling Life & Stroke Wear Monitor (HPT Standard)</h2>
+          <p className="text-xs text-slate-600 font-medium mt-0.5">
             Real-time punch die stroke tracking, regrind maintenance thresholds, and blade life wear analytics.
           </p>
         </div>

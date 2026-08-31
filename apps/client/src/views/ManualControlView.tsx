@@ -95,8 +95,8 @@ export const ManualControlView: React.FC = () => {
       {/* Top Header */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-300">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Manual Operations Console (OpMaster / manualControl)</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="text-lg font-black text-slate-900">Manual Operations Console (OpMaster / manualControl)</h2>
+          <p className="text-xs text-slate-600 font-medium mt-0.5">
             Manual carriage positioning, hydraulic motor controls, lubrication pumps, pneumatic clamps, and single stroke tooling tests.
           </p>
         </div>
