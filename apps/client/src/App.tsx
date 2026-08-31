@@ -4,6 +4,7 @@ import { ActiveTab } from './components/layout/Sidebar.js';
 import { DashboardView } from './views/DashboardView.js';
 import { ManualControlView } from './views/ManualControlView.js';
 import { RecipeMasterView } from './views/RecipeMasterView.js';
+import { NestingAlignmentView } from './views/NestingAlignmentView.js';
 import { MachineSetupView } from './views/MachineSetupView.js';
 import { TagMasterView } from './views/TagMasterView.js';
 import { usePlcStore } from './stores/usePlcStore.js';
@@ -63,11 +64,13 @@ export const App: React.FC = () => {
       {activeTab === 'PRODUCTION' && <DashboardView />}
       {activeTab === 'MANUAL' && <ManualControlView />}
       {activeTab === 'RECIPES' && <RecipeMasterView />}
+      {activeTab === 'ALIGNMENT' && <NestingAlignmentView />}
       {activeTab === 'MACHINE_SETUP' && <MachineSetupView />}
       {activeTab === 'TAGS' && <TagMasterView />}
       {activeTab !== 'PRODUCTION' &&
         activeTab !== 'MANUAL' &&
         activeTab !== 'RECIPES' &&
+        activeTab !== 'ALIGNMENT' &&
         activeTab !== 'MACHINE_SETUP' &&
         activeTab !== 'TAGS' && (
           <div className="p-8 flex flex-col items-center justify-center h-full text-center text-slate-400">
