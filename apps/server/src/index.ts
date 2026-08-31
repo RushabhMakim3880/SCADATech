@@ -1,7 +1,14 @@
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { buildApp } from './app.js';
 import { PlcManager } from './plc/plcManager.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load server-specific .env first, then fallback to cwd .env
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config();
 
 const PORT = parseInt(process.env.PORT || '5000', 10);
