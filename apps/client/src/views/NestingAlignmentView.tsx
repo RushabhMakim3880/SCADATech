@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ItemRecipe, ProgramCyclePlan, AlignedOperation } from '@innovance-hmi/shared';
+import { DataTable, Column } from '../components/common/DataTable.js';
 import {
   Clock,
   Layers,
@@ -124,10 +125,68 @@ export const NestingAlignmentView: React.FC = () => {
     ? Math.round((plan.utilizedLength / plan.stockBarLength) * 100)
     : 0;
 
+  const operationColumns: Column<AlignedOperation>[] = [
+    {
+      key: 'stepIndex',
+      header: 'Step',
+      width: '60px',
+      render: (op) => <span className="font-bold text-slate-700">#{op.stepIndex}</span>,
+    },
+    {
+      key: 'operationType',
+      header: 'Operation',
+      render: (op) => (
+        <span
+          className={`px-2 py-0.5 rounded text-xs font-semibold ${
+            op.operationType === 'PUNCH'
+              ? 'bg-blue-100 text-blue-800'
+              : op.operationType === 'MARK'
+              ? 'bg-yellow-100 text-yellow-800'
+              : 'bg-red-100 text-red-800'
+          }`}
+        >
+          {op.operationType}
+        </span>
+      ),
+    },
+    {
+      key: 'side',
+      header: 'Flange Side',
+      render: (op) => `Side ${op.side}`,
+    },
+    {
+      key: 'absoluteBarX',
+      header: 'Bar Coordinate (AX)',
+      render: (op) => <span className="font-mono">{op.absoluteBarX} mm</span>,
+    },
+    {
+      key: 'allocatedHeadName',
+      header: 'Allocated Tool Head',
+      render: (op) => <span className="font-bold text-slate-800">{op.allocatedHeadName}</span>,
+    },
+    {
+      key: 'allocatedHeadOffset',
+      header: 'Bed Offset (DX)',
+      render: (op) => <span className="text-slate-600">{op.allocatedHeadOffset} mm</span>,
+    },
+    {
+      key: 'requiredFeedAxisPos',
+      header: 'Required Feed DRO Pos',
+      render: (op) => (
+        <span className="font-mono text-cyan-700 font-bold">{op.requiredFeedAxisPos.toFixed(2)} mm</span>
+      ),
+    },
+    {
+      key: 'toolSize',
+      header: 'Tool / Text',
+      render: (op) => (op.toolSize ? `Ø${op.toolSize}mm` : op.markingText || 'Shear Blade'),
+    },
+  ];
+
   return (
     <div className="p-4 space-y-4 flex-1 overflow-y-auto">
       {/* 1. Original 4 Color Admin KPI Stat Widgets */}
-      <div className="row grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="widget-stats bg-blue">
           <div className="stats-icon"><Clock className="w-12 h-12" /></div>
           <div className="stats-info">
@@ -164,7 +223,7 @@ export const NestingAlignmentView: React.FC = () => {
       {/* 2. Top Header & Action Controls */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-300">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Manage Program Align (Nesting Optimizer)</h2>
+          <h2 className="text-lg font-bold text-slate-800">Manage Program Align (programAlignMaster)</h2>
           <p className="text-xs text-slate-500">
             Combine multiple part recipes onto raw angle bars to minimize scrap and generate optimal monotonic feed coordinates.
           </p>
@@ -344,55 +403,12 @@ export const NestingAlignmentView: React.FC = () => {
 
       {/* 5. Aligned Operations Sequence DataTable */}
       {plan && (
-        <div className="panel">
-          <div className="panel-heading">
-            <span>Manage Program Align DataTable</span>
-            <span className="text-xs text-slate-300">{plan.operationsSequence.length} Steps</span>
-          </div>
-
-          <div className="panel-body p-0">
-            <table className="table-custom">
-              <thead>
-                <tr>
-                  <th style={{ width: '60px' }}>Step</th>
-                  <th>Operation</th>
-                  <th>Flange Side</th>
-                  <th>Bar Coordinate (AX)</th>
-                  <th>Allocated Tool Head</th>
-                  <th>Head Offset (DX)</th>
-                  <th>Required Feed DRO Pos</th>
-                  <th>Tool Size / Text</th>
-                </tr>
-              </thead>
-              <tbody>
-                {plan.operationsSequence.map((op: AlignedOperation) => (
-                  <tr key={op.stepIndex}>
-                    <td>#{op.stepIndex}</td>
-                    <td>
-                      <span
-                        className={`px-2 py-0.5 rounded text-xs font-semibold ${
-                          op.operationType === 'PUNCH'
-                            ? 'bg-blue-100 text-blue-800'
-                            : op.operationType === 'MARK'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {op.operationType}
-                      </span>
-                    </td>
-                    <td>{op.side}</td>
-                    <td>{op.absoluteBarX} mm</td>
-                    <td><span className="font-semibold text-slate-800">{op.allocatedHeadName}</span></td>
-                    <td>{op.allocatedHeadOffset} mm</td>
-                    <td className="font-mono text-cyan-700 font-bold">{op.requiredFeedAxisPos.toFixed(2)} mm</td>
-                    <td>{op.toolSize ? `Ø${op.toolSize}mm` : op.markingText || 'Cut Blade'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <DataTable
+          title="Manage Program Align Operations DataTable"
+          columns={operationColumns}
+          data={plan.operationsSequence}
+          searchKeys={['allocatedHeadName', 'operationType']}
+        />
       )}
     </div>
   );

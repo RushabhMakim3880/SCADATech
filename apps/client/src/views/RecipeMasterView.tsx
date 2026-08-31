@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ItemRecipe, ItemRecipeStep, SideType } from '@innovance-hmi/shared';
 import { AngleBarVisualizer } from '../components/canvas/AngleBarVisualizer.js';
+import { DataTable, Column } from '../components/common/DataTable.js';
 import {
   Plus,
   Trash2,
@@ -14,6 +15,7 @@ export const RecipeMasterView: React.FC = () => {
   const [recipes, setRecipes] = useState<ItemRecipe[]>([]);
   const [activeTab, setActiveTab] = useState<'LIST' | 'FORM'>('LIST');
   const [selectedRecipe, setSelectedRecipe] = useState<ItemRecipe | null>(null);
+  const [highlightedStep, setHighlightedStep] = useState<number | undefined>(undefined);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -37,7 +39,7 @@ export const RecipeMasterView: React.FC = () => {
     const fresh: ItemRecipe = {
       id: '',
       itemCode: `ANG-${Date.now().toString().slice(-4)}`,
-      itemName: 'Standard Transmission Tower Angle',
+      itemName: 'Transmission Angle Profile',
       totalLength: 1500.0,
       angleWidthA: 75.0,
       angleWidthB: 75.0,
@@ -146,30 +148,92 @@ export const RecipeMasterView: React.FC = () => {
     }
   };
 
+  const columns: Column<ItemRecipe>[] = [
+    {
+      key: 'itemCode',
+      header: 'Item Code',
+      render: (r) => <span className="font-bold text-blue-700">{r.itemCode}</span>,
+    },
+    { key: 'itemName', header: 'Material / Description' },
+    {
+      key: 'angleWidthA',
+      header: 'Flange A',
+      render: (r) => `${r.angleWidthA} mm`,
+    },
+    {
+      key: 'angleWidthB',
+      header: 'Flange B',
+      render: (r) => `${r.angleWidthB} mm`,
+    },
+    {
+      key: 'thickness',
+      header: 'Thickness',
+      render: (r) => `${r.thickness} mm`,
+    },
+    {
+      key: 'totalLength',
+      header: 'Program Length',
+      render: (r) => <span className="font-bold text-slate-800">{r.totalLength} mm</span>,
+    },
+    {
+      key: 'steps',
+      header: 'Steps Count',
+      render: (r) => (
+        <span className="badge bg-slate-100 border text-slate-700 px-2 py-0.5 rounded text-xs font-semibold">
+          {r.steps?.length || 0} Steps
+        </span>
+      ),
+    },
+    {
+      key: 'isActive',
+      header: 'Status',
+      render: (r) => (
+        <span
+          className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+            r.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}
+        >
+          {r.isActive ? 'Active' : 'In Active'}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      align: 'right',
+      sortable: false,
+      render: (r) => (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleEditRecipe(r);
+          }}
+          className="btn-ca btn-ca-primary text-xs py-1 px-2.5"
+        >
+          <Edit className="w-3.5 h-3.5" /> Edit
+        </button>
+      ),
+    },
+  ];
+
   return (
     <div className="p-4 space-y-4 flex-1 overflow-y-auto">
-      {/* 1. Top Navigation Bar for Module */}
+      {/* Top Header */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-300">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Item Recipe Master</h2>
+          <h2 className="text-lg font-bold text-slate-800">Item Recipe Master (ItemRecipeMaster)</h2>
           <p className="text-xs text-slate-500">
-            Define angle bar part geometry, flange dimensions, punch hole coordinates and shear points.
+            Define part geometry, angle dimensions, punch hole coordinates, and shear points.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {activeTab === 'LIST' ? (
-            <button
-              onClick={handleCreateNew}
-              className="btn-ca btn-ca-primary"
-            >
+            <button onClick={handleCreateNew} className="btn-ca btn-ca-primary">
               <Plus className="w-4 h-4" /> Add Item Recipe
             </button>
           ) : (
-            <button
-              onClick={() => setActiveTab('LIST')}
-              className="btn-ca btn-ca-default"
-            >
+            <button onClick={() => setActiveTab('LIST')} className="btn-ca btn-ca-default">
               <List className="w-4 h-4" /> View All Recipes
             </button>
           )}
@@ -182,61 +246,18 @@ export const RecipeMasterView: React.FC = () => {
         </div>
       )}
 
-      {/* 2. TAB: LIST (Manage DataTable) */}
+      {/* TAB: LIST */}
       {activeTab === 'LIST' && (
-        <div className="panel">
-          <div className="panel-heading">
-            <span>Manage Item Recipe Master DataTable</span>
-            <span className="text-xs text-slate-300">{recipes.length} Records</span>
-          </div>
-
-          <div className="panel-body p-0">
-            <table className="table-custom">
-              <thead>
-                <tr>
-                  <th>Item Code</th>
-                  <th>Item Name</th>
-                  <th>Flange A Width</th>
-                  <th>Flange B Width</th>
-                  <th>Thickness</th>
-                  <th>Total Program Length</th>
-                  <th>Steps Count</th>
-                  <th>Status</th>
-                  <th style={{ textAlign: 'right' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recipes.map((r) => (
-                  <tr key={r.id}>
-                    <td className="font-bold text-blue-700">{r.itemCode}</td>
-                    <td>{r.itemName}</td>
-                    <td>{r.angleWidthA} mm</td>
-                    <td>{r.angleWidthB} mm</td>
-                    <td>{r.thickness} mm</td>
-                    <td className="font-bold text-slate-800">{r.totalLength} mm</td>
-                    <td><span className="badge bg-slate-200 px-2 py-0.5 rounded text-xs">{r.steps.length} Steps</span></td>
-                    <td>
-                      <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${r.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                        {r.isActive ? 'Active' : 'In Active'}
-                      </span>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <button
-                        onClick={() => handleEditRecipe(r)}
-                        className="btn-ca btn-ca-primary text-xs py-1 px-2"
-                      >
-                        <Edit className="w-3.5 h-3.5" /> Edit
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <DataTable
+          title="Manage Item Recipe Master DataTable"
+          columns={columns}
+          data={recipes}
+          searchKeys={['itemCode', 'itemName']}
+          onRowClick={handleEditRecipe}
+        />
       )}
 
-      {/* 3. TAB: FORM (Add/Edit Form with 1-to-1 matching structure of addItemrecipemaster.php) */}
+      {/* TAB: FORM */}
       {activeTab === 'FORM' && selectedRecipe && (
         <div className="space-y-4">
           <div className="panel">
@@ -260,7 +281,7 @@ export const RecipeMasterView: React.FC = () => {
                     type="text"
                     value={selectedRecipe.itemCode}
                     onChange={(e) => setSelectedRecipe({ ...selectedRecipe, itemCode: e.target.value })}
-                    className="form-control-ca mt-1"
+                    className="form-control-ca mt-1 font-bold text-blue-800"
                     placeholder="Enter Item Code"
                   />
                 </div>
@@ -304,7 +325,7 @@ export const RecipeMasterView: React.FC = () => {
                     type="number"
                     value={selectedRecipe.totalLength}
                     onChange={(e) => setSelectedRecipe({ ...selectedRecipe, totalLength: parseFloat(e.target.value) || 0 })}
-                    className="form-control-ca mt-1"
+                    className="form-control-ca mt-1 font-bold"
                     placeholder="Enter Program Length"
                   />
                 </div>
@@ -336,8 +357,12 @@ export const RecipeMasterView: React.FC = () => {
               {/* 2D CAD Visualizer Blueprint */}
               <div className="pt-3 border-t border-slate-200">
                 <label className="font-bold text-xs text-slate-700 mb-2 block">2D Angle Bar Visual Blueprint Preview</label>
-                <div className="h-52 border border-slate-300 rounded overflow-hidden">
-                  <AngleBarVisualizer recipe={selectedRecipe} />
+                <div className="h-56 rounded overflow-hidden">
+                  <AngleBarVisualizer
+                    recipe={selectedRecipe}
+                    highlightStepIndex={highlightedStep}
+                    onSelectStep={(idx) => setHighlightedStep(idx)}
+                  />
                 </div>
               </div>
 
@@ -357,25 +382,30 @@ export const RecipeMasterView: React.FC = () => {
                 <table className="table-custom border">
                   <thead>
                     <tr>
-                      <th style={{ width: '80px' }}>Step #</th>
+                      <th style={{ width: '70px' }}>Step #</th>
                       <th>Operation <span className="text-red-500">*</span></th>
                       <th>Side / Flange</th>
                       <th>X Pos (mm) <span className="text-red-500">*</span></th>
                       <th>Y Pos (mm)</th>
                       <th>Tool Die (mm)</th>
                       <th>Measurement Type</th>
-                      <th style={{ textAlign: 'right', width: '80px' }}>Actions</th>
+                      <th style={{ textAlign: 'right', width: '70px' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {selectedRecipe.steps.map((step, idx) => (
-                      <tr key={step.id || idx}>
+                      <tr
+                        key={step.id || idx}
+                        className={highlightedStep === idx ? 'bg-blue-50' : ''}
+                        onMouseEnter={() => setHighlightedStep(idx)}
+                        onMouseLeave={() => setHighlightedStep(undefined)}
+                      >
                         <td className="font-bold text-slate-600">#{step.stepNumber}</td>
                         <td>
                           <select
                             value={step.operationType}
                             onChange={(e) => handleUpdateStep(idx, 'operationType', e.target.value)}
-                            className="form-control-ca text-xs"
+                            className="form-control-ca text-xs py-1"
                           >
                             <option value="PUNCH">PUNCH</option>
                             <option value="MARK">MARKING</option>
@@ -386,7 +416,7 @@ export const RecipeMasterView: React.FC = () => {
                           <select
                             value={step.side}
                             onChange={(e) => handleUpdateStep(idx, 'side', e.target.value as SideType)}
-                            className="form-control-ca text-xs"
+                            className="form-control-ca text-xs py-1"
                           >
                             <option value="A">Side A</option>
                             <option value="B">Side B</option>
@@ -398,8 +428,8 @@ export const RecipeMasterView: React.FC = () => {
                             type="number"
                             value={step.xPosition}
                             onChange={(e) => handleUpdateStep(idx, 'xPosition', parseFloat(e.target.value) || 0)}
-                            className="form-control-ca text-xs w-28"
-                            placeholder="Enter X Pos"
+                            className="form-control-ca text-xs w-28 py-1 font-mono font-bold"
+                            placeholder="X Pos"
                           />
                         </td>
                         <td>
@@ -407,8 +437,8 @@ export const RecipeMasterView: React.FC = () => {
                             type="number"
                             value={step.yPosition}
                             onChange={(e) => handleUpdateStep(idx, 'yPosition', parseFloat(e.target.value) || 0)}
-                            className="form-control-ca text-xs w-24"
-                            placeholder="Enter Y Pos"
+                            className="form-control-ca text-xs w-24 py-1 font-mono"
+                            placeholder="Y Pos"
                           />
                         </td>
                         <td>
@@ -416,13 +446,13 @@ export const RecipeMasterView: React.FC = () => {
                             type="number"
                             value={step.toolSize || 18}
                             onChange={(e) => handleUpdateStep(idx, 'toolSize', parseFloat(e.target.value) || 18)}
-                            className="form-control-ca text-xs w-20"
+                            className="form-control-ca text-xs w-20 py-1"
                           />
                         </td>
                         <td>
                           <select
                             value="Absolute"
-                            className="form-control-ca text-xs"
+                            className="form-control-ca text-xs py-1"
                           >
                             <option value="Absolute">Absolute</option>
                             <option value="Incremental">Incremental</option>
