@@ -55,19 +55,6 @@ export const NestingAlignmentView: React.FC = () => {
       const json = await res.json();
       if (json.success && json.data.length > 0) {
         setRecipes(json.data);
-        // Initialize batch from first real recipe if queue is empty
-        if (batchOrders.length === 0) {
-          const first = json.data[0];
-          setBatchOrders([
-            {
-              recipeId: first.id,
-              itemCode: first.itemCode,
-              lengthMm: first.totalLength,
-              quantity: 10,
-              flangeSize: `L${first.angleWidthA}x${first.angleWidthB}x${first.thickness}`,
-            },
-          ]);
-        }
       }
     } catch (err) {
       console.error('Failed to fetch recipes', err);

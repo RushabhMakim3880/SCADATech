@@ -11,140 +11,161 @@ interface IoChannel {
   address: string;
   name: string;
   category: string;
-  isNc: boolean; // Normally Closed or Open
+  isNc: boolean;
   state: boolean;
   forced: boolean;
 }
 
 export const IoDiagnosticsView: React.FC = () => {
-  const { eStopOk, guardsOk, infeedClamp, carriageClamp, outfeedClamp, hydraulicPumpRunning, headsFiring } = usePlcStore();
+  const { isConnected, eStopOk, guardsOk, infeedClamp, carriageClamp, outfeedClamp, hydraulicPumpRunning, headsFiring } = usePlcStore();
 
   const [activeSubTab, setActiveSubTab] = useState<'INPUTS' | 'OUTPUTS' | 'CONFIG'>('INPUTS');
   const [filterCategory, setFilterCategory] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [forceModeEnabled, setForceModeEnabled] = useState<boolean>(false);
 
-  // 32 Standard Digital Inputs for HPT 6-Head Angle Punching Line (Innovance H3U / H5U)
-  const [inputs, setInputs] = useState<IoChannel[]>([
-    { address: 'X0', name: 'Carriage (X) Forward Hardware Limit', category: 'CARRIAGE', isNc: true, state: true, forced: false },
-    { address: 'X1', name: 'Carriage (X) Reverse Hardware Limit', category: 'CARRIAGE', isNc: true, state: true, forced: false },
-    { address: 'X2', name: 'Carriage Zero Reference Proximity', category: 'CARRIAGE', isNc: false, state: false, forced: false },
-    { address: 'X3', name: 'Emergency Stop PB Pressed', category: 'SAFETY', isNc: true, state: eStopOk, forced: false },
-    { address: 'X4', name: 'Safety Guard Door Closed Interlock', category: 'SAFETY', isNc: true, state: guardsOk, forced: false },
-    { address: 'X5', name: 'Main Hydraulic Oil Pressure Switch OK', category: 'HPU', isNc: false, state: hydraulicPumpRunning, forced: false },
-    { address: 'X6', name: 'HPU Oil Temperature High Alarm', category: 'HPU', isNc: true, state: true, forced: false },
-    { address: 'X7', name: 'HPU Oil Level Low Alarm', category: 'HPU', isNc: true, state: true, forced: false },
-    { address: 'X10', name: 'Infeed Table Angle Bar Present Sensor', category: 'INFEED', isNc: false, state: true, forced: false },
-    { address: 'X11', name: 'Infeed Conveyor Clamp Closed Proximity', category: 'INFEED', isNc: false, state: infeedClamp, forced: false },
-    { address: 'X12', name: 'Carriage Gripper Clamp Closed Proximity', category: 'CARRIAGE', isNc: false, state: carriageClamp, forced: false },
-    { address: 'X13', name: 'Outfeed Clamp Closed Proximity', category: 'OUTFEED', isNc: false, state: outfeedClamp, forced: false },
-    { address: 'X14', name: 'DA1 Punch Cylinder Top Home Sensor', category: 'PUNCH_A', isNc: false, state: !headsFiring['DA1'], forced: false },
-    { address: 'X15', name: 'DA1 Punch Cylinder Bottom Done Sensor', category: 'PUNCH_A', isNc: false, state: headsFiring['DA1'] || false, forced: false },
-    { address: 'X16', name: 'DA2 Punch Cylinder Top Home Sensor', category: 'PUNCH_A', isNc: false, state: !headsFiring['DA2'], forced: false },
-    { address: 'X17', name: 'DA2 Punch Cylinder Bottom Done Sensor', category: 'PUNCH_A', isNc: false, state: headsFiring['DA2'] || false, forced: false },
-    { address: 'X20', name: 'DA3 Punch Cylinder Top Home Sensor', category: 'PUNCH_A', isNc: false, state: !headsFiring['DA3'], forced: false },
-    { address: 'X21', name: 'DA3 Punch Cylinder Bottom Done Sensor', category: 'PUNCH_A', isNc: false, state: headsFiring['DA3'] || false, forced: false },
-    { address: 'X22', name: 'DB1 Punch Cylinder Top Home Sensor', category: 'PUNCH_B', isNc: false, state: !headsFiring['DB1'], forced: false },
-    { address: 'X23', name: 'DB1 Punch Cylinder Bottom Done Sensor', category: 'PUNCH_B', isNc: false, state: headsFiring['DB1'] || false, forced: false },
-    { address: 'X24', name: 'DB2 Punch Cylinder Top Home Sensor', category: 'PUNCH_B', isNc: false, state: !headsFiring['DB2'], forced: false },
-    { address: 'X25', name: 'DB2 Punch Cylinder Bottom Done Sensor', category: 'PUNCH_B', isNc: false, state: headsFiring['DB2'] || false, forced: false },
-    { address: 'X26', name: 'DB3 Punch Cylinder Top Home Sensor', category: 'PUNCH_B', isNc: false, state: !headsFiring['DB3'], forced: false },
-    { address: 'X27', name: 'DB3 Punch Cylinder Bottom Done Sensor', category: 'PUNCH_B', isNc: false, state: headsFiring['DB3'] || false, forced: false },
-    { address: 'X30', name: 'Marking Unit Top Home Sensor', category: 'MARKING', isNc: false, state: !headsFiring['Marking'], forced: false },
-    { address: 'X31', name: 'Marking Unit Bottom Stamped Sensor', category: 'MARKING', isNc: false, state: headsFiring['Marking'] || false, forced: false },
-    { address: 'X32', name: 'Hydraulic Shear Blade Top Home Sensor', category: 'SHEAR', isNc: false, state: !headsFiring['Cutter'], forced: false },
-    { address: 'X33', name: 'Hydraulic Shear Blade Bottom Cut Done', category: 'SHEAR', isNc: false, state: headsFiring['Cutter'] || false, forced: false },
-    { address: 'X34', name: 'Side Infeed Cross Transfer Up Sensor', category: 'INFEED', isNc: false, state: false, forced: false },
-    { address: 'X35', name: 'Side Infeed Cross Transfer Down Sensor', category: 'INFEED', isNc: false, state: true, forced: false },
-    { address: 'X36', name: 'Operator Foot Pedal Punch Trigger', category: 'CONTROLS', isNc: false, state: false, forced: false },
-    { address: 'X37', name: 'Lubrication Oil Pressure OK Sensor', category: 'LUBRICATION', isNc: false, state: true, forced: false },
-  ]);
+  // 32 Digital Inputs for HPT 6-Head Angle Punching Line (Innovance H3U / H5U)
+  const [forcedInputs, setForcedInputs] = useState<Record<string, boolean>>({});
+  const [forcedOutputs, setForcedOutputs] = useState<Record<string, boolean>>({});
 
-  // 32 Standard Digital Outputs for HPT 6-Head Line (Innovance H3U / H5U)
-  const [outputs, setOutputs] = useState<IoChannel[]>([
-    { address: 'Y0', name: 'Main Hydraulic Pump Motor Contactor', category: 'HPU', isNc: false, state: hydraulicPumpRunning, forced: false },
-    { address: 'Y1', name: 'Head Lubrication Motor Solenoid', category: 'LUBRICATION', isNc: false, state: false, forced: false },
-    { address: 'Y2', name: 'Oil Circulation Cooling Motor', category: 'HPU', isNc: false, state: false, forced: false },
-    { address: 'Y3', name: 'DA1 Punch Down Hydraulic Solenoid', category: 'PUNCH_A', isNc: false, state: headsFiring['DA1'] || false, forced: false },
-    { address: 'Y4', name: 'DA2 Punch Down Hydraulic Solenoid', category: 'PUNCH_A', isNc: false, state: headsFiring['DA2'] || false, forced: false },
-    { address: 'Y5', name: 'DA3 Punch Down Hydraulic Solenoid', category: 'PUNCH_A', isNc: false, state: headsFiring['DA3'] || false, forced: false },
-    { address: 'Y6', name: 'DB1 Punch Down Hydraulic Solenoid', category: 'PUNCH_B', isNc: false, state: headsFiring['DB1'] || false, forced: false },
-    { address: 'Y7', name: 'DB2 Punch Down Hydraulic Solenoid', category: 'PUNCH_B', isNc: false, state: headsFiring['DB2'] || false, forced: false },
-    { address: 'Y10', name: 'DB3 Punch Down Hydraulic Solenoid', category: 'PUNCH_B', isNc: false, state: headsFiring['DB3'] || false, forced: false },
-    { address: 'Y11', name: 'Marking Cylinder Down Solenoid', category: 'MARKING', isNc: false, state: headsFiring['Marking'] || false, forced: false },
-    { address: 'Y12', name: 'Hydraulic Shear Blade Down Solenoid', category: 'SHEAR', isNc: false, state: headsFiring['Cutter'] || false, forced: false },
-    { address: 'Y13', name: 'Infeed Hold-Down Clamp Close Solenoid', category: 'INFEED', isNc: false, state: infeedClamp, forced: false },
-    { address: 'Y14', name: 'Carriage Gripper Jaw Close Solenoid', category: 'CARRIAGE', isNc: false, state: carriageClamp, forced: false },
-    { address: 'Y15', name: 'Outfeed Hold-Down Clamp Close Solenoid', category: 'OUTFEED', isNc: false, state: outfeedClamp, forced: false },
-    { address: 'Y16', name: 'Side Infeed Cross Transfer Lift Up Solenoid', category: 'INFEED', isNc: false, state: false, forced: false },
-    { address: 'Y17', name: 'Outfeed Discharger Ejector Solenoid', category: 'OUTFEED', isNc: false, state: false, forced: false },
-    { address: 'Y20', name: 'Tower Alarm Hooter & Siren Beacon', category: 'SAFETY', isNc: false, state: false, forced: false },
-    { address: 'Y21', name: 'Tower Red Strobe Light (Fault)', category: 'SAFETY', isNc: false, state: false, forced: false },
-    { address: 'Y22', name: 'Tower Amber Strobe Light (Standby)', category: 'SAFETY', isNc: false, state: true, forced: false },
-    { address: 'Y23', name: 'Tower Green Strobe Light (Auto Cycle Running)', category: 'SAFETY', isNc: false, state: false, forced: false },
-    { address: 'Y24', name: 'Carriage Servo Drive Enable (SON)', category: 'CARRIAGE', isNc: false, state: true, forced: false },
-    { address: 'Y25', name: 'Carriage Servo Drive Alarm Reset (ARST)', category: 'CARRIAGE', isNc: false, state: false, forced: false },
-    { address: 'Y26', name: 'Pneumatic Chip Blow Cleaning Air Nozzle', category: 'LUBRICATION', isNc: false, state: false, forced: false },
-    { address: 'Y27', name: 'Hydraulic Oil Cooler Fan Relay', category: 'HPU', isNc: false, state: false, forced: false },
-  ]);
+  const rawInputs: Array<Omit<IoChannel, 'state' | 'forced'> & { dynamicState: boolean }> = [
+    { address: 'X0', name: 'Carriage (X) Forward Hardware Limit', category: 'CARRIAGE', isNc: true, dynamicState: isConnected ? false : false },
+    { address: 'X1', name: 'Carriage (X) Reverse Hardware Limit', category: 'CARRIAGE', isNc: true, dynamicState: isConnected ? false : false },
+    { address: 'X2', name: 'Carriage Zero Reference Proximity', category: 'CARRIAGE', isNc: false, dynamicState: isConnected ? false : false },
+    { address: 'X3', name: 'Emergency Stop PB Status', category: 'SAFETY', isNc: true, dynamicState: isConnected ? eStopOk : false },
+    { address: 'X4', name: 'Safety Guard Door Closed Interlock', category: 'SAFETY', isNc: true, dynamicState: isConnected ? guardsOk : false },
+    { address: 'X5', name: 'Main Hydraulic Oil Pressure Switch OK', category: 'HPU', isNc: false, dynamicState: isConnected ? hydraulicPumpRunning : false },
+    { address: 'X6', name: 'HPU Oil Temperature High Alarm', category: 'HPU', isNc: true, dynamicState: false },
+    { address: 'X7', name: 'HPU Oil Level Low Alarm', category: 'HPU', isNc: true, dynamicState: false },
+    { address: 'X10', name: 'Infeed Table Angle Bar Present Sensor', category: 'INFEED', isNc: false, dynamicState: false },
+    { address: 'X11', name: 'Infeed Conveyor Clamp Closed Proximity', category: 'INFEED', isNc: false, dynamicState: isConnected ? infeedClamp : false },
+    { address: 'X12', name: 'Carriage Gripper Clamp Closed Proximity', category: 'CARRIAGE', isNc: false, dynamicState: isConnected ? carriageClamp : false },
+    { address: 'X13', name: 'Outfeed Clamp Closed Proximity', category: 'OUTFEED', isNc: false, dynamicState: isConnected ? outfeedClamp : false },
+    { address: 'X14', name: 'DA1 Punch Cylinder Top Home Sensor', category: 'PUNCH_A', isNc: false, dynamicState: false },
+    { address: 'X15', name: 'DA1 Punch Cylinder Bottom Done Sensor', category: 'PUNCH_A', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['DA1']) : false },
+    { address: 'X16', name: 'DA2 Punch Cylinder Top Home Sensor', category: 'PUNCH_A', isNc: false, dynamicState: false },
+    { address: 'X17', name: 'DA2 Punch Cylinder Bottom Done Sensor', category: 'PUNCH_A', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['DA2']) : false },
+    { address: 'X20', name: 'DA3 Punch Cylinder Top Home Sensor', category: 'PUNCH_A', isNc: false, dynamicState: false },
+    { address: 'X21', name: 'DA3 Punch Cylinder Bottom Done Sensor', category: 'PUNCH_A', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['DA3']) : false },
+    { address: 'X22', name: 'DB1 Punch Cylinder Top Home Sensor', category: 'PUNCH_B', isNc: false, dynamicState: false },
+    { address: 'X23', name: 'DB1 Punch Cylinder Bottom Done Sensor', category: 'PUNCH_B', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['DB1']) : false },
+    { address: 'X24', name: 'DB2 Punch Cylinder Top Home Sensor', category: 'PUNCH_B', isNc: false, dynamicState: false },
+    { address: 'X25', name: 'DB2 Punch Cylinder Bottom Done Sensor', category: 'PUNCH_B', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['DB2']) : false },
+    { address: 'X26', name: 'DB3 Punch Cylinder Top Home Sensor', category: 'PUNCH_B', isNc: false, dynamicState: false },
+    { address: 'X27', name: 'DB3 Punch Cylinder Bottom Done Sensor', category: 'PUNCH_B', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['DB3']) : false },
+    { address: 'X30', name: 'Marking Unit Top Home Sensor', category: 'MARKING', isNc: false, dynamicState: false },
+    { address: 'X31', name: 'Marking Unit Bottom Stamped Sensor', category: 'MARKING', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['Marking']) : false },
+    { address: 'X32', name: 'Hydraulic Shear Blade Top Home Sensor', category: 'SHEAR', isNc: false, dynamicState: false },
+    { address: 'X33', name: 'Hydraulic Shear Blade Bottom Cut Done', category: 'SHEAR', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['Cutter']) : false },
+    { address: 'X34', name: 'Side Infeed Cross Transfer Up Sensor', category: 'INFEED', isNc: false, dynamicState: false },
+    { address: 'X35', name: 'Side Infeed Cross Transfer Down Sensor', category: 'INFEED', isNc: false, dynamicState: false },
+    { address: 'X36', name: 'Operator Foot Pedal Punch Trigger', category: 'CONTROLS', isNc: false, dynamicState: false },
+    { address: 'X37', name: 'Lubrication Oil Pressure OK Sensor', category: 'LUBRICATION', isNc: false, dynamicState: false },
+  ];
 
-  const handleToggleForce = (listType: 'INPUTS' | 'OUTPUTS', address: string) => {
-    if (!forceModeEnabled) {
-      alert('Simulation Force Mode is disabled. Enable Force Mode switch at the top to manually toggle I/O states for field testing.');
-      return;
-    }
+  const rawOutputs: Array<Omit<IoChannel, 'state' | 'forced'> & { dynamicState: boolean }> = [
+    { address: 'Y0', name: 'Main Hydraulic Pump Motor Contactor', category: 'HPU', isNc: false, dynamicState: isConnected ? hydraulicPumpRunning : false },
+    { address: 'Y1', name: 'Head Lubrication Motor Solenoid', category: 'LUBRICATION', isNc: false, dynamicState: false },
+    { address: 'Y2', name: 'Oil Circulation Cooling Motor', category: 'HPU', isNc: false, dynamicState: false },
+    { address: 'Y3', name: 'DA1 Punch Down Hydraulic Solenoid', category: 'PUNCH_A', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['DA1']) : false },
+    { address: 'Y4', name: 'DA2 Punch Down Hydraulic Solenoid', category: 'PUNCH_A', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['DA2']) : false },
+    { address: 'Y5', name: 'DA3 Punch Down Hydraulic Solenoid', category: 'PUNCH_A', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['DA3']) : false },
+    { address: 'Y6', name: 'DB1 Punch Down Hydraulic Solenoid', category: 'PUNCH_B', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['DB1']) : false },
+    { address: 'Y7', name: 'DB2 Punch Down Hydraulic Solenoid', category: 'PUNCH_B', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['DB2']) : false },
+    { address: 'Y10', name: 'DB3 Punch Down Hydraulic Solenoid', category: 'PUNCH_B', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['DB3']) : false },
+    { address: 'Y11', name: 'Marking Cylinder Down Solenoid', category: 'MARKING', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['Marking']) : false },
+    { address: 'Y12', name: 'Hydraulic Shear Blade Down Solenoid', category: 'SHEAR', isNc: false, dynamicState: isConnected ? Boolean(headsFiring['Cutter']) : false },
+    { address: 'Y13', name: 'Infeed Angle Bar Clamping Solenoid', category: 'INFEED', isNc: false, dynamicState: isConnected ? infeedClamp : false },
+    { address: 'Y14', name: 'Carriage Gripper Clamp Solenoid', category: 'CARRIAGE', isNc: false, dynamicState: isConnected ? carriageClamp : false },
+    { address: 'Y15', name: 'Outfeed Hold-Down Clamp Solenoid', category: 'OUTFEED', isNc: false, dynamicState: isConnected ? outfeedClamp : false },
+    { address: 'Y16', name: 'Side Infeed Cross Transfer Lift Cylinder', category: 'INFEED', isNc: false, dynamicState: false },
+    { address: 'Y17', name: 'Side Infeed Chain Drive Motor FWD', category: 'INFEED', isNc: false, dynamicState: false },
+    { address: 'Y20', name: 'Alarm Beacon Red Tower Light', category: 'SIGNAL', isNc: false, dynamicState: false },
+    { address: 'Y21', name: 'Cycle Running Green Tower Light', category: 'SIGNAL', isNc: false, dynamicState: isConnected },
+    { address: 'Y22', name: 'Standby Amber Tower Light', category: 'SIGNAL', isNc: false, dynamicState: !isConnected },
+    { address: 'Y23', name: 'HPU High Pressure Relief Solenoid', category: 'HPU', isNc: false, dynamicState: false },
+    { address: 'Y24', name: 'Carriage Brake Release Solenoid', category: 'CARRIAGE', isNc: false, dynamicState: false },
+    { address: 'Y25', name: 'Scrap Chute Pusher Cylinder Solenoid', category: 'SHEAR', isNc: false, dynamicState: false },
+    { address: 'Y26', name: 'Material Length Stop Gate Cylinder', category: 'INFEED', isNc: false, dynamicState: false },
+    { address: 'Y27', name: 'Outfeed Auto Eject Roller Motor', category: 'OUTFEED', isNc: false, dynamicState: false },
+  ];
 
-    if (listType === 'INPUTS') {
-      setInputs((prev) =>
-        prev.map((ch) => (ch.address === address ? { ...ch, state: !ch.state, forced: true } : ch))
-      );
+  const inputs: IoChannel[] = rawInputs.map((i) => ({
+    address: i.address,
+    name: i.name,
+    category: i.category,
+    isNc: i.isNc,
+    state: forceModeEnabled && forcedInputs[i.address] !== undefined ? forcedInputs[i.address] : i.dynamicState,
+    forced: Boolean(forceModeEnabled && forcedInputs[i.address] !== undefined),
+  }));
+
+  const outputs: IoChannel[] = rawOutputs.map((o) => ({
+    address: o.address,
+    name: o.name,
+    category: o.category,
+    isNc: o.isNc,
+    state: forceModeEnabled && forcedOutputs[o.address] !== undefined ? forcedOutputs[o.address] : o.dynamicState,
+    forced: Boolean(forceModeEnabled && forcedOutputs[o.address] !== undefined),
+  }));
+
+  const categories = ['ALL', 'CARRIAGE', 'PUNCH_A', 'PUNCH_B', 'MARKING', 'SHEAR', 'INFEED', 'OUTFEED', 'HPU', 'SAFETY', 'LUBRICATION', 'SIGNAL'];
+
+  const handleToggleForce = (type: 'INPUTS' | 'OUTPUTS', address: string) => {
+    if (!forceModeEnabled) return;
+    if (type === 'INPUTS') {
+      const current = forcedInputs[address] ?? false;
+      setForcedInputs((prev) => ({ ...prev, [address]: !current }));
     } else {
-      setOutputs((prev) =>
-        prev.map((ch) => {
-          if (ch.address === address) {
-            const nextState = !ch.state;
-            wsClient.writeTag(`PLC_Out_${address}`, nextState, 'Boolean');
-            return { ...ch, state: nextState, forced: true };
-          }
-          return ch;
-        })
-      );
+      const current = forcedOutputs[address] ?? false;
+      const next = !current;
+      setForcedOutputs((prev) => ({ ...prev, [address]: next }));
+      wsClient.writeTag(`Output_${address}_Force`, next, 'Boolean');
     }
   };
 
-  const handleResetAllForces = () => {
-    setInputs((prev) => prev.map((ch) => ({ ...ch, forced: false })));
-    setOutputs((prev) => prev.map((ch) => ({ ...ch, forced: false })));
+  const handleClearAllForces = () => {
+    setForcedInputs({});
+    setForcedOutputs({});
   };
 
   const currentList = activeSubTab === 'INPUTS' ? inputs : outputs;
-  const filteredList = currentList.filter((ch) => {
-    const matchCat = filterCategory === 'ALL' || ch.category === filterCategory;
-    const matchQuery = ch.address.toLowerCase().includes(searchQuery.toLowerCase()) || ch.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCat && matchQuery;
+  const filteredList = currentList.filter((item) => {
+    const matchesCategory = filterCategory === 'ALL' || item.category === filterCategory;
+    const matchesSearch = item.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          item.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
   });
 
-  const categories = ['ALL', 'CARRIAGE', 'PUNCH_A', 'PUNCH_B', 'MARKING', 'SHEAR', 'INFEED', 'OUTFEED', 'HPU', 'SAFETY', 'LUBRICATION'];
+  const activeInputsCount = inputs.filter((i) => i.state).length;
+  const activeOutputsCount = outputs.filter((o) => o.state).length;
 
   return (
     <div className="p-4 space-y-4 flex-1 overflow-y-auto">
-      {/* Header */}
+      {/* Top Header */}
       <div className="flex flex-wrap items-center justify-between pb-2 border-b border-slate-300 gap-3">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">PLC Hardware I/O Signal Diagnostics (Innovance H3U/H5U)</h2>
+          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+            PLC Hardware I/O Signal Diagnostics (Innovance H3U/H5U)
+          </h2>
           <p className="text-xs text-slate-500">
             Real-time visual diagnostic status of 32 Digital Inputs ($X$) and Outputs ($Y$) for instant field troubleshooting.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* Simulation Force Mode Switch */}
-          <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded border border-slate-300 text-xs">
-            <span className="font-bold text-slate-700">Field Force Mode:</span>
+        {/* Force Override Mode Controller */}
+        <div className="flex items-center gap-3 bg-slate-100 p-1.5 rounded-lg border border-slate-300 text-xs">
+          <div className="flex items-center gap-1.5 font-bold">
+            <span className="text-slate-600">Field Force Mode:</span>
             <button
-              onClick={() => setForceModeEnabled((f) => !f)}
-              className={`flex items-center gap-1 px-2 py-0.5 rounded font-bold transition-all ${
-                forceModeEnabled ? 'bg-amber-500 text-white' : 'bg-slate-300 text-slate-700'
+              onClick={() => {
+                setForceModeEnabled((prev) => !prev);
+                if (forceModeEnabled) handleClearAllForces();
+              }}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded font-bold transition-all ${
+                forceModeEnabled
+                  ? 'bg-red-600 text-white shadow-sm'
+                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
               }`}
             >
               {forceModeEnabled ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
@@ -154,52 +175,60 @@ export const IoDiagnosticsView: React.FC = () => {
 
           {forceModeEnabled && (
             <button
-              onClick={handleResetAllForces}
-              className="btn-ca btn-ca-danger text-xs py-1.5"
+              onClick={handleClearAllForces}
+              className="btn-ca btn-ca-danger text-xs py-1 px-2 flex items-center gap-1"
             >
-              <RefreshCw className="w-3.5 h-3.5" /> Release All Forces
+              <RefreshCw className="w-3 h-3" /> Clear All Forces
             </button>
           )}
         </div>
       </div>
 
-      {/* Tabs & Filters */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded border border-slate-200 shadow-sm">
-        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded">
+      {/* Tabs Row (Inputs vs Outputs vs Hardware Map) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setActiveSubTab('INPUTS')}
-            className={`px-3 py-1.5 rounded text-xs font-bold transition-all ${
-              activeSubTab === 'INPUTS' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            className={`px-4 py-2 rounded-lg font-bold transition-all shadow-sm ${
+              activeSubTab === 'INPUTS'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
             }`}
           >
-            Digital Inputs (X0–X37) • {inputs.filter((i) => i.state).length}/{inputs.length} Active
+            Digital Inputs (X0–X37) • {activeInputsCount}/{inputs.length} Active
           </button>
+
           <button
             onClick={() => setActiveSubTab('OUTPUTS')}
-            className={`px-3 py-1.5 rounded text-xs font-bold transition-all ${
-              activeSubTab === 'OUTPUTS' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            className={`px-4 py-2 rounded-lg font-bold transition-all shadow-sm ${
+              activeSubTab === 'OUTPUTS'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
             }`}
           >
-            Digital Outputs (Y0–Y37) • {outputs.filter((o) => o.state).length}/{outputs.length} Active
+            Digital Outputs (Y0–Y37) • {activeOutputsCount}/{outputs.length} Active
           </button>
         </div>
 
-        <div className="flex items-center gap-2 text-xs">
+        {/* Filter & Search Bar */}
+        <div className="flex items-center gap-2">
           <input
             type="text"
             placeholder="Search address or sensor..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="form-control-ca w-48 py-1"
+            className="form-control-ca text-xs py-1 px-2.5 w-48"
           />
 
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="form-control-ca py-1"
+            className="form-control-ca text-xs py-1"
           >
             {categories.map((c) => (
-              <option key={c} value={c}>{c === 'ALL' ? 'All Subsystems' : c}</option>
+              <option key={c} value={c}>
+                {c === 'ALL' ? 'All Subsystems' : c}
+              </option>
             ))}
           </select>
         </div>
@@ -217,40 +246,39 @@ export const IoDiagnosticsView: React.FC = () => {
               className={`p-3 rounded-lg border-2 transition-all cursor-pointer select-none flex flex-col justify-between ${
                 isActive
                   ? 'bg-emerald-50/70 border-emerald-500 shadow-sm'
-                  : 'bg-slate-50 border-slate-200 hover:border-slate-300'
-              } ${ch.forced ? 'ring-2 ring-amber-400' : ''}`}
+                  : 'bg-slate-50/80 border-slate-300'
+              } ${forceModeEnabled ? 'hover:border-blue-400' : ''}`}
             >
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full flex items-center justify-center">
-                      <span className={`w-2.5 h-2.5 rounded-full ${isActive ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-slate-300'}`} />
-                    </span>
-                    <span className="font-mono font-black text-sm text-slate-800">{ch.address}</span>
+                    <span
+                      className={`w-3.5 h-3.5 rounded-full border border-slate-400 inline-block shadow-inner ${
+                        isActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-200'
+                      }`}
+                    />
+                    <span className="font-mono font-black text-sm text-slate-900">{ch.address}</span>
                   </div>
 
-                  <div className="flex items-center gap-1">
-                    {ch.forced && (
-                      <span className="px-1.5 py-0.2 bg-amber-500 text-white rounded text-[9px] font-black">
-                        FORCED
-                      </span>
-                    )}
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                      isActive ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-600'
-                    }`}>
-                      {isActive ? 'HIGH (1)' : 'LOW (0)'}
-                    </span>
-                  </div>
+                  <span
+                    className={`px-2 py-0.5 rounded text-[10px] font-black tracking-wider ${
+                      isActive ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-600'
+                    }`}
+                  >
+                    {isActive ? 'HIGH (1)' : 'LOW (0)'}
+                  </span>
                 </div>
 
-                <div className="text-xs font-semibold text-slate-800 leading-snug line-clamp-2">
+                <div className="font-bold text-xs text-slate-800 line-clamp-2 leading-tight">
                   {ch.name}
                 </div>
               </div>
 
-              <div className="mt-3 pt-2 border-t border-slate-200/80 flex items-center justify-between text-[10px] text-slate-500">
-                <span className="font-bold uppercase tracking-wider">{ch.category}</span>
-                <span>{ch.isNc ? 'NC Contact' : 'NO Contact'}</span>
+              <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-200 text-[10px]">
+                <span className="font-semibold text-slate-500 uppercase">{ch.category}</span>
+                <span className="text-slate-400 font-mono">
+                  {ch.isNc ? 'NC Contact' : 'NO Contact'}
+                </span>
               </div>
             </div>
           );

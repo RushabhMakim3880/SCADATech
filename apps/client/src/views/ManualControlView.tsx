@@ -28,7 +28,7 @@ export const ManualControlView: React.FC = () => {
   const [stepIncrement, setStepIncrement] = useState<number>(10.0);
   const [headLubRunning, setHeadLubRunning] = useState<boolean>(false);
   const [oilCircRunning, setOilCircRunning] = useState<boolean>(false);
-  const [princherGoTarget, setPrincherGoTarget] = useState<number>(500.0);
+  const [princherGoTarget, setPrincherGoTarget] = useState<number>(0.0);
 
   // Keypad State
   const [isKeypadOpen, setIsKeypadOpen] = useState(false);

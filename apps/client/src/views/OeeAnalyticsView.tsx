@@ -19,9 +19,9 @@ interface ShiftConfig {
 
 export const OeeAnalyticsView: React.FC = () => {
   const [shifts, setShifts] = useState<ShiftConfig[]>([
-    { shiftName: 'Shift A (Morning)', startTime: '06:00', endTime: '14:00', targetTons: 12.0, targetPieces: 85 },
-    { shiftName: 'Shift B (Evening)', startTime: '14:00', endTime: '22:00', targetTons: 12.0, targetPieces: 85 },
-    { shiftName: 'Shift C (Night)', startTime: '22:00', endTime: '06:00', targetTons: 10.0, targetPieces: 70 },
+    { shiftName: 'Shift A (Morning)', startTime: '06:00', endTime: '14:00', targetTons: 0, targetPieces: 0 },
+    { shiftName: 'Shift B (Evening)', startTime: '14:00', endTime: '22:00', targetTons: 0, targetPieces: 0 },
+    { shiftName: 'Shift C (Night)', startTime: '22:00', endTime: '06:00', targetTons: 0, targetPieces: 0 },
   ]);
 
   const [selectedShiftIdx, setSelectedShiftIdx] = useState<number>(0);

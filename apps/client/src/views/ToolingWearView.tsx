@@ -21,51 +21,73 @@ interface ToolStation {
 
 const STORAGE_KEY = 'hpt_tooling_wear_master';
 
-const INITIAL_STATIONS: ToolStation[] = [
-  { id: '1', headName: 'DA1', stationType: 'PUNCH_A', flangeSide: 'A', toolSize: 18, toolShape: 'ROUND', currentStrokes: 0, maxStrokesLife: 25000, lastRegrindDate: new Date().toISOString().split('T')[0] },
-  { id: '2', headName: 'DA2', stationType: 'PUNCH_A', flangeSide: 'A', toolSize: 22, toolShape: 'ROUND', currentStrokes: 0, maxStrokesLife: 25000, lastRegrindDate: new Date().toISOString().split('T')[0] },
-  { id: '3', headName: 'DA3', stationType: 'PUNCH_A', flangeSide: 'A', toolSize: 14, toolShape: 'ROUND', currentStrokes: 0, maxStrokesLife: 25000, lastRegrindDate: new Date().toISOString().split('T')[0] },
-  { id: '4', headName: 'DB1', stationType: 'PUNCH_B', flangeSide: 'B', toolSize: 18, toolShape: 'ROUND', currentStrokes: 0, maxStrokesLife: 25000, lastRegrindDate: new Date().toISOString().split('T')[0] },
-  { id: '5', headName: 'DB2', stationType: 'PUNCH_B', flangeSide: 'B', toolSize: 22, toolShape: 'ROUND', currentStrokes: 0, maxStrokesLife: 25000, lastRegrindDate: new Date().toISOString().split('T')[0] },
-  { id: '6', headName: 'DB3', stationType: 'PUNCH_B', flangeSide: 'B', toolSize: 26, toolShape: 'OBLONG', currentStrokes: 0, maxStrokesLife: 20000, lastRegrindDate: new Date().toISOString().split('T')[0] },
-  { id: '7', headName: 'Marking', stationType: 'MARKING', flangeSide: 'A', toolSize: 0, toolShape: 'STAMP CASSETTE', currentStrokes: 0, maxStrokesLife: 100000, lastRegrindDate: new Date().toISOString().split('T')[0] },
-  { id: '8', headName: 'Cutter', stationType: 'CUTTER', flangeSide: 'NA', toolSize: 0, toolShape: 'SHEAR BLADE', currentStrokes: 0, maxStrokesLife: 40000, lastRegrindDate: new Date().toISOString().split('T')[0] },
-];
-
 export const ToolingWearView: React.FC = () => {
-  const [stations, setStations] = useState<ToolStation[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.warn('Failed to parse tooling wear from storage', e);
-    }
-    return INITIAL_STATIONS;
-  });
-
+  const [stations, setStations] = useState<ToolStation[]>([]);
   const [resetSuccess, setResetSuccess] = useState<string | null>(null);
 
   useEffect(() => {
+    fetchMachineTooling();
+  }, []);
+
+  const fetchMachineTooling = async () => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(stations));
-    } catch (e) {
-      console.error('Failed to persist tooling wear', e);
+      const res = await fetch('/api/machines');
+      const json = await res.json();
+      let savedWear: Record<string, { currentStrokes: number; lastRegrindDate: string }> = {};
+      try {
+        const local = localStorage.getItem(STORAGE_KEY);
+        if (local) savedWear = JSON.parse(local);
+      } catch (e) {
+        console.warn('Storage read error', e);
+      }
+
+      if (json.success && json.data.length > 0 && json.data[0].details) {
+        const details = json.data[0].details;
+        const loaded: ToolStation[] = details.map((h: any) => {
+          const saved = savedWear[h.headName] || { currentStrokes: 0, lastRegrindDate: new Date().toISOString().split('T')[0] };
+          let stationType: 'PUNCH_A' | 'PUNCH_B' | 'MARKING' | 'CUTTER' = 'PUNCH_A';
+          if (h.headType === 'MARKING') stationType = 'MARKING';
+          else if (h.headType === 'CUTTING') stationType = 'CUTTER';
+          else if (h.side === 'B') stationType = 'PUNCH_B';
+
+          let maxLife = 25000;
+          if (stationType === 'MARKING') maxLife = 100000;
+          if (stationType === 'CUTTER') maxLife = 40000;
+
+          return {
+            id: h.id || h.headName,
+            headName: h.headName,
+            stationType,
+            flangeSide: h.side || 'NA',
+            toolSize: h.toolSize || 0,
+            toolShape: h.toolShape || (stationType === 'MARKING' ? 'STAMP CASSETTE' : stationType === 'CUTTER' ? 'SHEAR BLADE' : 'ROUND'),
+            currentStrokes: saved.currentStrokes || 0,
+            maxStrokesLife: maxLife,
+            lastRegrindDate: saved.lastRegrindDate || new Date().toISOString().split('T')[0],
+          };
+        });
+        setStations(loaded);
+      }
+    } catch (err) {
+      console.error('Failed to load machine tooling', err);
     }
-  }, [stations]);
+  };
 
   const handleResetCounter = (id: string, headName: string) => {
     if (!window.confirm(`Are you sure you want to reset the stroke counter for ${headName} after tool replacement/regrind?`)) return;
-    setStations((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, currentStrokes: 0, lastRegrindDate: new Date().toISOString().split('T')[0] } : s))
+    const updated = stations.map((s) =>
+      s.id === id ? { ...s, currentStrokes: 0, lastRegrindDate: new Date().toISOString().split('T')[0] } : s
     );
+    setStations(updated);
+
+    const savedWear: Record<string, { currentStrokes: number; lastRegrindDate: string }> = {};
+    updated.forEach((s) => {
+      savedWear[s.headName] = { currentStrokes: s.currentStrokes, lastRegrindDate: s.lastRegrindDate };
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(savedWear));
+
     setResetSuccess(`Stroke counter for ${headName} reset to 0!`);
     setTimeout(() => setResetSuccess(null), 3000);
-  };
-
-  const handleUpdateToolSize = (id: string, newSize: number) => {
-    setStations((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, toolSize: newSize } : s))
-    );
   };
 
   const totalHits = stations.reduce((acc, s) => acc + s.currentStrokes, 0);
@@ -146,16 +168,7 @@ export const ToolingWearView: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-slate-500">Installed Die Size:</span>
                     {st.toolSize > 0 ? (
-                      <div className="flex items-center gap-1">
-                        <span className="text-slate-400">Ø</span>
-                        <input
-                          type="number"
-                          value={st.toolSize}
-                          onChange={(e) => handleUpdateToolSize(st.id, parseFloat(e.target.value) || 0)}
-                          className="form-control-ca w-16 py-0.5 text-xs text-right font-bold"
-                        />
-                        <span className="text-slate-500">mm</span>
-                      </div>
+                      <span className="font-bold text-slate-800">Ø{st.toolSize} mm</span>
                     ) : (
                       <span className="font-bold text-slate-700">{st.toolShape}</span>
                     )}
