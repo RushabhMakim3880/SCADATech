@@ -1,0 +1,133 @@
+/* body {
+    background-color: white;
+} */
+
+body,
+.btn {
+    font-size: 1rem;
+}
+
+#header {
+    display: none;
+}
+
+#top-menu {
+    top: 0px;
+}
+
+.pace .pace-progress {
+    display: none;
+}
+
+.app-with-top-menu.app-header-fixed {
+    padding-top: 40px;
+}
+
+
+[data-bs-theme=dark] {
+    --bs-primary: #4e73df;
+    /* your color */
+    --bs-secondary: #858796;
+    --bs-success: #1cc88a;
+    --bs-info: #36b9cc;
+    --bs-warning: #f6c23e;
+    --bs-danger: #e74a3b;
+    --bs-dark: #5a5c69;
+    --bs-light: #f8f9fc;
+    --bs-app-top-menu-bg: #0f75bc;
+    --bs-app-top-menu-menu-submenu-bg: #0f75bc;
+}
+
+:root {
+    --bs-app-top-menu-bg: #0f75bc;
+    --bs-app-top-menu-menu-submenu-bg: #0f75bc;
+    --bs-gray-900: #0f75bc;
+    --bs-dark-rgb: 15, 117, 188;
+    --bs-success-rgb: 130, 199, 121;
+    --bs-app-theme: #82c779;
+    --bs-border-radius: 0.25rem;
+}
+
+.btn-primary {
+    --bs-btn-bg: #0f75bc;
+}
+
+.btn-success {
+    --bs-btn-bg: #82c779;
+}
+
+.blueTitle {
+    color: #0f75bc;
+}
+
+
+
+
+
+
+#spaContainer {
+    font-size: 1.2rem;
+}
+
+#spaContainer .table-sm {
+    font-size: 1rem;
+}
+
+#spaContainer input {
+    max-width: 100px;
+}
+
+#tooltip {
+    position: absolute;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+    display: none;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* for modal-content */
+.modal .modal-content {
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-xxl {
+    --bs-modal-width: 95vw;
+    max-width: 95vw;
+    width: 95vw;
+}
+
+@media (min-width: 576px) {
+    .modal-xxl {
+        --bs-modal-width: 92vw;
+        max-width: 92vw;
+        width: 92vw;
+    }
+}
+
+@media (min-width: 992px) {
+    .modal-xxl {
+        --bs-modal-width: 90vw;
+        max-width: 90vw;
+        width: 90vw;
+    }
+}
+
+@media (min-width: 1400px) {
+    .modal-xxl {
+        --bs-modal-width: 85vw;
+        max-width: 1350px;
+        width: 85vw;
+    }
+}
+
+@media (min-width: 1860px) {
+    .modal-xxl {
+        --bs-modal-width: 1800px;
+        max-width: 1800px;
+        width: 1800px;
+    }
+}

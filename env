@@ -1,0 +1,67 @@
+scadaId = xyz
+
+websocketPort=3001
+nodejsApiPort=3002
+nodeBaseUrl = https://plcscada.test/
+internalApiToken= "rHpBBT34su0hXdah9e3F1RGG6fiu"
+
+#--------------------------------------------------------------------
+# Git AutoPush Configuration
+#--------------------------------------------------------------------
+gitAutoPush.secret = asdfrTiZPQv4BymfVrYpxrxhOP7qy9LJCrFgd8
+#make sure to match/use above secret in git webhook for autoPush.php to work
+
+#--------------------------------------------------------------------
+# Additional Environment Configuration
+#--------------------------------------------------------------------
+phpPath = php
+#need to change this only if using cyberpanel, else "php" would be sufficient,used in autopush and cron jobs
+app.homeRoute = \Modules\Frontend\OpMaster\Controllers\OpMaster::start
+devModePassword = ""  # Password to access dev mode, presee control+shift+alter+` on login screen and enter this secret to access dev mode, works with only tenant admin or saas admin role.
+
+#--------------------------------------------------------------------
+# ENVIRONMENT
+#--------------------------------------------------------------------
+CI_ENVIRONMENT = development
+app.cacheEnabled = false
+app.cacheTTL = 0
+# app.baseURL = https://plcscada.test/
+
+
+#--------------------------------------------------------------------
+# DATABASE
+#--------------------------------------------------------------------
+database.default.hostname = localhost
+database.default.database = plcscada
+database.default.username = root
+database.default.password = Mtpl
+database.default.DBDriver = MySQLi
+database.default.charset  = 'utf8mb4'
+database.default.DBCollat = 'utf8mb4_general_ci'
+
+#--------------------------------------------------------------------
+# JWT Configuration
+#--------------------------------------------------------------------
+jwt.secretKey = rHpBBT34su0hXdah7e3F1RGG6fiuoOYtV4oBPgl8G8wQZgpi6VWV+C+v9e09K/BX9MVSZb16srjx4LGY/zyW4Q==
+jwt.algorithm = "HS256"
+jwt.expireTime = 3600  # Short Login Token validity in seconds (e.g., 1 hour) 3600
+jwt.refreshExpireTime = 604800 # Without Rember Me used, Token validity in seconds (e.g., 1 week) 604800
+jwt.longExpireTime = 2592000 # When Remember Me is Used , Token validity in seconds (e.g., 30 days) 2592000
+
+
+#--------------------------------------------------------------------
+# Encryption Key
+#--------------------------------------------------------------------
+encryptionKey = IW1m7uFDTfz8xwhwwnIDM1YtzChXI4uustfDtGY+kQlFXk2XzXnM7mbFIuvRNOlxLa2DniLzumaHOgZ/JZ8o2A==
+
+
+feature.menuPosition = "Top"
+feature.notificationPlaySound = 1
+feature.notificationDelay = 5000
+feature.notificationPositionX = right
+feature.notificationPositionY = top
+feature.cdnToLocal = 1
+feature.allowedFileTypes = "jpg, jpeg, png, gif, pdf, doc, docx, xls, xlsx, ppt, pptx, txt, zip, rar, apk, dat"
+feature.appTagline = ""
+
+appIdentifier = 843da0940bc0cc4cfbe6c29c81f5c9a341b6da0e2f49dec61ed9ed2eb069da24

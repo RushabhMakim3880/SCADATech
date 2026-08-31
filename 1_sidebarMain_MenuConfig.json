@@ -1,0 +1,185 @@
+[
+  {
+    "id": "menuItem_29",
+    "label": "Plc Master",
+    "icon": "fas fa-network-wired",
+    "class": "",
+    "module": "PlcMaster",
+    "permissions": "view",
+    "attributes": "",
+    "isPopup": 0,
+    "url": "PlcMaster/managePlcMaster",
+    "children": [
+      {
+        "id": "menuItem_30",
+        "label": "Plc Master",
+        "icon": "fas fa-list",
+        "class": "",
+        "module": "PlcMaster",
+        "permissions": "view",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "PlcMaster/managePlcMaster",
+        "children": []
+      },
+      {
+        "id": "menuItem_31",
+        "label": "Tag Groups",
+        "icon": "fas fa-list",
+        "class": "",
+        "module": "PlcTagGroupMaster",
+        "permissions": "view",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "PlcTagGroupMaster/managePlcTag",
+        "children": []
+      },
+      {
+        "id": "menuItem_32",
+        "label": "Ui Tag",
+        "icon": "fas fa-list",
+        "class": "",
+        "module": "UiTagMaster",
+        "permissions": "view",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "UiTagMaster/manageUiTag",
+        "children": []
+      },
+      {
+        "id": "menuItem_33",
+        "label": "Alarm Config",
+        "icon": "fas fa-list",
+        "class": "",
+        "module": "AalarmModules",
+        "permissions": "view",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "AalarmModules/manageAlarmconfig",
+        "children": []
+      },
+      {
+        "id": "menuItem_34",
+        "label": "Alarm Log",
+        "icon": "fas fa-list",
+        "class": "",
+        "module": "AlarmLog",
+        "permissions": "view",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "AlarmLog/manageAlarmlog",
+        "children": []
+      },
+      {
+        "id": "menuItem_35",
+        "label": "Company Master Settings",
+        "icon": "fas fa-cogs",
+        "class": "",
+        "module": "setting",
+        "permissions": "view",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "setting/manageCompanyMasterSettings",
+        "children": []
+      }
+    ]
+  },
+  {
+    "id": "menuItem_43",
+    "label": "Item Job",
+    "icon": "fas fa-sitemap",
+    "class": "",
+    "module": "",
+    "permissions": "",
+    "attributes": "",
+    "isPopup": 1,
+    "url": "#",
+    "children": [
+      {
+        "id": "menuItem_36",
+        "label": "Item Recipe",
+        "icon": "fas fa-list",
+        "class": "",
+        "module": "ItemRecipeMaster",
+        "permissions": "view",
+        "attributes": "",
+        "isPopup": 1,
+        "url": "ItemRecipeMaster/manageItemrecipemaster",
+        "children": []
+      },
+      {
+        "id": "menuItem_37",
+        "label": "Job Cards",
+        "icon": "fas fa-align-justify",
+        "class": "",
+        "module": "jobCards",
+        "permissions": "add,edit,view,delete,manage",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "jobCards/manageJobcard",
+        "children": []
+      }
+    ]
+  },
+  {
+    "id": "menuItem_38",
+    "label": "Profile",
+    "icon": "fas fa-user",
+    "class": "editProfile",
+    "module": "",
+    "permissions": "",
+    "attributes": "",
+    "isPopup": 0,
+    "url": "",
+    "children": []
+  },
+  {
+    "id": "menuItem_39",
+    "label": "Reports",
+    "icon": "fab fa-galactic-republic",
+    "class": "",
+    "module": "",
+    "permissions": "",
+    "attributes": "",
+    "isPopup": 0,
+    "url": "#",
+    "children": [
+      {
+        "id": "menuItem_40",
+        "label": "Manage Punch Counters",
+        "icon": "fas fa-hockey-puck",
+        "class": "",
+        "module": "punchCounters",
+        "permissions": "add,edit,view,delete,manage",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "punchCounters/managePunchcounters",
+        "children": []
+      },
+      {
+        "id": "menuItem_41",
+        "label": "Manage Program Align",
+        "icon": "fas fa-project-diagram",
+        "class": "",
+        "module": "programAlignMaster",
+        "permissions": "view,manage",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "programAlignMaster/manageProgramalignmaster",
+        "children": []
+      },
+      {
+        "id": "menuItem_42",
+        "label": "Manage Production",
+        "icon": "fab fa-product-hunt",
+        "class": "",
+        "module": "productionMasters",
+        "permissions": "add,edit,view,delete,manage",
+        "attributes": "",
+        "isPopup": 0,
+        "url": "productionMasters/manageProductionmaster",
+        "children": []
+      }
+    ]
+  }
+]

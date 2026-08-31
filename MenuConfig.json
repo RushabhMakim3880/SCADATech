@@ -1,0 +1,36 @@
+[
+  {
+    "id": "menuItem_4",
+    "label": "Sample Module",
+    "icon": "fas fa-angry",
+    "class": "",
+    "module": "",
+    "permissions": "",
+    "attributes": "",
+    "url": "#",
+    "children": [
+      {
+        "id": "menuItem_5",
+        "label": "Add Sample Module",
+        "icon": "fas fa-plus-circle",
+        "class": "",
+        "module": "",
+        "permissions": "",
+        "attributes": "",
+        "url": "samples/addSampleNew",
+        "children": []
+      },
+      {
+        "id": "menuItem_6",
+        "label": "Manage Sample",
+        "icon": "fas fa-align-justify",
+        "class": "",
+        "module": "",
+        "permissions": "",
+        "attributes": "",
+        "url": "samples/manageSampleNew",
+        "children": []
+      }
+    ]
+  }
+]
