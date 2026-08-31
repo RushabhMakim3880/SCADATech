@@ -4,7 +4,12 @@
 
 @layer base {
   body {
-    @apply bg-scada-950 text-slate-100 font-sans select-none overflow-hidden antialiased;
+    background-color: #06090e;
+    color: #f1f5f9;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    user-select: none;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
     background-image: 
       radial-gradient(at 0% 0%, rgba(0, 240, 255, 0.04) 0px, transparent 50%),
       radial-gradient(at 100% 100%, rgba(0, 255, 157, 0.03) 0px, transparent 50%),
@@ -14,18 +19,31 @@
 
 /* Glassmorphic Industrial Panels */
 .scada-panel {
-  @apply bg-gradient-to-b from-scada-900/95 to-scada-950/95 border border-scada-750/70 rounded-xl backdrop-blur-xl shadow-2xl;
+  background: linear-gradient(to bottom, rgba(11, 17, 26, 0.95), rgba(6, 9, 14, 0.95));
+  border: 1px solid rgba(29, 44, 66, 0.7);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(16px);
   box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
 .scada-panel-accent {
-  @apply bg-gradient-to-b from-scada-850 to-scada-900 border border-cyan-500/30 rounded-xl shadow-lg;
+  background: linear-gradient(to bottom, #101926, #0b111a);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 0.75rem;
   box-shadow: 0 0 25px -5px rgba(0, 240, 255, 0.15), inset 0 1px 0 0 rgba(0, 240, 255, 0.2);
 }
 
 /* Digital Readout (DRO) Cluster */
 .scada-dro {
-  @apply font-mono font-black tracking-wider bg-black/85 border border-slate-800/90 rounded-lg shadow-inner relative overflow-hidden;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  background-color: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(30, 41, 59, 0.9);
+  border-radius: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.6);
 }
 
 .scada-dro::after {
@@ -39,73 +57,128 @@
 }
 
 .scada-dro-cyan {
-  @apply scada-dro text-neon-cyan border-cyan-950/70;
+  color: #00f0ff;
+  border-color: rgba(8, 51, 68, 0.7);
   text-shadow: 0 0 12px rgba(0, 240, 255, 0.65);
 }
 
 .scada-dro-emerald {
-  @apply scada-dro text-neon-emerald border-emerald-950/70;
+  color: #00ff9d;
+  border-color: rgba(6, 78, 59, 0.7);
   text-shadow: 0 0 12px rgba(0, 255, 157, 0.65);
 }
 
 .scada-dro-amber {
-  @apply scada-dro text-neon-amber border-amber-950/70;
+  color: #ffb703;
+  border-color: rgba(120, 53, 15, 0.7);
   text-shadow: 0 0 12px rgba(255, 183, 3, 0.65);
 }
 
 .scada-dro-purple {
-  @apply scada-dro text-purple-400 border-purple-950/70;
+  color: #c084fc;
+  border-color: rgba(88, 28, 135, 0.7);
   text-shadow: 0 0 12px rgba(181, 23, 158, 0.65);
 }
 
 /* Premium Industrial Tactile Buttons */
 .scada-btn {
-  @apply px-4 py-3 font-bold rounded-xl transition-all duration-150 active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-2 border select-none relative overflow-hidden;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  transition: all 150ms ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.scada-btn:active {
+  transform: scale(0.97);
+}
+
+.scada-btn:disabled {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 .scada-btn-primary {
-  @apply scada-btn bg-gradient-to-b from-cyan-500 to-cyan-700 hover:from-cyan-400 hover:to-cyan-600 text-slate-950 font-extrabold border-cyan-300/40;
+  background: linear-gradient(to bottom, #06b6d4, #0e7490);
+  color: #020617;
+  font-weight: 800;
+  border: 1px solid rgba(103, 232, 249, 0.4);
   box-shadow: 0 4px 15px 0 rgba(0, 240, 255, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
+}
+.scada-btn-primary:hover {
+  background: linear-gradient(to bottom, #22d3ee, #0891b2);
 }
 
 .scada-btn-success {
-  @apply scada-btn bg-gradient-to-b from-emerald-500 to-emerald-700 hover:from-emerald-400 hover:to-emerald-600 text-slate-950 font-extrabold border-emerald-300/40;
+  background: linear-gradient(to bottom, #10b981, #047857);
+  color: #020617;
+  font-weight: 800;
+  border: 1px solid rgba(110, 231, 183, 0.4);
   box-shadow: 0 4px 15px 0 rgba(0, 255, 157, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
+}
+.scada-btn-success:hover {
+  background: linear-gradient(to bottom, #34d399, #059669);
 }
 
 .scada-btn-danger {
-  @apply scada-btn bg-gradient-to-b from-rose-500 to-rose-700 hover:from-rose-400 hover:to-rose-600 text-white font-extrabold border-rose-300/40;
+  background: linear-gradient(to bottom, #f43f5e, #be123c);
+  color: #ffffff;
+  font-weight: 800;
+  border: 1px solid rgba(253, 164, 175, 0.4);
   box-shadow: 0 4px 15px 0 rgba(255, 0, 85, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+}
+.scada-btn-danger:hover {
+  background: linear-gradient(to bottom, #fb7185, #e11d48);
 }
 
 .scada-btn-amber {
-  @apply scada-btn bg-gradient-to-b from-amber-500 to-amber-700 hover:from-amber-400 hover:to-amber-600 text-slate-950 font-extrabold border-amber-300/40;
+  background: linear-gradient(to bottom, #f59e0b, #b45309);
+  color: #020617;
+  font-weight: 800;
+  border: 1px solid rgba(252, 211, 77, 0.4);
   box-shadow: 0 4px 15px 0 rgba(255, 183, 3, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+}
+.scada-btn-amber:hover {
+  background: linear-gradient(to bottom, #fbbf24, #d97706);
 }
 
 .scada-btn-secondary {
-  @apply scada-btn bg-gradient-to-b from-scada-800 to-scada-900 hover:from-scada-750 hover:to-scada-850 text-slate-200 border-scada-700/80;
+  background: linear-gradient(to bottom, #162233, #0b111a);
+  color: #e2e8f0;
+  border: 1px solid rgba(38, 56, 82, 0.8);
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
 }
+.scada-btn-secondary:hover {
+  background: linear-gradient(to bottom, #1d2c42, #101926);
+}
 
-/* Pulsing LED status pill */
+/* Pulsing LED status indicators */
 .led-indicator {
-  @apply w-2.5 h-2.5 rounded-full inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  display: inline-block;
 }
 .led-emerald {
-  @apply led-indicator bg-neon-emerald;
+  background-color: #00ff9d;
   box-shadow: 0 0 10px #00ff9d, 0 0 20px #00ff9d;
 }
 .led-rose {
-  @apply led-indicator bg-neon-rose;
+  background-color: #ff0055;
   box-shadow: 0 0 10px #ff0055, 0 0 20px #ff0055;
 }
 .led-amber {
-  @apply led-indicator bg-neon-amber;
+  background-color: #ffb703;
   box-shadow: 0 0 10px #ffb703, 0 0 20px #ffb703;
 }
 .led-cyan {
-  @apply led-indicator bg-neon-cyan;
+  background-color: #00f0ff;
   box-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
 }
 
