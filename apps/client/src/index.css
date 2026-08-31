@@ -7,207 +7,319 @@
     background-color: #d9e0e7;
     color: #242a30;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    user-select: auto;
+    user-select: none;
     overflow-x: hidden;
     margin: 0;
     padding: 0;
   }
 }
 
-/* Color Admin Layout Containers */
+/* ==========================================================================
+   Color Admin Industrial Layout Containers
+   ========================================================================== */
 .app-header {
   background: #ffffff;
-  border-bottom: 1px solid #e2e7eb;
-  height: 50px;
+  border-bottom: 1px solid #c8d1db;
+  height: 52px;
 }
 
 .app-sidebar {
-  background: #2d353c;
-  width: 230px;
+  background: #242a30;
+  width: 240px;
 }
 
 .app-content {
   background: #d9e0e7;
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - 52px);
 }
 
-/* Color Admin Panel Cards */
+/* ==========================================================================
+   Color Admin Panels & Cards
+   ========================================================================== */
 .panel {
   background: #ffffff;
   border-radius: 4px;
-  border: none;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid #d0d7de;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .panel-heading {
-  background: #242a30;
+  background: #2d353c;
   color: #ffffff;
-  padding: 10px 15px;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
+  padding: 8px 14px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
   font-weight: 600;
   font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .panel-body {
-  padding: 15px;
+  padding: 14px;
 }
 
-/* KPI Widget Stats (Exact Color Admin Classes) */
+/* ==========================================================================
+   Industrial KPI Stat Widgets (Color Admin Authentic)
+   ========================================================================== */
 .widget-stats {
   position: relative;
   color: #ffffff;
-  padding: 15px;
+  padding: 14px 16px;
   border-radius: 4px;
-  margin-bottom: 15px;
+  margin-bottom: 0px;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
 .widget-stats.bg-blue {
-  background: #348fe2 !important;
+  background: linear-gradient(135deg, #348fe2 0%, #206dbb 100%) !important;
 }
 
 .widget-stats.bg-green {
-  background: #00acac !important;
+  background: linear-gradient(135deg, #00acac 0%, #007a7a 100%) !important;
 }
 
 .widget-stats.bg-orange {
-  background: #f59c1a !important;
+  background: linear-gradient(135deg, #f59c1a 0%, #c47608 100%) !important;
 }
 
 .widget-stats.bg-red {
-  background: #ff5b57 !important;
+  background: linear-gradient(135deg, #ff5b57 0%, #cc3935 100%) !important;
 }
 
-.widget-stats.bg-purple {
-  background: #727cb6 !important;
-}
-
-.widget-stats.bg-black {
-  background: #2d353c !important;
+.widget-stats.bg-dark {
+  background: linear-gradient(135deg, #343a40 0%, #212529 100%) !important;
 }
 
 .widget-stats .stats-icon {
   position: absolute;
-  right: 15px;
-  top: 15px;
-  font-size: 42px;
-  opacity: 0.25;
+  right: 14px;
+  top: 12px;
+  font-size: 38px;
+  opacity: 0.22;
 }
 
 .widget-stats .stats-info h4 {
-  font-size: 12px;
-  margin: 0 0 5px 0;
-  color: rgba(255, 255, 255, 0.75);
+  font-size: 11px;
+  margin: 0 0 4px 0;
+  color: rgba(255, 255, 255, 0.85);
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 .widget-stats .stats-info p {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   margin: 0;
+  line-height: 1.2;
 }
 
-/* DataTables Styling */
+/* ==========================================================================
+   Industrial High-Contrast Digital DRO Display
+   ========================================================================== */
+.digital-dro-box {
+  background: #11161b;
+  border: 1px solid #323d47;
+  border-radius: 4px;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.digital-dro-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #8a9ba8;
+  letter-spacing: 0.5px;
+}
+
+.digital-dro-val {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 15px;
+  font-weight: 800;
+  color: #00ffcc;
+  text-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
+}
+
+/* ==========================================================================
+   Industrial Dual-State LED Indicators
+   ========================================================================== */
+.led-indicator {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.led-indicator.led-green {
+  background: #00ff66;
+  box-shadow: 0 0 6px #00ff66;
+}
+
+.led-indicator.led-red {
+  background: #ff3333;
+  box-shadow: 0 0 6px #ff3333;
+}
+
+.led-indicator.led-amber {
+  background: #ffaa00;
+  box-shadow: 0 0 6px #ffaa00;
+}
+
+.led-indicator.led-off {
+  background: #444c54;
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   DataTables & Custom Table Components
+   ========================================================================== */
 .table-custom {
   width: 100%;
   border-collapse: collapse;
   background: #ffffff;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .table-custom th {
-  background: #f8f9fa;
+  background: #f1f3f5;
   color: #242a30;
-  font-weight: 600;
-  border-bottom: 2px solid #dee2e6;
-  padding: 10px 12px;
+  font-weight: 700;
+  border-bottom: 2px solid #ced4da;
+  border-top: 1px solid #e9ecef;
+  padding: 8px 12px;
   text-align: left;
 }
 
 .table-custom td {
-  padding: 10px 12px;
+  padding: 8px 12px;
   border-bottom: 1px solid #e9ecef;
-  color: #495057;
+  color: #333333;
   vertical-align: middle;
 }
 
-.table-custom tbody tr:hover {
-  background-color: #f1f3f5;
+.table-custom tbody tr:nth-child(even) {
+  background-color: #fafbfc;
 }
 
-/* Standard Bootstrap Action Buttons */
+.table-custom tbody tr:hover {
+  background-color: #ebf3fc;
+}
+
+/* ==========================================================================
+   Standard Color Admin & Industrial Push Buttons
+   ========================================================================== */
 .btn-ca {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   font-weight: 600;
   font-size: 12px;
-  padding: 6px 12px;
+  padding: 5px 12px;
   border-radius: 3px;
-  transition: all 0.15s ease-in-out;
+  transition: all 0.12s ease-in-out;
   cursor: pointer;
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.btn-ca:active {
+  transform: translateY(1px);
 }
 
 .btn-ca-primary {
   background: #348fe2;
   color: #ffffff;
-  border: 1px solid #348fe2;
+  border-color: #2777c2;
 }
 .btn-ca-primary:hover {
-  background: #2772b8;
+  background: #2475c4;
 }
 
 .btn-ca-success {
   background: #00acac;
   color: #ffffff;
-  border: 1px solid #00acac;
+  border-color: #008787;
 }
 .btn-ca-success:hover {
-  background: #008a8a;
+  background: #008e8e;
 }
 
 .btn-ca-warning {
   background: #f59c1a;
   color: #ffffff;
-  border: 1px solid #f59c1a;
+  border-color: #cf7c08;
 }
 .btn-ca-warning:hover {
-  background: #c87a0c;
+  background: #d88307;
 }
 
 .btn-ca-danger {
   background: #ff5b57;
   color: #ffffff;
-  border: 1px solid #ff5b57;
+  border-color: #e03c38;
 }
 .btn-ca-danger:hover {
-  background: #cc403d;
+  background: #ea4541;
 }
 
 .btn-ca-default {
-  background: #f2f3f4;
+  background: #ffffff;
   color: #333333;
-  border: 1px solid #ccd0d4;
+  border: 1px solid #ced4da;
 }
 .btn-ca-default:hover {
-  background: #e2e4e6;
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.btn-ca-dark {
+  background: #2d353c;
+  color: #ffffff;
+  border: 1px solid #1a2024;
+}
+.btn-ca-dark:hover {
+  background: #1f252a;
+}
+
+/* Industrial Push Button (.plc-btn) */
+.btn-industrial {
+  font-weight: 700;
+  font-size: 11px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+  text-align: center;
+}
+
+.btn-industrial:active {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  transform: translateY(1px);
 }
 
 .form-control-ca {
   background: #ffffff;
-  border: 1px solid #dcdfe2;
+  border: 1px solid #ced4da;
   border-radius: 3px;
-  padding: 6px 10px;
-  font-size: 13px;
+  padding: 5px 8px;
+  font-size: 12px;
   color: #333333;
-  width: 100%;
 }
 .form-control-ca:focus {
   border-color: #348fe2;
