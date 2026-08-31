@@ -13,6 +13,9 @@ import {
   CheckCircle2,
   Clock,
   Zap,
+  Activity,
+  Layers,
+  ChevronRight,
 } from 'lucide-react';
 
 interface ProductionCycleEntity {
@@ -92,15 +95,15 @@ export const LiveProductionView: React.FC = () => {
         const currentPos = usePlcStore.getState().feedPositionMm;
 
         if (Math.abs(targetPos - currentPos) > 1.0) {
-          // Move towards target
-          const step = Math.min(Math.abs(targetPos - currentPos), 15.0);
+          // Move towards target with smooth acceleration
+          const step = Math.min(Math.abs(targetPos - currentPos), 18.0);
           const newPos = currentPos < targetPos ? currentPos + step : currentPos - step;
           batchUpdateTags({
             feedPositionMm: newPos,
-            feedSpeedMPerMin: 24.0,
+            feedSpeedMPerMin: 28.5,
           });
         } else {
-          // Reached target -> Fire tool head
+          // Reached target coordinate -> Fire allocated head
           batchUpdateTags({ feedSpeedMPerMin: 0.0 });
           const head = currentOp.allocatedHeadName || 'DA1';
 
@@ -120,10 +123,10 @@ export const LiveProductionView: React.FC = () => {
             if (currentStepIdx + 1 < activeCycle.operations.length) {
               setCurrentStepIdx((idx) => idx + 1);
             } else {
-              // Completed bar
+              // Completed all operations on raw bar
               setIsRunning(false);
             }
-          }, 450);
+          }, 400);
         }
       }, 100);
     }
@@ -135,7 +138,7 @@ export const LiveProductionView: React.FC = () => {
 
   const handleStart = () => {
     if (!eStopOk || !guardsOk) {
-      alert('Cannot start: Check E-Stop and Safety Guard doors!');
+      alert('SAFETY INTERLOCK TRIP: Check E-Stop button and machine enclosure doors!');
       return;
     }
     setIsRunning(true);
@@ -161,107 +164,151 @@ export const LiveProductionView: React.FC = () => {
   const progressPercent = Math.round((currentStepIdx / totalSteps) * 100);
 
   return (
-    <div className="p-6 space-y-5 flex-1 overflow-y-auto">
-      {/* Top Main Status Bar */}
+    <div className="p-6 space-y-6 flex-1 overflow-y-auto">
+      {/* 1. Hero Digital Readout (DRO) Cluster */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        {/* Feed Carriage DRO */}
-        <div className="industrial-card p-4 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/20 border-emerald-900/60">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
-            <span className="flex items-center gap-1.5">
-              <Compass className="w-4 h-4 text-emerald-400" /> FEED AXIS (X)
+        {/* Main Feed Axis X DRO */}
+        <div className="scada-panel p-4 border-cyan-500/30 relative overflow-hidden group">
+          <div className="flex items-center justify-between text-xs text-slate-400 font-mono mb-2">
+            <span className="flex items-center gap-2 font-bold text-slate-200">
+              <Compass className="w-4 h-4 text-neon-cyan" /> CARRIAGE FEED (X)
             </span>
-            <span className="text-emerald-400 font-bold">DRO</span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-cyan-950 text-neon-cyan border border-cyan-500/40 font-bold">
+              SERVO DRO
+            </span>
           </div>
-          <div className="text-3xl font-mono font-extrabold text-emerald-400 tracking-wider">
-            {feedPositionMm.toFixed(2)}
+
+          <div className="scada-dro-cyan p-3 text-center my-1">
+            <span className="text-4xl font-extrabold">{feedPositionMm.toFixed(2)}</span>
             <span className="text-xs text-slate-400 ml-1 font-normal">mm</span>
           </div>
-          <div className="text-[11px] text-slate-400 font-mono mt-1">
-            TARGET: {activeCycle?.operations[currentStepIdx]?.requiredFeedAxisPos.toFixed(2) || '0.00'} mm
+
+          <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mt-2">
+            <span>TARGET:</span>
+            <span className="text-neon-cyan font-bold">
+              {activeCycle?.operations[currentStepIdx]?.requiredFeedAxisPos.toFixed(2) || '0.00'} mm
+            </span>
           </div>
         </div>
 
-        {/* Speed */}
-        <div className="industrial-card p-4">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
-            <span className="flex items-center gap-1.5">
+        {/* Feed Velocity */}
+        <div className="scada-panel p-4">
+          <div className="flex items-center justify-between text-xs text-slate-400 font-mono mb-2">
+            <span className="flex items-center gap-2 font-bold text-slate-200">
               <Gauge className="w-4 h-4 text-cyan-400" /> FEED SPEED
             </span>
-            <span className="text-cyan-400">SERVO</span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-scada-800 text-slate-300 font-bold">
+              INVERTER
+            </span>
           </div>
-          <div className="text-3xl font-mono font-extrabold text-cyan-400">
-            {Math.abs(feedSpeedMPerMin).toFixed(1)}
+
+          <div className="scada-dro-cyan p-3 text-center my-1">
+            <span className="text-4xl font-extrabold">{Math.abs(feedSpeedMPerMin).toFixed(1)}</span>
             <span className="text-xs text-slate-400 ml-1 font-normal">m/min</span>
           </div>
-          <div className="text-[11px] text-slate-400 font-mono mt-1">
-            STATE: {isRunning ? 'RUNNING' : 'HOLD'}
+
+          <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mt-2">
+            <span>STATE:</span>
+            <span className={isRunning ? 'text-neon-emerald font-bold' : 'text-slate-400'}>
+              {isRunning ? 'ACCELERATING' : 'STOPPED'}
+            </span>
           </div>
         </div>
 
         {/* Hydraulic Pressure */}
-        <div className="industrial-card p-4">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
-            <span className="flex items-center gap-1.5">
-              <Flame className="w-4 h-4 text-amber-400" /> HYD PRESSURE
+        <div className="scada-panel p-4">
+          <div className="flex items-center justify-between text-xs text-slate-400 font-mono mb-2">
+            <span className="flex items-center gap-2 font-bold text-slate-200">
+              <Flame className="w-4 h-4 text-neon-amber" /> HYD PRESSURE
             </span>
-            <span className="text-amber-400">HPU</span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-amber-950 text-neon-amber border border-amber-500/40 font-bold">
+              HPU MAIN
+            </span>
           </div>
-          <div className="text-3xl font-mono font-extrabold text-amber-400">
-            {hydraulicPressureBar.toFixed(1)}
+
+          <div className="scada-dro-amber p-3 text-center my-1">
+            <span className="text-4xl font-extrabold">{hydraulicPressureBar.toFixed(1)}</span>
             <span className="text-xs text-slate-400 ml-1 font-normal">bar</span>
           </div>
-          <div className="text-[11px] text-slate-400 font-mono mt-1">
-            PUMP: 1450 RPM
+
+          <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mt-2">
+            <span>PUMP MOTOR:</span>
+            <span className="text-neon-amber font-bold">1450 RPM (OK)</span>
           </div>
         </div>
 
         {/* Cycle Timer */}
-        <div className="industrial-card p-4">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
-            <span className="flex items-center gap-1.5">
+        <div className="scada-panel p-4">
+          <div className="flex items-center justify-between text-xs text-slate-400 font-mono mb-2">
+            <span className="flex items-center gap-2 font-bold text-slate-200">
               <Clock className="w-4 h-4 text-purple-400" /> CYCLE TIME
             </span>
-            <span className="text-purple-400 font-mono">LIVE</span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-500/40 font-bold">
+              TIMER
+            </span>
           </div>
-          <div className="text-3xl font-mono font-extrabold text-purple-400">
-            {Math.floor(elapsedSec / 60)}:{(elapsedSec % 60).toString().padStart(2, '0')}
+
+          <div className="scada-dro-purple p-3 text-center my-1">
+            <span className="text-4xl font-extrabold">
+              {Math.floor(elapsedSec / 60)}:{(elapsedSec % 60).toString().padStart(2, '0')}
+            </span>
             <span className="text-xs text-slate-400 ml-1 font-normal">min</span>
           </div>
-          <div className="text-[11px] text-slate-400 font-mono mt-1">
-            PROGRESS: {progressPercent}%
+
+          <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mt-2">
+            <span>PROGRESS:</span>
+            <span className="text-purple-300 font-bold">{progressPercent}%</span>
           </div>
         </div>
 
-        {/* Produced Piece Count */}
-        <div className="industrial-card p-4">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> CUT PIECES
+        {/* Piece Output Counter */}
+        <div className="scada-panel p-4">
+          <div className="flex items-center justify-between text-xs text-slate-400 font-mono mb-2">
+            <span className="flex items-center gap-2 font-bold text-slate-200">
+              <CheckCircle2 className="w-4 h-4 text-neon-emerald" /> CUT OUTPUT
             </span>
-            <span className="text-emerald-400">OUTPUT</span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-neon-emerald border border-emerald-500/40 font-bold">
+              BATCH
+            </span>
           </div>
-          <div className="text-3xl font-mono font-extrabold text-emerald-400">
-            {producedPcs}
+
+          <div className="scada-dro-emerald p-3 text-center my-1">
+            <span className="text-4xl font-extrabold">{producedPcs}</span>
             <span className="text-xs text-slate-400 ml-1 font-normal">Pcs</span>
           </div>
-          <div className="text-[11px] text-slate-400 font-mono mt-1">
-            STEP: {currentStepIdx + 1} / {totalSteps}
+
+          <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mt-2">
+            <span>STEP:</span>
+            <span className="text-neon-emerald font-bold">
+              {currentStepIdx + 1} / {totalSteps}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Real-time 2D Angle Bar Visualizer with Live Feed Cursor */}
-      <div className="industrial-card p-4 space-y-3">
+      {/* 2. Interactive Real-Time 2D Angle Bar Visualizer */}
+      <div className="scada-panel p-5 space-y-3">
         <div className="flex items-center justify-between text-xs font-mono">
-          <span className="font-bold text-slate-200">
-            ACTIVE PART: {currentRecipe?.itemCode} ({currentRecipe?.itemName}) • Stock Raw Bar: {activeCycle?.stockBarLength || 6000}mm
-          </span>
-          <span className="text-emerald-400 font-bold">
-            CURRENT ACTION: {activeCycle?.operations[currentStepIdx]?.operationType} on {activeCycle?.operations[currentStepIdx]?.allocatedHeadName}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="font-extrabold text-slate-100 text-sm tracking-wider flex items-center gap-2">
+              <Layers className="w-4 h-4 text-cyan-400" />
+              ACTIVE BLUEPRINT: {currentRecipe?.itemCode} ({currentRecipe?.itemName})
+            </span>
+            <span className="px-2.5 py-1 rounded bg-scada-800 border border-scada-700 text-slate-300 text-[10px] font-bold">
+              RAW BAR: {activeCycle?.stockBarLength || 6000}mm
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="led-emerald" />
+            <span className="text-neon-emerald font-bold">
+              ACTION: {activeCycle?.operations[currentStepIdx]?.operationType} ON{' '}
+              {activeCycle?.operations[currentStepIdx]?.allocatedHeadName}
+            </span>
+          </div>
         </div>
 
-        <div className="h-52">
+        <div className="h-56">
           <AngleBarVisualizer
             recipe={currentRecipe}
             activeFeedPosition={feedPositionMm}
@@ -269,16 +316,18 @@ export const LiveProductionView: React.FC = () => {
         </div>
       </div>
 
-      {/* Bottom Production Console: Head Matrix + Step Queue + Controls */}
+      {/* 3. CNC Tooling Matrix, Operation Queue & Master Touch Controls */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Physical 6-Head Firing Indicators */}
-        <div className="industrial-card p-5 space-y-3">
-          <div className="text-xs font-bold text-slate-200 font-mono flex items-center justify-between">
-            <span>TOOLING HEADS REAL-TIME FIRING</span>
-            <Zap className="w-4 h-4 text-amber-400" />
+        {/* Physical 6-Head Tooling HUD */}
+        <div className="scada-panel p-5 space-y-4">
+          <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-200 border-b border-scada-750 pb-3">
+            <span className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-neon-amber" /> 6-HEAD TOOLING FIRING MATRIX
+            </span>
+            <span className="text-[10px] text-slate-400">HYDRAULIC ACTUATORS</span>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 font-mono">
+          <div className="grid grid-cols-4 gap-2.5 font-mono">
             {['DA1', 'DA2', 'DA3', 'DB1', 'DB2', 'DB3', 'Marking', 'Cutter'].map((h) => {
               const isFiring = headsFiring[h];
               const isAllocated = activeCycle?.operations[currentStepIdx]?.allocatedHeadName === h;
@@ -286,31 +335,37 @@ export const LiveProductionView: React.FC = () => {
               return (
                 <div
                   key={h}
-                  className={`p-3 rounded-lg border text-center transition-all ${
+                  className={`p-3 rounded-xl border text-center transition-all duration-150 relative overflow-hidden ${
                     isFiring
-                      ? 'bg-rose-600 border-rose-400 text-white scale-105 shadow-lg shadow-rose-900/60'
+                      ? 'bg-rose-900 border-rose-400 text-white shadow-neon-rose scale-105'
                       : isAllocated
-                      ? 'bg-cyan-950/80 border-cyan-500 text-cyan-300 animate-pulse'
-                      : 'bg-slate-950/60 border-slate-800 text-slate-400'
+                      ? 'bg-cyan-950/90 border-cyan-400 text-neon-cyan shadow-neon-cyan animate-pulse'
+                      : 'bg-scada-950/80 border-scada-750 text-slate-400 hover:border-slate-600'
                   }`}
                 >
-                  <div className="font-black text-sm">{h}</div>
-                  <div className="text-[10px] mt-0.5 font-bold">
-                    {isFiring ? 'PUNCHING' : isAllocated ? 'TARGET' : 'READY'}
+                  <div className="font-black text-sm tracking-wider">{h}</div>
+                  <div className="text-[10px] mt-1 font-bold">
+                    {isFiring ? 'STRIKING' : isAllocated ? 'TARGET' : 'READY'}
                   </div>
+                  {isFiring && (
+                    <span className="absolute inset-0 bg-rose-500/20 animate-ping" />
+                  )}
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Step Sequence Table */}
-        <div className="industrial-card p-4 flex flex-col justify-between">
-          <div className="text-xs font-bold text-slate-200 font-mono mb-2">
-            BATCH OPERATION QUEUE ({currentStepIdx + 1} / {totalSteps})
+        {/* Batch Operation Step Queue */}
+        <div className="scada-panel p-5 flex flex-col justify-between space-y-3">
+          <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-200 border-b border-scada-750 pb-3">
+            <span className="flex items-center gap-2">
+              <Activity className="w-4 h-4 text-cyan-400" /> BATCH STEP QUEUE ({currentStepIdx + 1} / {totalSteps})
+            </span>
+            <span className="text-[10px] text-slate-400">MONOTONIC FEED</span>
           </div>
 
-          <div className="space-y-1.5 max-h-36 overflow-y-auto">
+          <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
             {activeCycle?.operations.map((op, idx: number) => {
               const isCurrent = currentStepIdx === idx;
               const isDone = currentStepIdx > idx;
@@ -318,56 +373,60 @@ export const LiveProductionView: React.FC = () => {
               return (
                 <div
                   key={op.id || idx}
-                  className={`flex items-center justify-between p-2 rounded text-xs font-mono transition-all ${
+                  className={`flex items-center justify-between p-2.5 rounded-xl text-xs font-mono transition-all ${
                     isCurrent
-                      ? 'bg-cyan-950 border border-cyan-500 text-cyan-200 shadow'
+                      ? 'bg-gradient-to-r from-cyan-950 to-scada-800 border border-cyan-400/80 text-neon-cyan shadow-neon-cyan'
                       : isDone
-                      ? 'bg-slate-950/40 text-slate-500'
-                      : 'bg-slate-950/80 text-slate-300'
+                      ? 'bg-scada-950/40 text-slate-500 border border-transparent'
+                      : 'bg-scada-950/80 text-slate-300 border border-scada-800'
                   }`}
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold">#{op.sequenceOrder}</span>
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-extrabold text-slate-300">#{op.sequenceOrder}</span>
                     <span className="font-bold text-slate-100">{op.operationType}</span>
-                    <span className="text-cyan-400">({op.allocatedHeadName})</span>
+                    <span className="text-cyan-400 text-[10px]">({op.allocatedHeadName})</span>
                   </div>
-                  <div className="font-bold text-emerald-400">X: {op.requiredFeedAxisPos.toFixed(1)}mm</div>
+                  <div className="flex items-center gap-1.5 font-bold text-neon-emerald">
+                    <span>X: {op.requiredFeedAxisPos.toFixed(1)}mm</span>
+                    {isCurrent && <ChevronRight className="w-3.5 h-3.5 animate-pulse" />}
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Main Industrial Touch Start/Stop/Pause Buttons */}
-        <div className="industrial-card p-5 flex flex-col justify-between space-y-3">
-          <div className="text-xs font-bold text-slate-200 font-mono">
-            CNC MASTER CYCLE EXECUTION
+        {/* Master CNC Execution Station Buttons */}
+        <div className="scada-panel p-5 flex flex-col justify-between space-y-4">
+          <div className="text-xs font-mono font-bold text-slate-200 border-b border-scada-750 pb-3 flex items-center justify-between">
+            <span>CNC MASTER CYCLE CONTROLLER</span>
+            <span className={isRunning ? 'led-emerald' : 'led-amber'} />
           </div>
 
-          <div className="grid grid-cols-2 gap-3 flex-1">
+          <div className="grid grid-cols-2 gap-3.5 flex-1">
             {!isRunning ? (
               <button
                 onClick={handleStart}
-                className="industrial-btn-success h-20 text-lg font-black flex flex-col items-center justify-center gap-1.5 shadow-xl"
+                className="scada-btn-success h-22 text-base font-black flex flex-col items-center justify-center gap-1.5"
               >
-                <Play className="w-7 h-7" />
+                <Play className="w-8 h-8" />
                 <span>START AUTO</span>
               </button>
             ) : (
               <button
                 onClick={handlePause}
-                className="industrial-btn-amber h-20 text-lg font-black flex flex-col items-center justify-center gap-1.5 shadow-xl"
+                className="scada-btn-amber h-22 text-base font-black flex flex-col items-center justify-center gap-1.5"
               >
-                <Pause className="w-7 h-7" />
+                <Pause className="w-8 h-8" />
                 <span>PAUSE CYCLE</span>
               </button>
             )}
 
             <button
               onClick={handleStop}
-              className="industrial-btn-danger h-20 text-lg font-black flex flex-col items-center justify-center gap-1.5 shadow-xl"
+              className="scada-btn-danger h-22 text-base font-black flex flex-col items-center justify-center gap-1.5"
             >
-              <Square className="w-7 h-7" />
+              <Square className="w-8 h-8" />
               <span>ABORT / RESET</span>
             </button>
           </div>

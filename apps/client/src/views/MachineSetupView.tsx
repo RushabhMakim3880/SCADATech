@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { MachineConfig, MachineDetail } from '@innovance-hmi/shared';
-import { Wrench, Save, CheckCircle, RefreshCw } from 'lucide-react';
+import { MachineDetail } from '@innovance-hmi/shared';
+import { Wrench, Save, CheckCircle, Cpu } from 'lucide-react';
 
 export const MachineSetupView: React.FC = () => {
-  const [machine, setMachine] = useState<MachineConfig | null>(null);
+  const [machine, setMachine] = useState<any | null>(null);
+  const [heads, setHeads] = useState<MachineDetail[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [savedSuccess, setSavedSuccess] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
     fetchMachineConfig();
@@ -18,232 +19,205 @@ export const MachineSetupView: React.FC = () => {
       const res = await fetch('/api/machines');
       const json = await res.json();
       if (json.success && json.data.length > 0) {
-        setMachine(json.data[0]);
+        const m = json.data[0];
+        setMachine(m);
+        setHeads(m.details || []);
       }
     } catch (err) {
-      console.error('Failed to fetch machine config', err);
+      console.error('Failed to load machine config', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleToolSizeChange = (id: string, size: number) => {
-    if (!machine) return;
-    setMachine({
-      ...machine,
-      details: machine.details.map((d) => (d.id === id ? { ...d, toolSize: size } : d)),
-    });
+  const handleUpdateHead = (index: number, field: keyof MachineDetail, value: any) => {
+    const updated = [...heads];
+    updated[index] = { ...updated[index], [field]: value };
+    setHeads(updated);
   };
 
-  const handleToolShapeChange = (id: string, shape: 'ROUND' | 'OBLONG' | 'SQUARE') => {
+  const handleSaveAll = async () => {
     if (!machine) return;
-    setMachine({
-      ...machine,
-      details: machine.details.map((d) => (d.id === id ? { ...d, toolShape: shape } : d)),
-    });
-  };
-
-  const handleToggleHead = (id: string) => {
-    if (!machine) return;
-    setMachine({
-      ...machine,
-      details: machine.details.map((d) => (d.id === id ? { ...d, isActive: !d.isActive } : d)),
-    });
-  };
-
-  const saveSetup = async () => {
-    if (!machine) return;
-    setSaving(true);
+    setIsSaving(true);
     try {
-      const payload = {
-        heads: machine.details.map((d) => ({
-          id: d.id,
-          toolSize: d.toolSize,
-          toolShape: d.toolShape,
-          isActive: d.isActive,
-        })),
-      };
-
-      const res = await fetch(`/api/machines/${machine.id}/setup`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        setSavedSuccess(true);
-        setTimeout(() => setSavedSuccess(false), 3000);
-      }
+      await Promise.all(
+        heads.map((h) =>
+          fetch(`/api/machines/head/${h.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              toolSize: h.toolSize,
+              toolShape: h.toolShape,
+              xPosition: h.xPosition,
+              side: h.side,
+              isActive: h.isActive,
+            }),
+          })
+        )
+      );
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+      fetchMachineConfig();
     } catch (err) {
-      console.error('Failed to save setup', err);
+      console.error('Failed to save tooling', err);
     } finally {
-      setSaving(false);
+      setIsSaving(false);
     }
   };
 
   if (loading) {
-    return (
-      <div className="p-8 flex items-center justify-center h-full text-slate-400 font-mono">
-        <RefreshCw className="w-6 h-6 animate-spin mr-2 text-cyan-400" />
-        LOADING MACHINE CONFIGURATION...
-      </div>
-    );
+    return <div className="p-8 text-center text-slate-400 font-mono">Loading Machine Master...</div>;
   }
 
   return (
     <div className="p-6 space-y-6 flex-1 overflow-y-auto">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div className="flex items-center justify-between border-b border-scada-750 pb-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-            <Wrench className="w-5 h-5 text-cyan-400" />
-            Physical Tooling & Head Configuration
+          <h2 className="text-xl font-extrabold text-slate-100 flex items-center gap-2.5">
+            <Wrench className="w-6 h-6 text-neon-cyan" />
+            Machine Tooling Master & Bed Coordinate Offsets ($DX$)
           </h2>
-          <p className="text-xs text-slate-400">
-            Define installed punch die diameters, shapes, marking cassettes, and bed offset DX for each head.
+          <p className="text-xs text-slate-400 font-mono">
+            Configure punch dies (Ø14 to Ø26), tool profiles, marking cassettes, and mechanical bed offsets.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          {savedSuccess && (
-            <span className="flex items-center gap-1 text-xs font-mono text-emerald-400 bg-emerald-950/60 px-3 py-1.5 rounded border border-emerald-800">
-              <CheckCircle className="w-4 h-4" /> SAVED SUCCESSFULLY
+          {saveSuccess && (
+            <span className="flex items-center gap-1.5 text-xs font-mono text-neon-emerald bg-emerald-950 px-3.5 py-2 rounded-xl border border-emerald-500/50 shadow-neon-emerald">
+              <CheckCircle className="w-4 h-4" /> TOOLING CONFIGURATION SAVED
             </span>
           )}
 
           <button
-            onClick={saveSetup}
-            disabled={saving}
-            className="industrial-btn-primary px-5 py-2.5 text-sm"
+            onClick={handleSaveAll}
+            disabled={isSaving}
+            className="scada-btn-primary px-5 py-2 text-xs font-mono"
           >
             <Save className="w-4 h-4" />
-            {saving ? 'SAVING...' : 'SAVE TOOLING SETUP'}
+            {isSaving ? 'SAVING...' : 'SAVE CONFIGURATION'}
           </button>
         </div>
       </div>
 
-      {/* Machine Bed Info Card */}
+      {/* Machine Specifications Overview Card */}
       {machine && (
-        <div className="industrial-card p-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-mono">
+        <div className="scada-panel p-5 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-mono">
           <div>
-            <div className="text-slate-400">MACHINE MODEL</div>
-            <div className="text-sm font-bold text-slate-100">{machine.machineName}</div>
-          </div>
-          <div>
-            <div className="text-slate-400">ANGLE CAPACITY</div>
-            <div className="text-sm font-bold text-cyan-300">
-              {machine.minAngleSize}mm - {machine.maxAngleSize}mm (T: {machine.minThickness}-{machine.maxThickness}mm)
+            <div className="text-slate-400 text-[10px] uppercase">MACHINE MODEL</div>
+            <div className="font-extrabold text-sm text-slate-100 mt-1 flex items-center gap-2">
+              <Cpu className="w-4 h-4 text-cyan-400" />
+              {machine.machineName}
             </div>
           </div>
           <div>
-            <div className="text-slate-400">TOTAL HEADS</div>
-            <div className="text-sm font-bold text-emerald-400">6 Punch + Marking + Cut</div>
+            <div className="text-slate-400 text-[10px] uppercase">CNC CONTROLLER</div>
+            <div className="font-bold text-slate-200 mt-1">{machine.machineType}</div>
           </div>
           <div>
-            <div className="text-slate-400">MAX BAR STOCK</div>
-            <div className="text-sm font-bold text-slate-100">{machine.maxBarLength / 1000} Meters</div>
+            <div className="text-slate-400 text-[10px] uppercase">PUNCHING HEADS</div>
+            <div className="font-bold text-neon-cyan mt-1">{heads.length} Stations Active</div>
+          </div>
+          <div>
+            <div className="text-slate-400 text-[10px] uppercase">OPC-UA ENDPOINT</div>
+            <div className="font-bold text-slate-300 mt-1 truncate">{machine.machineCode}</div>
           </div>
         </div>
       )}
 
-      {/* Heads Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {machine?.details.map((head: MachineDetail) => (
-          <div
-            key={head.id}
-            className={`industrial-card p-5 border transition-all ${
-              head.isActive ? 'border-slate-800' : 'opacity-60 border-slate-900'
-            }`}
-          >
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-              <div className="flex items-center gap-2">
-                <span className="w-8 h-8 rounded bg-cyan-950 border border-cyan-800 flex items-center justify-center font-mono font-black text-cyan-400 text-sm">
-                  {head.headName}
-                </span>
-                <div>
-                  <div className="text-sm font-bold text-slate-100">{head.headName} ({head.headType})</div>
-                  <div className="text-[11px] text-slate-400 font-mono">
-                    Side {head.side} • Bed Offset DX: {head.xPosition}mm
+      {/* 6-Head Tooling & Offsets Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 font-mono">
+        {heads.map((head, idx) => {
+          const isSideA = head.side === 'A';
+          return (
+            <div
+              key={head.id || idx}
+              className={`scada-panel p-5 space-y-4 border transition-all ${
+                head.isActive
+                  ? isSideA
+                    ? 'border-cyan-500/40'
+                    : 'border-emerald-500/40'
+                  : 'opacity-50 border-scada-750'
+              }`}
+            >
+              <div className="flex items-center justify-between border-b border-scada-750 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm ${
+                      isSideA
+                        ? 'bg-cyan-950 text-neon-cyan border border-cyan-500/50 shadow-neon-cyan'
+                        : 'bg-emerald-950 text-neon-emerald border border-emerald-500/50 shadow-neon-emerald'
+                    }`}
+                  >
+                    {head.headName}
+                  </div>
+                  <div>
+                    <div className="font-extrabold text-sm text-slate-100">{head.headName} STATION</div>
+                    <div className="text-[10px] text-slate-400">FLANGE {head.side}</div>
                   </div>
                 </div>
+
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={head.isActive}
+                    onChange={(e) => handleUpdateHead(idx, 'isActive', e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-10 h-5 bg-scada-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+                </label>
               </div>
 
-              <button
-                onClick={() => handleToggleHead(head.id)}
-                className={`px-2.5 py-1 rounded text-[11px] font-mono font-bold border transition-all ${
-                  head.isActive
-                    ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
-                    : 'bg-slate-800 text-slate-400 border-slate-700'
-                }`}
-              >
-                {head.isActive ? 'ENABLED' : 'DISABLED'}
-              </button>
+              <div className="space-y-3 text-xs">
+                <div>
+                  <label className="text-[10px] text-slate-400">INSTALLED TOOL DIE SIZE (mm)</label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <input
+                      type="number"
+                      value={head.toolSize || 18}
+                      onChange={(e) =>
+                        handleUpdateHead(idx, 'toolSize', parseFloat(e.target.value) || 0)
+                      }
+                      className="w-full bg-scada-950 border border-scada-750 rounded-lg px-3 py-2 text-neon-cyan font-extrabold focus:border-cyan-400 focus:outline-none text-sm"
+                    />
+                    <span className="text-slate-400 font-bold">mm</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[10px] text-slate-400">BED OFFSET DX FROM CUTTER (mm)</label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <input
+                      type="number"
+                      value={head.xPosition}
+                      onChange={(e) =>
+                        handleUpdateHead(idx, 'xPosition', parseFloat(e.target.value) || 0)
+                      }
+                      className="w-full bg-scada-950 border border-scada-750 rounded-lg px-3 py-2 text-slate-100 font-extrabold focus:border-cyan-400 focus:outline-none text-sm"
+                    />
+                    <span className="text-slate-400 font-bold">mm</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[10px] text-slate-400">TOOL SHAPE PROFILE</label>
+                  <select
+                    value={head.toolShape || 'ROUND'}
+                    onChange={(e) =>
+                      handleUpdateHead(idx, 'toolShape', e.target.value as 'ROUND' | 'OBLONG' | 'SQUARE')
+                    }
+                    className="w-full bg-scada-950 border border-scada-750 rounded-lg px-3 py-2 text-slate-100 font-bold focus:border-cyan-400 focus:outline-none mt-1"
+                  >
+                    <option value="ROUND">ROUND DIE (Standard)</option>
+                    <option value="OBLONG">OBLONG / SLOTTED DIE</option>
+                    <option value="SQUARE">SQUARE DIE</option>
+                  </select>
+                </div>
+              </div>
             </div>
-
-            {head.headType === 'PUNCHING' && (
-              <div className="space-y-3 text-xs font-mono">
-                <div>
-                  <label className="text-slate-400 block mb-1">INSTALLED DIE DIAMETER (Ø mm)</label>
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {[14, 18, 22, 26].map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => handleToolSizeChange(head.id, size)}
-                        className={`py-2 rounded font-bold border transition-all ${
-                          head.toolSize === size
-                            ? 'bg-cyan-600 text-white border-cyan-500 shadow'
-                            : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                        }`}
-                      >
-                        Ø {size}mm
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-slate-400 block mb-1">PUNCH TOOL SHAPE</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {(['ROUND', 'OBLONG', 'SQUARE'] as const).map((shape) => (
-                      <button
-                        key={shape}
-                        onClick={() => handleToolShapeChange(head.id, shape)}
-                        className={`py-1.5 rounded text-[11px] font-bold border transition-all ${
-                          head.toolShape === shape
-                            ? 'bg-slate-800 text-cyan-300 border-cyan-600'
-                            : 'bg-slate-950 text-slate-400 border-slate-800'
-                        }`}
-                      >
-                        {shape}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {head.headType === 'MARKING' && (
-              <div className="space-y-3 text-xs font-mono">
-                <div className="text-slate-400">CASSETTE MATRIX: 4 Standard Character Slots</div>
-                <div className="grid grid-cols-4 gap-2">
-                  {[1, 2, 3, 4].map((c) => (
-                    <div key={c} className="p-2 rounded bg-slate-950 border border-slate-800 text-center">
-                      <div className="text-[10px] text-slate-500">SLOT {c}</div>
-                      <div className="text-sm font-bold text-cyan-300">AUTO</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {head.headType === 'CUTTING' && (
-              <div className="space-y-2 text-xs font-mono text-slate-400">
-                <div>CUTTER TYPE: Hydraulic Dual-Action Angle Shear</div>
-                <div>BLADE CLEARANCE: 0.4mm • Max Force: 120 Tons</div>
-              </div>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

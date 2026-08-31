@@ -3,303 +3,277 @@ import { usePlcStore } from '../stores/usePlcStore.js';
 import { wsClient } from '../services/wsClient.js';
 import {
   Sliders,
-  ArrowLeft,
-  ArrowRight,
+  Power,
   RotateCcw,
+  Zap,
+  Lock,
+  Unlock,
+  Gauge,
+  Flame,
+  ArrowRight,
+  ArrowLeft,
 } from 'lucide-react';
 
 export const ManualControlView: React.FC = () => {
   const {
     feedPositionMm,
-    feedTargetMm,
-    feedSpeedMPerMin,
     hydraulicPressureBar,
     hydraulicPumpRunning,
     infeedClamp,
     carriageClamp,
     outfeedClamp,
     headsFiring,
-    eStopOk,
-    guardsOk,
     batchUpdateTags,
   } = usePlcStore();
 
-  const [stepSize, setStepSize] = useState<number>(10.0); // mm
-  const [jogMode, setJogMode] = useState<'CONTINUOUS' | 'STEP'>('CONTINUOUS');
+  const [stepIncrement, setStepIncrement] = useState<number>(10.0);
+  const [jogSpeed, setJogSpeed] = useState<number>(30); // %
 
-  const handleContinuousJog = (direction: 'FWD' | 'REV', isDown: boolean) => {
-    if (isDown) {
-      wsClient.jogStart(direction, 50.0);
+  const handleStepJog = (direction: 'FWD' | 'REV') => {
+    const delta = direction === 'FWD' ? stepIncrement : -stepIncrement;
+    const newPos = Math.max(0, feedPositionMm + delta);
+    batchUpdateTags({ feedPositionMm: newPos });
+    wsClient.writeTag('Carriage_Target_Pos', newPos, 'Float');
+  };
+
+  const handleToggleHpu = () => {
+    const newState = !hydraulicPumpRunning;
+    batchUpdateTags({
+      hydraulicPumpRunning: newState,
+      hydraulicPressureBar: newState ? 145.0 : 0.0,
+    });
+    wsClient.writeTag('HPU_Motor_Run', newState, 'Boolean');
+  };
+
+  const handleToggleClamp = (clamp: 'infeed' | 'carriage' | 'outfeed') => {
+    if (clamp === 'infeed') {
+      batchUpdateTags({ infeedClamp: !infeedClamp });
+      wsClient.writeTag('Clamp_Infeed_Closed', !infeedClamp, 'Boolean');
+    } else if (clamp === 'carriage') {
+      batchUpdateTags({ carriageClamp: !carriageClamp });
+      wsClient.writeTag('Clamp_Carriage_Closed', !carriageClamp, 'Boolean');
     } else {
-      wsClient.jogStop(direction);
+      batchUpdateTags({ outfeedClamp: !outfeedClamp });
+      wsClient.writeTag('Clamp_Outfeed_Closed', !outfeedClamp, 'Boolean');
     }
   };
 
-  const handleStepJog = (direction: 'FWD' | 'REV') => {
-    const delta = direction === 'FWD' ? stepSize : -stepSize;
-    const target = Math.max(0, feedPositionMm + delta);
-    wsClient.writeTag('Feed_Axis_Target_Position', target, 'Float');
-  };
-
-  const handleHomeAxis = () => {
-    wsClient.writeTag('Feed_Axis_Target_Position', 0.0, 'Float');
-  };
-
-  const toggleClamp = (clamp: 'infeed' | 'carriage' | 'outfeed') => {
-    wsClient.toggleValve(clamp);
-  };
-
-  const toggleHydraulic = () => {
-    wsClient.toggleValve('pump');
-  };
-
-  const fireHead = (headName: string) => {
+  const handleTestHead = (head: string) => {
     batchUpdateTags({
-      headsFiring: { ...headsFiring, [headName]: true },
+      headsFiring: { ...headsFiring, [head]: true },
     });
-    const tagName =
-      headName === 'Marking'
-        ? 'Marking_Trigger'
-        : headName === 'Cutter'
-        ? 'Shear_Cut_Trigger'
-        : `Head_${headName}_Punch_Trigger`;
-
-    wsClient.writeTag(tagName, true, 'Boolean');
-
     setTimeout(() => {
       batchUpdateTags({
-        headsFiring: { ...usePlcStore.getState().headsFiring, [headName]: false },
+        headsFiring: { ...usePlcStore.getState().headsFiring, [head]: false },
       });
-    }, 400);
+    }, 450);
   };
 
   return (
     <div className="p-6 space-y-6 flex-1 overflow-y-auto">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div className="flex items-center justify-between border-b border-scada-750 pb-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-            <Sliders className="w-5 h-5 text-cyan-400" />
-            Manual Axis Jogging & Valve Actuation Console
+          <h2 className="text-xl font-extrabold text-slate-100 flex items-center gap-2.5">
+            <Sliders className="w-6 h-6 text-neon-cyan" />
+            CNC Manual Jogging & Valve Actuators Console
           </h2>
-          <p className="text-xs text-slate-400">
-            Push-and-hold continuous servo jog, calibrated incremental stepping, and cylinder valve testing.
+          <p className="text-xs text-slate-400 font-mono">
+            Direct axis jogging, hydraulic clamp sequencing, and individual tool head stroke testing.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleHomeAxis}
-            className="industrial-btn-secondary px-4 py-2 text-xs font-mono"
-          >
-            <RotateCcw className="w-4 h-4 text-cyan-400" />
-            GOTO HOME (X: 0.00)
-          </button>
+        {/* Live Carriage DRO Pill */}
+        <div className="flex items-center gap-4 bg-scada-950 px-5 py-2.5 rounded-2xl border border-cyan-500/40 shadow-neon-cyan font-mono">
+          <span className="text-xs text-slate-400 font-bold">FEED CARRIAGE:</span>
+          <span className="text-2xl font-extrabold text-neon-cyan tracking-wider">
+            {feedPositionMm.toFixed(2)} <span className="text-xs text-slate-400 font-normal">mm</span>
+          </span>
         </div>
       </div>
 
-      {/* Main DRO & Status Display */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="industrial-card p-5 bg-gradient-to-br from-slate-900 to-emerald-950/30 border-emerald-900/60">
-          <div className="text-xs font-mono text-slate-400 mb-1">FEED CARRIAGE POSITION (X)</div>
-          <div className="text-5xl font-mono font-extrabold text-emerald-400 tracking-wider">
-            {feedPositionMm.toFixed(2)}
-            <span className="text-base text-slate-400 ml-2 font-normal">mm</span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* 1. Feed Carriage Manual Jog Section */}
+        <div className="scada-panel p-6 space-y-5">
+          <div className="text-xs font-bold text-slate-200 font-mono flex items-center justify-between border-b border-scada-750 pb-3">
+            <span className="flex items-center gap-2">
+              <Gauge className="w-4 h-4 text-neon-cyan" /> CARRIAGE AXIS (X) MANUAL JOG
+            </span>
+            <span className="text-[10px] text-slate-400">PULSE GENERATOR</span>
           </div>
-          <div className="text-xs font-mono text-slate-400 mt-2 flex justify-between">
-            <span>TARGET: {feedTargetMm.toFixed(2)} mm</span>
-            <span className="text-cyan-400">VELOCITY: {Math.abs(feedSpeedMPerMin).toFixed(1)} m/min</span>
-          </div>
-        </div>
 
-        <div className="industrial-card p-5">
-          <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-1">
-            <span>HYDRAULIC POWER UNIT (HPU)</span>
+          {/* Calibrated Incremental Step Selector */}
+          <div className="space-y-2">
+            <label className="text-xs font-mono text-slate-300 font-bold">INCREMENTAL STEP (mm)</label>
+            <div className="grid grid-cols-5 gap-2 font-mono">
+              {[0.1, 1.0, 10.0, 50.0, 100.0].map((step) => (
+                <button
+                  key={step}
+                  onClick={() => setStepIncrement(step)}
+                  className={`py-3 rounded-xl text-xs font-extrabold border transition-all ${
+                    stepIncrement === step
+                      ? 'bg-gradient-to-b from-cyan-500 to-cyan-700 text-slate-950 border-cyan-300 shadow-neon-cyan'
+                      : 'bg-scada-950 text-slate-300 border-scada-750 hover:border-slate-600'
+                  }`}
+                >
+                  {step}mm
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Jog Speed Slider */}
+          <div className="space-y-2 font-mono">
+            <div className="flex justify-between text-xs font-bold text-slate-300">
+              <span>MANUAL JOG VELOCITY:</span>
+              <span className="text-neon-cyan">{jogSpeed}%</span>
+            </div>
+            <input
+              type="range"
+              min="5"
+              max="100"
+              value={jogSpeed}
+              onChange={(e) => setJogSpeed(parseInt(e.target.value))}
+              className="w-full h-2 bg-scada-950 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+            />
+          </div>
+
+          {/* Heavy Duty Step Jog Buttons */}
+          <div className="grid grid-cols-2 gap-4 pt-2">
             <button
-              onClick={toggleHydraulic}
-              className={`px-2.5 py-1 text-xs font-bold rounded ${
-                hydraulicPumpRunning ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-300'
-              }`}
+              onClick={() => handleStepJog('REV')}
+              className="scada-btn-secondary h-20 text-base font-extrabold flex flex-col items-center justify-center gap-1"
             >
-              {hydraulicPumpRunning ? 'PUMP RUNNING' : 'PUMP OFF'}
+              <ArrowLeft className="w-6 h-6 text-cyan-400" />
+              <span>STEP REV (-{stepIncrement}mm)</span>
+            </button>
+
+            <button
+              onClick={() => handleStepJog('FWD')}
+              className="scada-btn-primary h-20 text-base font-extrabold flex flex-col items-center justify-center gap-1"
+            >
+              <ArrowRight className="w-6 h-6" />
+              <span>STEP FWD (+{stepIncrement}mm)</span>
             </button>
           </div>
-          <div className="text-4xl font-mono font-extrabold text-amber-400">
-            {hydraulicPressureBar.toFixed(1)}
-            <span className="text-base text-slate-400 ml-2 font-normal">bar</span>
-          </div>
-          <div className="text-xs font-mono text-slate-400 mt-2">
-            OPTIMAL RANGE: 130.0 - 160.0 bar
-          </div>
+
+          {/* Zero Datum Reset */}
+          <button
+            onClick={() => {
+              batchUpdateTags({ feedPositionMm: 0 });
+              wsClient.writeTag('Carriage_Zero_Set', true, 'Boolean');
+            }}
+            className="w-full scada-btn-secondary py-3 text-xs font-mono text-slate-300 flex items-center justify-center gap-2"
+          >
+            <RotateCcw className="w-4 h-4 text-cyan-400" />
+            SET CARRIAGE ZERO REFERENCE (DATUM 0.00mm)
+          </button>
         </div>
 
-        <div className="industrial-card p-5">
-          <div className="text-xs font-mono text-slate-400 mb-2">SAFETY CIRCUIT INTERLOCKS</div>
-          <div className="space-y-2 text-xs font-mono">
-            <div className="flex items-center justify-between p-2 rounded bg-slate-950 border border-slate-800">
-              <span>EMERGENCY STOP</span>
-              <span className={eStopOk ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
-                {eStopOk ? 'CIRCUIT OK' : 'TRIPPED'}
-              </span>
-            </div>
-            <div className="flex items-center justify-between p-2 rounded bg-slate-950 border border-slate-800">
-              <span>SAFETY GUARD DOORS</span>
-              <span className={guardsOk ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}>
-                {guardsOk ? 'CLOSED' : 'OPEN'}
-              </span>
-            </div>
+        {/* 2. Hydraulic Power Unit & Clamps Console */}
+        <div className="scada-panel p-6 space-y-5">
+          <div className="text-xs font-bold text-slate-200 font-mono flex items-center justify-between border-b border-scada-750 pb-3">
+            <span className="flex items-center gap-2">
+              <Flame className="w-4 h-4 text-neon-amber" /> HYDRAULIC POWER UNIT & CLAMPS
+            </span>
+            <span className={hydraulicPumpRunning ? 'led-emerald' : 'led-rose'} />
           </div>
-        </div>
-      </div>
 
-      {/* Axis Jogging Console */}
-      <div className="industrial-card p-6 space-y-5">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <h3 className="text-base font-bold text-slate-100 uppercase tracking-wider">
-            Servo Feed Axis Controls
-          </h3>
-
-          <div className="flex items-center gap-4">
-            <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs font-mono">
-              <button
-                onClick={() => setJogMode('CONTINUOUS')}
-                className={`px-3 py-1.5 rounded font-bold transition-all ${
-                  jogMode === 'CONTINUOUS' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400'
-                }`}
-              >
-                CONTINUOUS JOG
-              </button>
-              <button
-                onClick={() => setJogMode('STEP')}
-                className={`px-3 py-1.5 rounded font-bold transition-all ${
-                  jogMode === 'STEP' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400'
-                }`}
-              >
-                INCREMENTAL STEP
-              </button>
-            </div>
-
-            {jogMode === 'STEP' && (
-              <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs font-mono">
-                {[0.1, 1.0, 10.0, 50.0, 100.0].map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setStepSize(s)}
-                    className={`px-2.5 py-1 rounded font-bold ${
-                      stepSize === s ? 'bg-emerald-600 text-white' : 'text-slate-400'
-                    }`}
-                  >
-                    {s}mm
-                  </button>
-                ))}
+          {/* HPU Master Toggle */}
+          <div className="p-4 bg-scada-950 rounded-2xl border border-scada-750 space-y-3">
+            <div className="flex items-center justify-between font-mono">
+              <div>
+                <div className="font-extrabold text-sm text-slate-100">MAIN HPU MOTOR (15kW)</div>
+                <div className="text-[11px] text-slate-400">
+                  Pressure: {hydraulicPressureBar.toFixed(1)} bar
+                </div>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Large Jog Touch Buttons */}
-        <div className="grid grid-cols-2 gap-6">
-          {jogMode === 'CONTINUOUS' ? (
-            <>
               <button
-                onMouseDown={() => handleContinuousJog('REV', true)}
-                onMouseUp={() => handleContinuousJog('REV', false)}
-                onMouseLeave={() => handleContinuousJog('REV', false)}
-                onTouchStart={() => handleContinuousJog('REV', true)}
-                onTouchEnd={() => handleContinuousJog('REV', false)}
-                className="industrial-btn-secondary h-28 text-lg font-bold flex flex-col items-center justify-center gap-2 active:bg-cyan-800 select-none shadow-lg"
-              >
-                <ArrowLeft className="w-8 h-8 text-cyan-400" />
-                <span>CONTINUOUS JOG REVERSE (&lt;&lt;)</span>
-              </button>
-
-              <button
-                onMouseDown={() => handleContinuousJog('FWD', true)}
-                onMouseUp={() => handleContinuousJog('FWD', false)}
-                onMouseLeave={() => handleContinuousJog('FWD', false)}
-                onTouchStart={() => handleContinuousJog('FWD', true)}
-                onTouchEnd={() => handleContinuousJog('FWD', false)}
-                className="industrial-btn-primary h-28 text-lg font-bold flex flex-col items-center justify-center gap-2 active:scale-95 select-none shadow-lg"
-              >
-                <ArrowRight className="w-8 h-8 text-white" />
-                <span>CONTINUOUS JOG FORWARD (&gt;&gt;)</span>
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => handleStepJog('REV')}
-                className="industrial-btn-secondary h-28 text-lg font-bold flex flex-col items-center justify-center gap-2 active:bg-cyan-800 select-none shadow-lg"
-              >
-                <ArrowLeft className="w-8 h-8 text-cyan-400" />
-                <span>STEP REVERSE (-{stepSize}mm)</span>
-              </button>
-
-              <button
-                onClick={() => handleStepJog('FWD')}
-                className="industrial-btn-primary h-28 text-lg font-bold flex flex-col items-center justify-center gap-2 active:scale-95 select-none shadow-lg"
-              >
-                <ArrowRight className="w-8 h-8 text-white" />
-                <span>STEP FORWARD (+{stepSize}mm)</span>
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Hydraulic Clamps & Tool Head Actuators */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Clamps */}
-        <div className="industrial-card p-5 space-y-4">
-          <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider">
-            Material Clamping Cylinders
-          </h3>
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { id: 'infeed' as const, label: 'INFEED CLAMP', state: infeedClamp },
-              { id: 'carriage' as const, label: 'CARRIAGE GRIPPER', state: carriageClamp },
-              { id: 'outfeed' as const, label: 'OUTFEED CLAMP', state: outfeedClamp },
-            ].map((c) => (
-              <button
-                key={c.id}
-                onClick={() => toggleClamp(c.id)}
-                className={`p-4 rounded-lg border font-mono text-center transition-all ${
-                  c.state
-                    ? 'bg-emerald-950 border-emerald-600 text-emerald-300 shadow-md'
-                    : 'bg-slate-900 border-slate-800 text-slate-400'
+                onClick={handleToggleHpu}
+                className={`px-4 py-2.5 rounded-xl font-mono font-extrabold text-xs flex items-center gap-2 transition-all ${
+                  hydraulicPumpRunning
+                    ? 'bg-rose-950 text-rose-300 border border-rose-500/60 shadow-neon-rose'
+                    : 'bg-emerald-950 text-neon-emerald border border-emerald-500/60 shadow-neon-emerald'
                 }`}
               >
-                <div className="text-xs font-bold mb-1">{c.label}</div>
-                <div className="text-sm font-black">{c.state ? 'CLAMPED' : 'OPEN'}</div>
+                <Power className="w-4 h-4" />
+                {hydraulicPumpRunning ? 'STOP HPU' : 'START HPU'}
               </button>
+            </div>
+          </div>
+
+          {/* Pneumatic / Hydraulic Clamps */}
+          <div className="space-y-3 font-mono text-xs">
+            <div className="text-slate-300 font-bold">MATERIAL CLAMPING ACTUATORS</div>
+
+            {[
+              { id: 'infeed' as const, label: 'INFEED CONVEYOR CLAMP', state: infeedClamp },
+              { id: 'carriage' as const, label: 'CARRIAGE GRIPPER JAW', state: carriageClamp },
+              { id: 'outfeed' as const, label: 'OUTFEED DISCHARGE CLAMP', state: outfeedClamp },
+            ].map((c) => (
+              <div
+                key={c.id}
+                className="flex items-center justify-between p-3.5 rounded-xl bg-scada-950 border border-scada-750"
+              >
+                <div>
+                  <div className="font-bold text-slate-200">{c.label}</div>
+                  <div className="text-[10px] text-slate-400">
+                    STATUS: {c.state ? 'CLAMPED (LOCKED)' : 'RELEASED (OPEN)'}
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleToggleClamp(c.id)}
+                  className={`px-3.5 py-2 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all ${
+                    c.state
+                      ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-slate-950 shadow-neon-emerald'
+                      : 'bg-scada-800 text-slate-300 hover:bg-scada-700'
+                  }`}
+                >
+                  {c.state ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
+                  {c.state ? 'CLAMPED' : 'UNCLAMP'}
+                </button>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Head Single Strokes */}
-        <div className="industrial-card p-5 space-y-4">
-          <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider">
-            Punch & Tool Single-Stroke Test
-          </h3>
-          <div className="grid grid-cols-4 gap-2 font-mono">
-            {['DA1', 'DA2', 'DA3', 'DB1', 'DB2', 'DB3', 'Marking', 'Cutter'].map((h) => {
-              const isFiring = headsFiring[h];
+        {/* 3. Individual Tooling Head Stroke Test */}
+        <div className="scada-panel p-6 space-y-5">
+          <div className="text-xs font-bold text-slate-200 font-mono flex items-center justify-between border-b border-scada-750 pb-3">
+            <span className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-neon-amber" /> SINGLE STROKE TEST CONSOLE
+            </span>
+            <span className="text-[10px] text-slate-400">MANUAL OVERRIDE</span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 font-mono">
+            {['DA1', 'DA2', 'DA3', 'DB1', 'DB2', 'DB3', 'Marking', 'Cutter'].map((head) => {
+              const isFiring = headsFiring[head];
               return (
                 <button
-                  key={h}
-                  onClick={() => fireHead(h)}
-                  className={`p-2.5 rounded-lg border font-bold text-xs transition-all ${
+                  key={head}
+                  onClick={() => handleTestHead(head)}
+                  disabled={!hydraulicPumpRunning}
+                  className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all ${
                     isFiring
-                      ? 'bg-rose-600 text-white border-rose-500 scale-105'
-                      : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-800'
-                  }`}
+                      ? 'bg-rose-600 text-white shadow-neon-rose scale-105'
+                      : 'bg-scada-950 border-scada-750 text-slate-200 hover:border-cyan-400 hover:bg-scada-850/60'
+                  } disabled:opacity-40 disabled:pointer-events-none`}
                 >
-                  <div className="text-cyan-400 text-[11px]">{h}</div>
-                  <div className="text-[10px] mt-0.5">{isFiring ? 'STROKE' : 'FIRE'}</div>
+                  <span className="font-extrabold text-sm">{head}</span>
+                  <span className="text-[10px] font-bold text-slate-400">
+                    {isFiring ? 'PUNCHING...' : 'TRIGGER STROKE'}
+                  </span>
                 </button>
               );
             })}
           </div>
+
+          {!hydraulicPumpRunning && (
+            <div className="p-3 bg-amber-950/60 border border-amber-500/40 rounded-xl text-xs font-mono text-amber-300 text-center">
+              ⚠️ Start HPU pump before testing cylinder strokes.
+            </div>
+          )}
         </div>
       </div>
     </div>

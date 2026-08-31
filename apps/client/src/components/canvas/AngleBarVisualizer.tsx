@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { ItemRecipe } from '@innovance-hmi/shared';
-import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, Crosshair } from 'lucide-react';
 
 interface AngleBarVisualizerProps {
   recipe: Partial<ItemRecipe> | null;
@@ -15,8 +15,9 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
   activeFeedPosition,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [scale, setScale] = useState<number>(0.8);
-  const [panX, setPanX] = useState<number>(40);
+  const [scale, setScale] = useState<number>(0.85);
+  const [panX, setPanX] = useState<number>(60);
+  const [mouseCoord, setMouseCoord] = useState<{ xMm: number; flange: string } | null>(null);
 
   const totalLength = recipe?.totalLength || 1500;
   const widthA = recipe?.angleWidthA || 75;
@@ -29,7 +30,6 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Resize canvas to parent container
     const parent = canvas.parentElement;
     if (parent) {
       canvas.width = parent.clientWidth;
@@ -39,18 +39,20 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     const w = canvas.width;
     const h = canvas.height;
 
-    ctx.clearRect(0, 0, w, h);
+    // 1. Dark CAD Blueprint Background
+    ctx.fillStyle = '#06090e';
+    ctx.fillRect(0, 0, w, h);
 
-    // Draw background grid
-    ctx.strokeStyle = '#1e293b';
+    // 2. High-Tech Grid
+    ctx.strokeStyle = 'rgba(29, 44, 66, 0.4)';
     ctx.lineWidth = 1;
-    for (let x = 0; x < w; x += 40) {
+    for (let x = 0; x < w; x += 30) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
       ctx.lineTo(x, h);
       ctx.stroke();
     }
-    for (let y = 0; y < h; y += 40) {
+    for (let y = 0; y < h; y += 30) {
       ctx.beginPath();
       ctx.moveTo(0, y);
       ctx.lineTo(w, y);
@@ -58,196 +60,285 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     }
 
     const centerY = h / 2;
-    const pixelsPerMm = scale * ((w - 120) / Math.max(1000, totalLength));
+    const pixelsPerMm = scale * ((w - 140) / Math.max(1000, totalLength));
     const startX = panX;
     const barWidthPx = totalLength * pixelsPerMm;
-    const flangeAPx = widthA * pixelsPerMm * 1.5;
-    const flangeBPx = widthB * pixelsPerMm * 1.5;
+    const flangeAPx = widthA * pixelsPerMm * 1.6;
+    const flangeBPx = widthB * pixelsPerMm * 1.6;
 
-    // 1. Draw Flange A (Top Wing)
-    ctx.fillStyle = '#0f172a';
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 2;
+    // 3. Draw Angle Bar (Flange A - Top Wing with Metallic Brushed Steel Gradient)
+    const gradA = ctx.createLinearGradient(0, centerY - flangeAPx, 0, centerY);
+    gradA.addColorStop(0, '#101926');
+    gradA.addColorStop(0.5, '#162233');
+    gradA.addColorStop(1, '#0b111a');
+
+    ctx.fillStyle = gradA;
     ctx.fillRect(startX, centerY - flangeAPx, barWidthPx, flangeAPx);
+
+    // Flange A Outer Border & Glow
+    ctx.strokeStyle = '#0ea5e9';
+    ctx.lineWidth = 2;
     ctx.strokeRect(startX, centerY - flangeAPx, barWidthPx, flangeAPx);
 
-    // 2. Draw Flange B (Bottom Wing)
-    ctx.fillStyle = '#0f172a';
-    ctx.strokeStyle = '#34d399';
-    ctx.lineWidth = 2;
+    // 4. Draw Angle Bar (Flange B - Bottom Wing with Metallic Gradient)
+    const gradB = ctx.createLinearGradient(0, centerY, 0, centerY + flangeBPx);
+    gradB.addColorStop(0, '#0b111a');
+    gradB.addColorStop(0.5, '#162233');
+    gradB.addColorStop(1, '#101926');
+
+    ctx.fillStyle = gradB;
     ctx.fillRect(startX, centerY, barWidthPx, flangeBPx);
+
+    // Flange B Outer Border & Glow
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 2;
     ctx.strokeRect(startX, centerY, barWidthPx, flangeBPx);
 
-    // 3. Draw Angle Bend Center Line
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([6, 4]);
+    // 5. Bend Heel Axis (Centerline with Neon Amber Glow)
+    ctx.strokeStyle = '#ffb703';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([8, 4]);
     ctx.beginPath();
     ctx.moveTo(startX, centerY);
     ctx.lineTo(startX + barWidthPx, centerY);
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // 4. Flange Labels
+    // 6. Flange & Coordinate Callouts
     ctx.font = 'bold 11px JetBrains Mono, monospace';
     ctx.fillStyle = '#38bdf8';
-    ctx.fillText(`FLANGE A (Width: ${widthA}mm)`, startX + 10, centerY - flangeAPx + 16);
+    ctx.fillText(`FLANGE A (Width: ${widthA}mm)`, startX + 12, centerY - flangeAPx + 18);
     ctx.fillStyle = '#34d399';
-    ctx.fillText(`FLANGE B (Width: ${widthB}mm)`, startX + 10, centerY + flangeBPx - 10);
-    ctx.fillStyle = '#f59e0b';
-    ctx.fillText('HEEL / BEND AXIS', startX + barWidthPx - 130, centerY - 6);
+    ctx.fillText(`FLANGE B (Width: ${widthB}mm)`, startX + 12, centerY + flangeBPx - 12);
+    ctx.fillStyle = '#ffb703';
+    ctx.fillText('BEND HEEL DATUM', startX + barWidthPx - 140, centerY - 8);
 
-    // 5. Draw Length Dimension Ruler along top
-    ctx.strokeStyle = '#64748b';
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '10px JetBrains Mono, monospace';
-    ctx.lineWidth = 1;
-
-    const rulerY = centerY - flangeAPx - 20;
+    // 7. Precision Millimeter Dimension Ruler along Top
+    const rulerY = centerY - flangeAPx - 24;
+    ctx.strokeStyle = '#384f6e';
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(startX, rulerY);
     ctx.lineTo(startX + barWidthPx, rulerY);
     ctx.stroke();
 
-    // Ruler Ticks every 100mm / 500mm
     const tickStep = totalLength > 3000 ? 500 : 100;
+    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.fillStyle = '#94a3b8';
+
     for (let mm = 0; mm <= totalLength; mm += tickStep) {
       const tx = startX + mm * pixelsPerMm;
       ctx.beginPath();
-      ctx.moveTo(tx, rulerY - 5);
-      ctx.lineTo(tx, rulerY + 5);
+      ctx.moveTo(tx, rulerY - 6);
+      ctx.lineTo(tx, rulerY + 6);
       ctx.stroke();
       if (mm % (tickStep * 2) === 0 || mm === totalLength) {
-        ctx.fillText(`${mm}mm`, tx - 14, rulerY - 8);
+        ctx.fillText(`${mm}mm`, tx - 16, rulerY - 9);
       }
     }
 
-    // 6. Draw Steps (Punch Holes, Marking, Cutter)
+    // 8. Draw CAD Punch Steps, Markings & Shearing Line
     steps.forEach((step, idx) => {
       const isSelected = selectedStepIndex === idx;
       const stepX = startX + step.xPosition * pixelsPerMm;
 
       if (step.operationType === 'PUNCH') {
         const isSideA = step.side === 'A';
-        const holeRadius = Math.max(4, ((step.toolSize || 18) / 2) * pixelsPerMm * 1.5);
+        const holeRadius = Math.max(5, ((step.toolSize || 18) / 2) * pixelsPerMm * 1.6);
         const gaugeY = isSideA
-          ? centerY - step.yPosition * pixelsPerMm * 1.5
-          : centerY + step.yPosition * pixelsPerMm * 1.5;
+          ? centerY - step.yPosition * pixelsPerMm * 1.6
+          : centerY + step.yPosition * pixelsPerMm * 1.6;
 
-        // Hole fill & outline
+        // Punch Bore Drop Shadow & Depth
+        ctx.beginPath();
+        ctx.arc(stepX, gaugeY, holeRadius + 2, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+        ctx.fill();
+
+        // Punch Hole Bore Gradient (Metallic Die Hole)
+        const holeGrad = ctx.createRadialGradient(
+          stepX - 2,
+          gaugeY - 2,
+          1,
+          stepX,
+          gaugeY,
+          holeRadius
+        );
+        if (isSelected) {
+          holeGrad.addColorStop(0, '#ff0055');
+          holeGrad.addColorStop(1, '#88002d');
+        } else if (isSideA) {
+          holeGrad.addColorStop(0, '#00f0ff');
+          holeGrad.addColorStop(1, '#0369a1');
+        } else {
+          holeGrad.addColorStop(0, '#00ff9d');
+          holeGrad.addColorStop(1, '#047857');
+        }
+
         ctx.beginPath();
         ctx.arc(stepX, gaugeY, holeRadius, 0, Math.PI * 2);
-        ctx.fillStyle = isSelected ? '#f43f5e' : isSideA ? '#0284c7' : '#059669';
+        ctx.fillStyle = holeGrad;
         ctx.fill();
-        ctx.strokeStyle = isSelected ? '#ffe4e6' : '#ffffff';
-        ctx.lineWidth = isSelected ? 3 : 1.5;
+        ctx.strokeStyle = isSelected ? '#ffffff' : isSideA ? '#38bdf8' : '#34d399';
+        ctx.lineWidth = isSelected ? 2.5 : 1.5;
         ctx.stroke();
 
-        // Hole Center Crosshair
+        // Center Crosshair
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(stepX - holeRadius - 2, gaugeY);
-        ctx.lineTo(stepX + holeRadius + 2, gaugeY);
-        ctx.moveTo(stepX, gaugeY - holeRadius - 2);
-        ctx.lineTo(stepX, gaugeY + holeRadius + 2);
+        ctx.moveTo(stepX - holeRadius - 3, gaugeY);
+        ctx.lineTo(stepX + holeRadius + 3, gaugeY);
+        ctx.moveTo(stepX, gaugeY - holeRadius - 3);
+        ctx.lineTo(stepX, gaugeY + holeRadius + 3);
         ctx.stroke();
 
-        // Label
-        ctx.fillStyle = '#f8fafc';
-        ctx.font = 'bold 9px JetBrains Mono, monospace';
-        ctx.fillText(`Ø${step.toolSize || 18}`, stepX - 10, gaugeY - holeRadius - 4);
+        // Callout Tag
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px JetBrains Mono, monospace';
+        ctx.fillText(`Ø${step.toolSize || 18}`, stepX - 12, gaugeY - holeRadius - 6);
       } else if (step.operationType === 'MARK') {
-        // Marking Block
-        const blockW = 70;
-        const blockH = 22;
-        ctx.fillStyle = isSelected ? '#be123c' : '#7c2d12';
-        ctx.strokeStyle = '#fb923c';
-        ctx.lineWidth = 1.5;
+        // Marking Block Stamp
+        const blockW = 80;
+        const blockH = 26;
+        ctx.fillStyle = isSelected ? '#9f1239' : '#451a03';
+        ctx.strokeStyle = '#ffb703';
+        ctx.lineWidth = 2;
         ctx.fillRect(stepX - blockW / 2, centerY - blockH / 2, blockW, blockH);
         ctx.strokeRect(stepX - blockW / 2, centerY - blockH / 2, blockW, blockH);
 
-        ctx.fillStyle = '#ffedd5';
-        ctx.font = 'bold 10px JetBrains Mono, monospace';
-        ctx.fillText(step.markingText || 'STAMP', stepX - blockW / 2 + 6, centerY + 4);
+        ctx.fillStyle = '#ffeedd';
+        ctx.font = 'bold 11px JetBrains Mono, monospace';
+        ctx.fillText(step.markingText || 'STAMP', stepX - blockW / 2 + 8, centerY + 4);
       } else if (step.operationType === 'CUT' || step.isCutOff) {
-        // Cut-off line
-        ctx.strokeStyle = '#ef4444';
+        // Cut-Off Laser Line
+        ctx.strokeStyle = '#ff0055';
         ctx.lineWidth = 3;
-        ctx.setLineDash([4, 2]);
+        ctx.setLineDash([5, 3]);
         ctx.beginPath();
-        ctx.moveTo(stepX, centerY - flangeAPx - 10);
-        ctx.lineTo(stepX, centerY + flangeBPx + 10);
+        ctx.moveTo(stepX, centerY - flangeAPx - 14);
+        ctx.lineTo(stepX, centerY + flangeBPx + 14);
         ctx.stroke();
         ctx.setLineDash([]);
 
-        ctx.fillStyle = '#ef4444';
+        ctx.fillStyle = '#ff0055';
         ctx.font = 'bold 11px JetBrains Mono, monospace';
-        ctx.fillText('✂ CUT-OFF', stepX - 25, centerY + flangeBPx + 22);
+        ctx.fillText('✂ SHEAR CUT', stepX - 35, centerY + flangeBPx + 28);
       }
     });
 
-    // 7. Live Production Feed Cursor (if provided)
+    // 9. Real-Time Laser Feed Carriage Cursor (Active in Production & Jog)
     if (activeFeedPosition !== undefined && activeFeedPosition >= 0) {
       const liveX = startX + activeFeedPosition * pixelsPerMm;
-      ctx.strokeStyle = '#10b981';
+
+      // Laser Line
+      ctx.strokeStyle = '#00f0ff';
       ctx.lineWidth = 3;
+      ctx.shadowColor = '#00f0ff';
+      ctx.shadowBlur = 12;
       ctx.beginPath();
       ctx.moveTo(liveX, 0);
       ctx.lineTo(liveX, h);
       ctx.stroke();
+      ctx.shadowBlur = 0; // reset
 
-      ctx.fillStyle = '#10b981';
-      ctx.font = 'bold 12px JetBrains Mono, monospace';
-      ctx.fillText(`FEED: ${activeFeedPosition.toFixed(1)}mm`, liveX + 6, 24);
+      // Carriage Cursor Head
+      ctx.fillStyle = '#00f0ff';
+      ctx.beginPath();
+      ctx.moveTo(liveX, 0);
+      ctx.lineTo(liveX - 8, 16);
+      ctx.lineTo(liveX + 8, 16);
+      ctx.closePath();
+      ctx.fill();
+
+      // Tooltip Box on Top
+      ctx.fillStyle = '#0b111a';
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 1.5;
+      ctx.fillRect(liveX + 8, 8, 120, 24);
+      ctx.strokeRect(liveX + 8, 8, 120, 24);
+
+      ctx.fillStyle = '#00f0ff';
+      ctx.font = 'bold 11px JetBrains Mono, monospace';
+      ctx.fillText(`X: ${activeFeedPosition.toFixed(1)} mm`, liveX + 16, 24);
     }
   }, [recipe, scale, panX, selectedStepIndex, totalLength, widthA, widthB, steps, activeFeedPosition]);
 
-  return (
-    <div className="relative w-full h-full bg-slate-950 rounded-lg overflow-hidden border border-slate-800">
-      <canvas ref={canvasRef} className="w-full h-full cursor-crosshair" />
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-      {/* Floating Canvas Controls */}
-      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 p-1 rounded-lg backdrop-blur shadow-lg">
+    const centerY = canvas.height / 2;
+    const pixelsPerMm = scale * ((canvas.width - 140) / Math.max(1000, totalLength));
+    const xMm = Math.max(0, Math.min(totalLength, Math.round((x - panX) / pixelsPerMm)));
+    const flange = y < centerY ? 'Flange A' : 'Flange B';
+
+    setMouseCoord({ xMm, flange });
+  };
+
+  return (
+    <div className="relative w-full h-full bg-scada-950 rounded-2xl overflow-hidden border border-scada-750 shadow-2xl">
+      <canvas
+        ref={canvasRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setMouseCoord(null)}
+        className="w-full h-full cursor-crosshair"
+      />
+
+      {/* Floating Canvas Zoom & View Controls */}
+      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-scada-900/90 border border-scada-750 p-1.5 rounded-xl backdrop-blur-xl shadow-2xl">
         <button
-          onClick={() => setScale((s) => Math.min(2.5, s + 0.15))}
-          className="p-1.5 hover:bg-slate-800 rounded text-slate-300 hover:text-white"
+          onClick={() => setScale((s) => Math.min(3.0, s + 0.2))}
+          className="p-2 hover:bg-scada-800 rounded-lg text-slate-300 hover:text-white transition-all"
           title="Zoom In"
         >
           <ZoomIn className="w-4 h-4" />
         </button>
         <button
-          onClick={() => setScale((s) => Math.max(0.3, s - 0.15))}
-          className="p-1.5 hover:bg-slate-800 rounded text-slate-300 hover:text-white"
+          onClick={() => setScale((s) => Math.max(0.3, s - 0.2))}
+          className="p-2 hover:bg-scada-800 rounded-lg text-slate-300 hover:text-white transition-all"
           title="Zoom Out"
         >
           <ZoomOut className="w-4 h-4" />
         </button>
         <button
           onClick={() => {
-            setScale(0.8);
-            setPanX(40);
+            setScale(0.85);
+            setPanX(60);
           }}
-          className="p-1.5 hover:bg-slate-800 rounded text-slate-300 hover:text-white"
-          title="Reset View"
+          className="p-2 hover:bg-scada-800 rounded-lg text-slate-300 hover:text-white transition-all"
+          title="Fit to Screen"
         >
           <Maximize2 className="w-4 h-4" />
         </button>
       </div>
 
-      {/* Footer Legend */}
-      <div className="absolute bottom-3 left-4 flex items-center gap-4 text-[11px] font-mono text-slate-400 bg-slate-900/90 px-3 py-1.5 rounded border border-slate-800">
-        <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" /> Flange A Punch
+      {/* Live Coordinate Crosshair Tracker */}
+      {mouseCoord && (
+        <div className="absolute top-4 left-4 flex items-center gap-2 text-xs font-mono bg-scada-900/90 border border-cyan-500/40 text-neon-cyan px-3 py-1.5 rounded-xl shadow-neon-cyan backdrop-blur-xl">
+          <Crosshair className="w-3.5 h-3.5 animate-spin" />
+          <span>X: {mouseCoord.xMm}mm</span>
+          <span className="text-slate-400">•</span>
+          <span className="text-slate-300">{mouseCoord.flange}</span>
+        </div>
+      )}
+
+      {/* Footer Industrial Legend */}
+      <div className="absolute bottom-4 left-4 flex items-center gap-5 text-xs font-mono text-slate-300 bg-scada-900/90 px-4 py-2 rounded-xl border border-scada-750 backdrop-blur-xl shadow-2xl">
+        <span className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full bg-cyan-400 shadow-neon-cyan" /> Flange A Punch
         </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Flange B Punch
+        <span className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full bg-emerald-400 shadow-neon-emerald" /> Flange B Punch
         </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded bg-amber-600" /> Marking Stamp
+        <span className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded bg-amber-500 shadow-neon-amber" /> Marking Stamp
         </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 bg-rose-500" /> Shear Cut-Off
+        <span className="flex items-center gap-2">
+          <span className="w-3 h-3 bg-rose-500 shadow-neon-rose" /> Hydraulic Shear
         </span>
       </div>
     </div>

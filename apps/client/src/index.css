@@ -4,55 +4,123 @@
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100;
+    @apply bg-scada-950 text-slate-100 font-sans select-none overflow-hidden antialiased;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(0, 240, 255, 0.04) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(0, 255, 157, 0.03) 0px, transparent 50%),
+      linear-gradient(to bottom, #06090e, #090e17);
   }
 }
 
-/* Custom Industrial UI utility classes */
-.dro-display {
-  @apply font-mono text-emerald-400 font-extrabold tracking-wider bg-black/70 border border-emerald-900/60 px-3 py-1.5 rounded shadow-inner;
+/* Glassmorphic Industrial Panels */
+.scada-panel {
+  @apply bg-gradient-to-b from-scada-900/95 to-scada-950/95 border border-scada-750/70 rounded-xl backdrop-blur-xl shadow-2xl;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
-.industrial-card {
-  @apply bg-slate-900/90 border border-slate-800/80 rounded-lg backdrop-blur shadow-lg;
+.scada-panel-accent {
+  @apply bg-gradient-to-b from-scada-850 to-scada-900 border border-cyan-500/30 rounded-xl shadow-lg;
+  box-shadow: 0 0 25px -5px rgba(0, 240, 255, 0.15), inset 0 1px 0 0 rgba(0, 240, 255, 0.2);
 }
 
-.industrial-btn {
-  @apply px-4 py-3 font-semibold rounded-lg transition-all duration-150 active:scale-95 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2;
+/* Digital Readout (DRO) Cluster */
+.scada-dro {
+  @apply font-mono font-black tracking-wider bg-black/85 border border-slate-800/90 rounded-lg shadow-inner relative overflow-hidden;
 }
 
-.industrial-btn-primary {
-  @apply industrial-btn bg-cyan-600 hover:bg-cyan-500 text-white shadow-cyan-900/40 shadow-md;
+.scada-dro::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+  opacity: 0.6;
 }
 
-.industrial-btn-success {
-  @apply industrial-btn bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/40 shadow-md;
+.scada-dro-cyan {
+  @apply scada-dro text-neon-cyan border-cyan-950/70;
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.65);
 }
 
-.industrial-btn-danger {
-  @apply industrial-btn bg-rose-600 hover:bg-rose-500 text-white shadow-rose-900/40 shadow-md;
+.scada-dro-emerald {
+  @apply scada-dro text-neon-emerald border-emerald-950/70;
+  text-shadow: 0 0 12px rgba(0, 255, 157, 0.65);
 }
 
-.industrial-btn-amber {
-  @apply industrial-btn bg-amber-600 hover:bg-amber-500 text-white shadow-amber-900/40 shadow-md;
+.scada-dro-amber {
+  @apply scada-dro text-neon-amber border-amber-950/70;
+  text-shadow: 0 0 12px rgba(255, 183, 3, 0.65);
 }
 
-.industrial-btn-secondary {
-  @apply industrial-btn bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700;
+.scada-dro-purple {
+  @apply scada-dro text-purple-400 border-purple-950/70;
+  text-shadow: 0 0 12px rgba(181, 23, 158, 0.65);
+}
+
+/* Premium Industrial Tactile Buttons */
+.scada-btn {
+  @apply px-4 py-3 font-bold rounded-xl transition-all duration-150 active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-2 border select-none relative overflow-hidden;
+}
+
+.scada-btn-primary {
+  @apply scada-btn bg-gradient-to-b from-cyan-500 to-cyan-700 hover:from-cyan-400 hover:to-cyan-600 text-slate-950 font-extrabold border-cyan-300/40;
+  box-shadow: 0 4px 15px 0 rgba(0, 240, 255, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
+}
+
+.scada-btn-success {
+  @apply scada-btn bg-gradient-to-b from-emerald-500 to-emerald-700 hover:from-emerald-400 hover:to-emerald-600 text-slate-950 font-extrabold border-emerald-300/40;
+  box-shadow: 0 4px 15px 0 rgba(0, 255, 157, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
+}
+
+.scada-btn-danger {
+  @apply scada-btn bg-gradient-to-b from-rose-500 to-rose-700 hover:from-rose-400 hover:to-rose-600 text-white font-extrabold border-rose-300/40;
+  box-shadow: 0 4px 15px 0 rgba(255, 0, 85, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+}
+
+.scada-btn-amber {
+  @apply scada-btn bg-gradient-to-b from-amber-500 to-amber-700 hover:from-amber-400 hover:to-amber-600 text-slate-950 font-extrabold border-amber-300/40;
+  box-shadow: 0 4px 15px 0 rgba(255, 183, 3, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+}
+
+.scada-btn-secondary {
+  @apply scada-btn bg-gradient-to-b from-scada-800 to-scada-900 hover:from-scada-750 hover:to-scada-850 text-slate-200 border-scada-700/80;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Pulsing LED status pill */
+.led-indicator {
+  @apply w-2.5 h-2.5 rounded-full inline-block;
+}
+.led-emerald {
+  @apply led-indicator bg-neon-emerald;
+  box-shadow: 0 0 10px #00ff9d, 0 0 20px #00ff9d;
+}
+.led-rose {
+  @apply led-indicator bg-neon-rose;
+  box-shadow: 0 0 10px #ff0055, 0 0 20px #ff0055;
+}
+.led-amber {
+  @apply led-indicator bg-neon-amber;
+  box-shadow: 0 0 10px #ffb703, 0 0 20px #ffb703;
+}
+.led-cyan {
+  @apply led-indicator bg-neon-cyan;
+  box-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #06090e;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 3px;
+  background: #1d2c42;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #263852;
 }

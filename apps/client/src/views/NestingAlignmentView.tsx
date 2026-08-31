@@ -6,6 +6,8 @@ import {
   RefreshCw,
   Trash2,
   CheckCircle2,
+  TrendingUp,
+  Percent,
 } from 'lucide-react';
 
 export const NestingAlignmentView: React.FC = () => {
@@ -27,7 +29,6 @@ export const NestingAlignmentView: React.FC = () => {
       const json = await res.json();
       if (json.success && json.data.length > 0) {
         setRecipes(json.data);
-        // Default select first recipe with 3 pcs
         setSelectedItems([{ recipeId: json.data[0].id, quantity: 3 }]);
       }
     } catch (err) {
@@ -125,30 +126,30 @@ export const NestingAlignmentView: React.FC = () => {
   return (
     <div className="p-6 space-y-6 flex-1 overflow-y-auto">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div className="flex items-center justify-between border-b border-scada-750 pb-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-            <Layers className="w-5 h-5 text-cyan-400" />
-            Production Bar Nesting & Multi-Item Alignment Engine
+          <h2 className="text-xl font-extrabold text-slate-100 flex items-center gap-2.5">
+            <Layers className="w-6 h-6 text-neon-cyan" />
+            Bar Nesting & Multi-Item Alignment Studio
           </h2>
-          <p className="text-xs text-slate-400">
-            Combine multiple part recipes into raw stock bar batches, minimize scrap, and optimize head firing coordinates.
+          <p className="text-xs text-slate-400 font-mono">
+            Algorithmic raw bar optimization, scrap minimization, and forward-feed coordinate alignment.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           {commitSuccess && (
-            <span className="flex items-center gap-1 text-xs font-mono text-emerald-400 bg-emerald-950/60 px-3 py-1.5 rounded border border-emerald-800">
-              <CheckCircle2 className="w-4 h-4" /> BATCH SENT TO PRODUCTION
+            <span className="flex items-center gap-1.5 text-xs font-mono text-neon-emerald bg-emerald-950 px-3.5 py-2 rounded-xl border border-emerald-500/50 shadow-neon-emerald">
+              <CheckCircle2 className="w-4 h-4" /> BATCH COMMITTED TO CNC PRODUCTION
             </span>
           )}
 
           <button
             onClick={calculateNesting}
             disabled={calculating || selectedItems.length === 0}
-            className="industrial-btn-primary px-4 py-2 text-xs font-mono"
+            className="scada-btn-primary px-5 py-2 text-xs font-mono"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${calculating ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${calculating ? 'animate-spin' : ''}`} />
             {calculating ? 'CALCULATING...' : 'OPTIMIZE & ALIGN'}
           </button>
 
@@ -156,10 +157,10 @@ export const NestingAlignmentView: React.FC = () => {
             <button
               onClick={commitToProduction}
               disabled={committing}
-              className="industrial-btn-success px-4 py-2 text-xs font-mono"
+              className="scada-btn-success px-5 py-2 text-xs font-mono"
             >
-              <Play className="w-3.5 h-3.5" />
-              {committing ? 'COMMITTING...' : 'SEND TO PRODUCTION'}
+              <Play className="w-4 h-4" />
+              {committing ? 'COMMITTING...' : 'SEND TO CNC HUD'}
             </button>
           )}
         </div>
@@ -168,31 +169,31 @@ export const NestingAlignmentView: React.FC = () => {
       {/* Top Configuration & Selection Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Available Recipes Selector */}
-        <div className="industrial-card p-4 space-y-3">
-          <div className="text-xs font-bold text-slate-300 font-mono flex items-center justify-between">
-            <span>AVAILABLE RECIPES</span>
-            <span className="text-slate-500">{recipes.length} available</span>
+        <div className="scada-panel p-5 space-y-3">
+          <div className="text-xs font-bold text-slate-200 font-mono flex items-center justify-between border-b border-scada-750 pb-2">
+            <span>AVAILABLE RECIPE CATALOG</span>
+            <span className="text-cyan-400 font-extrabold">{recipes.length} available</span>
           </div>
 
-          <div className="space-y-1.5 max-h-48 overflow-y-auto">
+          <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
             {recipes.map((r) => {
               const isAdded = selectedItems.some((i) => i.recipeId === r.id);
               return (
                 <div
                   key={r.id}
-                  className="flex items-center justify-between p-2.5 rounded bg-slate-950/60 border border-slate-800 text-xs font-mono"
+                  className="flex items-center justify-between p-3 rounded-xl bg-scada-950 border border-scada-750 text-xs font-mono"
                 >
                   <div>
-                    <span className="font-bold text-cyan-300">{r.itemCode}</span>
+                    <span className="font-extrabold text-neon-cyan">{r.itemCode}</span>
                     <span className="text-slate-400 ml-2">({r.totalLength}mm)</span>
                   </div>
                   <button
                     onClick={() => handleAddItem(r.id)}
                     disabled={isAdded}
-                    className={`px-2 py-1 rounded text-[10px] font-bold ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all ${
                       isAdded
-                        ? 'bg-slate-800 text-slate-500'
-                        : 'bg-cyan-700 hover:bg-cyan-600 text-white shadow'
+                        ? 'bg-scada-800 text-slate-500'
+                        : 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-neon-cyan'
                     }`}
                   >
                     {isAdded ? 'ADDED' : '+ ADD'}
@@ -204,44 +205,44 @@ export const NestingAlignmentView: React.FC = () => {
         </div>
 
         {/* Selected Batch Items & Quantities */}
-        <div className="industrial-card p-4 space-y-3">
-          <div className="text-xs font-bold text-slate-300 font-mono flex items-center justify-between">
-            <span>BATCH TARGET ITEMS</span>
-            <span className="text-cyan-400">{selectedItems.length} selected</span>
+        <div className="scada-panel p-5 space-y-3">
+          <div className="text-xs font-bold text-slate-200 font-mono flex items-center justify-between border-b border-scada-750 pb-2">
+            <span>BATCH TARGET CUT LIST</span>
+            <span className="text-neon-cyan font-bold">{selectedItems.length} items</span>
           </div>
 
-          <div className="space-y-2 max-h-48 overflow-y-auto">
+          <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
             {selectedItems.map((item) => {
               const recipe = recipes.find((r) => r.id === item.recipeId);
               return (
                 <div
                   key={item.recipeId}
-                  className="flex items-center justify-between p-2.5 rounded bg-slate-950 border border-slate-800 text-xs font-mono"
+                  className="flex items-center justify-between p-3 rounded-xl bg-scada-950 border border-scada-750 text-xs font-mono"
                 >
                   <div>
-                    <div className="font-bold text-slate-200">{recipe?.itemCode}</div>
+                    <div className="font-extrabold text-slate-100">{recipe?.itemCode}</div>
                     <div className="text-[10px] text-slate-400">Length: {recipe?.totalLength}mm</div>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleUpdateQuantity(item.recipeId, -1)}
-                      className="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded flex items-center justify-center text-slate-200 font-bold"
+                      className="w-7 h-7 bg-scada-800 hover:bg-scada-700 rounded-lg flex items-center justify-center text-slate-100 font-extrabold"
                     >
                       -
                     </button>
-                    <span className="font-bold text-cyan-300 w-6 text-center">{item.quantity}</span>
+                    <span className="font-extrabold text-neon-cyan w-8 text-center text-sm">{item.quantity}</span>
                     <button
                       onClick={() => handleUpdateQuantity(item.recipeId, 1)}
-                      className="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded flex items-center justify-center text-slate-200 font-bold"
+                      className="w-7 h-7 bg-scada-800 hover:bg-scada-700 rounded-lg flex items-center justify-center text-slate-100 font-extrabold"
                     >
                       +
                     </button>
                     <button
                       onClick={() => handleRemoveItem(item.recipeId)}
-                      className="p-1 text-rose-400 hover:text-rose-300 ml-1"
+                      className="p-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-950/60 rounded-lg ml-1"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -251,18 +252,20 @@ export const NestingAlignmentView: React.FC = () => {
         </div>
 
         {/* Raw Stock Bar Length Selection */}
-        <div className="industrial-card p-4 space-y-4">
-          <div className="text-xs font-bold text-slate-300 font-mono">RAW STOCK BAR LENGTH</div>
+        <div className="scada-panel p-5 space-y-4">
+          <div className="text-xs font-bold text-slate-200 font-mono border-b border-scada-750 pb-2">
+            RAW STOCK BAR LENGTH SPEC
+          </div>
 
           <div className="grid grid-cols-3 gap-2 text-xs font-mono">
             {[6000, 9000, 12000].map((len) => (
               <button
                 key={len}
                 onClick={() => setStockBarLength(len)}
-                className={`py-3 rounded font-bold border transition-all ${
+                className={`py-3.5 rounded-xl font-extrabold border transition-all ${
                   stockBarLength === len
-                    ? 'bg-cyan-600 text-white border-cyan-500 shadow'
-                    : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                    ? 'bg-gradient-to-b from-cyan-500 to-cyan-700 text-slate-950 border-cyan-300 shadow-neon-cyan'
+                    : 'bg-scada-950 text-slate-300 border-scada-750 hover:border-slate-600'
                 }`}
               >
                 {len / 1000} Meters
@@ -272,18 +275,20 @@ export const NestingAlignmentView: React.FC = () => {
           </div>
 
           {plan && (
-            <div className="p-3 bg-slate-950/80 rounded border border-slate-800 space-y-1.5 text-xs font-mono">
-              <div className="flex justify-between">
-                <span className="text-slate-400">UTILIZATION:</span>
-                <span className="text-emerald-400 font-bold">{utilizationPercent}%</span>
+            <div className="p-4 bg-scada-950 rounded-xl border border-scada-750 space-y-2 text-xs font-mono">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400 flex items-center gap-1.5">
+                  <Percent className="w-4 h-4 text-emerald-400" /> UTILIZATION:
+                </span>
+                <span className="text-neon-emerald font-extrabold text-sm">{utilizationPercent}%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">UTILIZED:</span>
-                <span className="text-slate-200">{plan.utilizedLength} mm</span>
+                <span className="text-slate-400">UTILIZED MATERIAL:</span>
+                <span className="text-slate-100 font-bold">{plan.utilizedLength} mm</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">REMNANT SCRAP:</span>
-                <span className="text-amber-400 font-bold">{plan.scrapLength} mm</span>
+                <span className="text-slate-400">SCRAP REMNANT:</span>
+                <span className="text-neon-amber font-extrabold">{plan.scrapLength} mm</span>
               </div>
             </div>
           )}
@@ -292,14 +297,17 @@ export const NestingAlignmentView: React.FC = () => {
 
       {/* Visual Stock Bar Representation */}
       {plan && (
-        <div className="industrial-card p-5 space-y-3">
+        <div className="scada-panel p-6 space-y-4">
           <div className="flex items-center justify-between text-xs font-mono">
-            <span className="font-bold text-slate-200">RAW STOCK BAR NESTING LAYOUT ({plan.stockBarLength}mm)</span>
-            <span className="text-cyan-400">ESTIMATED CYCLE: ~{plan.estimatedCycleTimeSec}s</span>
+            <span className="font-extrabold text-slate-100 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-neon-cyan" />
+              RAW STOCK BAR NESTING TIMELINE ({plan.stockBarLength}mm)
+            </span>
+            <span className="text-neon-cyan font-bold">ESTIMATED PRODUCTION CYCLE: ~{plan.estimatedCycleTimeSec}s</span>
           </div>
 
           {/* Bar Diagram */}
-          <div className="w-full h-14 bg-slate-950 border border-slate-800 rounded-lg p-1.5 flex gap-1 items-center overflow-hidden">
+          <div className="w-full h-16 bg-scada-950 border border-scada-750 rounded-xl p-2 flex gap-1.5 items-center overflow-hidden shadow-inner-dark">
             {plan.itemsSummary.map((item, idx) => {
               const recipe = recipes.find((r) => r.id === item.recipeId);
               const partLength = recipe?.totalLength || 1500;
@@ -309,9 +317,9 @@ export const NestingAlignmentView: React.FC = () => {
                 <div
                   key={idx}
                   style={{ width: `${widthPct}%` }}
-                  className="h-full bg-cyan-900/60 border border-cyan-500/80 rounded flex flex-col items-center justify-center text-[10px] font-mono font-bold text-cyan-200"
+                  className="h-full bg-gradient-to-r from-cyan-950 via-scada-800 to-cyan-950 border border-cyan-500/80 rounded-lg flex flex-col items-center justify-center text-[10px] font-mono font-bold text-neon-cyan shadow-sm"
                 >
-                  <span className="truncate px-1">{item.itemCode} (x{item.count})</span>
+                  <span className="truncate px-2">{item.itemCode} (x{item.count})</span>
                   <span className="text-[9px] text-cyan-300/80">{partLength * item.count}mm</span>
                 </div>
               );
@@ -320,7 +328,7 @@ export const NestingAlignmentView: React.FC = () => {
             {plan.scrapLength > 0 && (
               <div
                 style={{ width: `${(plan.scrapLength / plan.stockBarLength) * 100}%` }}
-                className="h-full bg-rose-950/40 border border-rose-800/60 border-dashed rounded flex items-center justify-center text-[10px] font-mono text-rose-400"
+                className="h-full bg-rose-950/60 border border-rose-600/80 border-dashed rounded-lg flex items-center justify-center text-[10px] font-mono font-extrabold text-rose-300 shadow-sm"
               >
                 SCRAP ({plan.scrapLength}mm)
               </div>
@@ -331,54 +339,54 @@ export const NestingAlignmentView: React.FC = () => {
 
       {/* Operations Sequence Matrix */}
       {plan && (
-        <div className="industrial-card overflow-hidden">
-          <div className="px-4 py-3 border-b border-slate-800 bg-slate-950/60 flex items-center justify-between">
-            <h3 className="text-xs font-bold text-slate-200 font-mono uppercase">
-              Optimized Machine Execution Sequence ({plan.operationsSequence.length} Steps)
+        <div className="scada-panel overflow-hidden">
+          <div className="px-5 py-3 border-b border-scada-750 bg-scada-950/90 flex items-center justify-between">
+            <h3 className="text-xs font-extrabold text-slate-100 font-mono uppercase">
+              CNC OPTIMIZED EXECUTION SEQUENCE MATRIX ({plan.operationsSequence.length} Steps)
             </h3>
-            <span className="text-xs text-emerald-400 font-mono">
-              Monotonic Forward Feed Algorithm Active
+            <span className="text-xs text-neon-emerald font-mono font-bold">
+              ● Monotonic Forward Feed ($AX - DX$)
             </span>
           </div>
 
           <div className="max-h-72 overflow-y-auto">
             <table className="w-full text-left text-xs font-mono">
-              <thead className="bg-slate-950/90 text-slate-400 sticky top-0 border-b border-slate-800">
+              <thead className="bg-scada-950 text-slate-400 sticky top-0 border-b border-scada-750">
                 <tr>
-                  <th className="p-2.5 pl-4">Step</th>
-                  <th className="p-2.5">Operation</th>
-                  <th className="p-2.5">Side</th>
-                  <th className="p-2.5">Bar Coord (AX)</th>
-                  <th className="p-2.5">Allocated Head</th>
-                  <th className="p-2.5">Head Offset (DX)</th>
-                  <th className="p-2.5 font-bold text-emerald-400">Target Feed DRO</th>
-                  <th className="p-2.5">Tool Size / Text</th>
+                  <th className="p-3 pl-4">Step</th>
+                  <th className="p-3">Operation</th>
+                  <th className="p-3">Side</th>
+                  <th className="p-3">Bar Coord (AX)</th>
+                  <th className="p-3">Allocated Tool</th>
+                  <th className="p-3">Head Offset (DX)</th>
+                  <th className="p-3 font-extrabold text-neon-emerald">Target Feed DRO</th>
+                  <th className="p-3">Tool Size / Spec</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/40">
+              <tbody className="divide-y divide-scada-750/40">
                 {plan.operationsSequence.map((op: AlignedOperation) => (
-                  <tr key={op.stepIndex} className="hover:bg-slate-800/30">
-                    <td className="p-2.5 pl-4 font-bold text-slate-300">#{op.stepIndex}</td>
-                    <td className="p-2.5">
+                  <tr key={op.stepIndex} className="hover:bg-scada-850/60 transition-all">
+                    <td className="p-3 pl-4 font-extrabold text-slate-300">#{op.stepIndex}</td>
+                    <td className="p-3">
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold ${
                           op.operationType === 'PUNCH'
-                            ? 'bg-cyan-950 text-cyan-400 border border-cyan-800'
+                            ? 'bg-cyan-950 text-neon-cyan border border-cyan-500/50'
                             : op.operationType === 'MARK'
-                            ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                            : 'bg-rose-950 text-rose-400 border border-rose-800'
+                            ? 'bg-amber-950 text-neon-amber border border-amber-500/50'
+                            : 'bg-rose-950 text-rose-300 border border-rose-500/50'
                         }`}
                       >
                         {op.operationType}
                       </span>
                     </td>
-                    <td className="p-2.5">{op.side}</td>
-                    <td className="p-2.5 font-bold text-slate-100">{op.absoluteBarX} mm</td>
-                    <td className="p-2.5 font-bold text-cyan-300">{op.allocatedHeadName}</td>
-                    <td className="p-2.5 text-slate-400">{op.allocatedHeadOffset} mm</td>
-                    <td className="p-2.5 font-black text-emerald-400">{op.requiredFeedAxisPos.toFixed(2)} mm</td>
-                    <td className="p-2.5 text-slate-300">
-                      {op.toolSize ? `Ø${op.toolSize}mm` : op.markingText || 'Cut Blade'}
+                    <td className="p-3">{op.side}</td>
+                    <td className="p-3 font-bold text-slate-100">{op.absoluteBarX} mm</td>
+                    <td className="p-3 font-bold text-neon-cyan">{op.allocatedHeadName}</td>
+                    <td className="p-3 text-slate-400">{op.allocatedHeadOffset} mm</td>
+                    <td className="p-3 font-extrabold text-neon-emerald text-sm">{op.requiredFeedAxisPos.toFixed(2)} mm</td>
+                    <td className="p-3 text-slate-300">
+                      {op.toolSize ? `Ø${op.toolSize}mm` : op.markingText || 'Hydraulic Shear Blade'}
                     </td>
                   </tr>
                 ))}

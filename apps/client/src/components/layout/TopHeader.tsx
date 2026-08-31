@@ -1,87 +1,119 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePlcStore } from '../../stores/usePlcStore.js';
-import { Activity, ShieldAlert, Cpu, AlertTriangle } from 'lucide-react';
+import { Activity, ShieldAlert, Cpu, AlertTriangle, ShieldCheck, Clock } from 'lucide-react';
 
 export const TopHeader: React.FC = () => {
   const { isConnected, isSimulator, mode, setMode, eStopOk, activeAlarms, hydraulicPressureBar } = usePlcStore();
+  const [timeStr, setTimeStr] = useState<string>('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setTimeStr(now.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <header className="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between select-none">
-      {/* Brand & Machine Title */}
+    <header className="h-18 bg-scada-900/90 border-b border-scada-750/80 px-6 py-3 flex items-center justify-between select-none backdrop-blur-xl relative z-20 shadow-2xl">
+      {/* Brand & Machine Title with Metallic Badge */}
       <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-lg bg-cyan-600 flex items-center justify-center font-black text-white text-xl tracking-wider shadow-lg shadow-cyan-900/30">
+        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-400 via-cyan-600 to-blue-700 flex items-center justify-center font-black text-slate-950 text-xl tracking-tighter shadow-neon-cyan border border-cyan-300/40">
           6H
         </div>
         <div>
-          <h1 className="text-base font-bold text-slate-100 flex items-center gap-2">
-            INNOVANCE 6-HEAD CNC ANGLE LINE
-            <span className="text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 font-mono">
-              HPT-01
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-sm font-black tracking-widest text-slate-100 uppercase">
+              INNOVANCE CNC ANGLE LINE
+            </h1>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950/90 text-neon-cyan border border-cyan-500/40 font-mono font-bold tracking-wider shadow-sm">
+              SERIES 6-HEAD
             </span>
-          </h1>
-          <p className="text-xs text-slate-400">Angle Punching, Marking & Shearing HMI</p>
+          </div>
+          <p className="text-[11px] text-slate-400 font-mono tracking-tight flex items-center gap-2">
+            <span>STATION: #01</span>
+            <span>•</span>
+            <span className="text-slate-300">SKIPPER PUNCH & SHEAR HMI</span>
+          </p>
         </div>
       </div>
 
-      {/* Center Operational Mode Selector */}
-      <div className="flex items-center bg-slate-950 p-1 rounded-lg border border-slate-800">
-        {(['MANUAL', 'SEMI_AUTO', 'AUTO'] as const).map((m) => (
-          <button
-            key={m}
-            onClick={() => setMode(m)}
-            className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${
-              mode === m
-                ? m === 'AUTO'
-                  ? 'bg-emerald-600 text-white shadow'
-                  : 'bg-cyan-600 text-white shadow'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            {m.replace('_', ' ')}
-          </button>
-        ))}
+      {/* Center: Hardware Segmented Mode Rocker Selector */}
+      <div className="flex items-center bg-scada-950/90 p-1.5 rounded-xl border border-scada-750/90 shadow-inner-dark">
+        {(['MANUAL', 'SEMI_AUTO', 'AUTO'] as const).map((m) => {
+          const isActive = mode === m;
+          return (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              className={`px-5 py-2 text-xs font-mono font-extrabold rounded-lg transition-all duration-200 flex items-center gap-2 relative ${
+                isActive
+                  ? m === 'AUTO'
+                    ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-slate-950 shadow-neon-emerald border border-emerald-300/50'
+                    : 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-neon-cyan border border-cyan-300/50'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-scada-850/60'
+              }`}
+            >
+              <span className={isActive ? (m === 'AUTO' ? 'led-emerald' : 'led-cyan') : 'w-2 h-2 rounded-full bg-slate-700'} />
+              <span>{m.replace('_', ' ')}</span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Right Hardware Telemetry & Safety Status */}
-      <div className="flex items-center gap-4 text-xs font-mono">
-        {/* Hydraulic Pressure Indicator */}
-        <div className="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded border border-slate-800">
-          <Activity className="w-4 h-4 text-cyan-400" />
-          <span className="text-slate-400">HYD:</span>
-          <span className="text-cyan-300 font-bold">{hydraulicPressureBar.toFixed(1)} bar</span>
+      {/* Right: Live Telemetry HUD & Safety Interlocks */}
+      <div className="flex items-center gap-3.5 text-xs font-mono">
+        {/* Hydraulic Pressure Widget */}
+        <div className="flex items-center gap-2.5 bg-scada-950/90 px-3.5 py-2 rounded-xl border border-scada-750/80 shadow-inner-dark">
+          <Activity className="w-4 h-4 text-neon-amber animate-pulse" />
+          <div>
+            <div className="text-[9px] text-slate-400 font-bold tracking-wider">HPU PRESSURE</div>
+            <div className="text-neon-amber font-extrabold text-xs">
+              {hydraulicPressureBar.toFixed(1)} <span className="text-[10px] text-slate-400 font-normal">BAR</span>
+            </div>
+          </div>
         </div>
 
-        {/* E-Stop Status */}
+        {/* E-Stop Safety Status */}
         <div
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded border font-semibold ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border font-bold transition-all ${
             eStopOk
-              ? 'bg-emerald-950/60 border-emerald-800/80 text-emerald-400'
-              : 'bg-rose-950 border-rose-700 text-rose-300 animate-pulse'
+              ? 'bg-emerald-950/50 border-emerald-500/40 text-neon-emerald shadow-sm'
+              : 'bg-rose-950/80 border-rose-500 text-rose-300 animate-pulse-fast shadow-neon-rose'
           }`}
         >
-          <ShieldAlert className="w-4 h-4" />
+          {eStopOk ? <ShieldCheck className="w-4 h-4 text-neon-emerald" /> : <ShieldAlert className="w-4 h-4 text-neon-rose" />}
           <span>{eStopOk ? 'E-STOP OK' : 'E-STOP TRIPPED'}</span>
         </div>
 
-        {/* PLC Gateway Status */}
+        {/* PLC Gateway Watchdog */}
         <div
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded border ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border ${
             isConnected
-              ? 'bg-slate-950 border-slate-800 text-emerald-400'
-              : 'bg-amber-950/60 border-amber-800 text-amber-300'
+              ? 'bg-scada-950/80 border-scada-700 text-neon-cyan'
+              : 'bg-amber-950/60 border-amber-500/60 text-amber-300'
           }`}
         >
           <Cpu className="w-4 h-4" />
-          <span>{isConnected ? (isSimulator ? 'SIMULATOR ON' : 'PLC ONLINE') : 'CONNECTING...'}</span>
+          <span className="font-bold">{isConnected ? (isSimulator ? 'VIRTUAL PLC' : 'PLC ONLINE') : 'OFFLINE'}</span>
+          <span className={isConnected ? 'led-cyan' : 'led-amber'} />
         </div>
 
-        {/* Active Alarms Badge */}
+        {/* Live Alarms Badge */}
         {activeAlarms.length > 0 && (
-          <div className="flex items-center gap-1 bg-rose-900/60 text-rose-300 px-3 py-1.5 rounded border border-rose-700 animate-pulse">
-            <AlertTriangle className="w-4 h-4" />
-            <span>{activeAlarms.length} ALARM</span>
+          <div className="flex items-center gap-2 bg-rose-950/90 text-rose-200 px-3.5 py-2 rounded-xl border border-rose-500/80 shadow-neon-rose animate-bounce">
+            <AlertTriangle className="w-4 h-4 text-neon-rose" />
+            <span className="font-black">{activeAlarms.length} ALARM</span>
           </div>
         )}
+
+        {/* Digital Clock */}
+        <div className="flex items-center gap-2 bg-scada-950/90 px-3.5 py-2 rounded-xl border border-scada-750/80 text-slate-300 font-extrabold shadow-inner-dark">
+          <Clock className="w-3.5 h-3.5 text-cyan-400" />
+          <span>{timeStr}</span>
+        </div>
       </div>
     </header>
   );
