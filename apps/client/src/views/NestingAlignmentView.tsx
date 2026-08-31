@@ -4,10 +4,10 @@ import { DataTable, Column } from '../components/common/DataTable.js';
 import {
   Sparkles,
   Settings,
-  CheckCircle,
   Play,
   Trash2,
 } from 'lucide-react';
+import { HmiAlert } from '../utils/alerts.js';
 
 interface NestingOrder {
   recipeId: string;
@@ -43,7 +43,6 @@ export const NestingAlignmentView: React.FC = () => {
   const [batchOrders, setBatchOrders] = useState<NestingOrder[]>([]);
   const [nestedBars, setNestedBars] = useState<NestedBar[]>([]);
   const [isOptimizing, setIsOptimizing] = useState<boolean>(false);
-  const [appliedSuccess, setAppliedSuccess] = useState<boolean>(false);
 
   useEffect(() => {
     fetchRecipes();
@@ -170,9 +169,13 @@ export const NestingAlignmentView: React.FC = () => {
   const overallYieldPct = totalRawLength > 0 ? Number(((totalUtilizedLength / totalRawLength) * 100).toFixed(1)) : 0;
   const totalScrapMeters = Number(((totalRawLength - totalUtilizedLength) / 1000).toFixed(2));
 
-  const handleSendToAutoProduction = () => {
-    setAppliedSuccess(true);
-    setTimeout(() => setAppliedSuccess(false), 3000);
+  const handleSendToAutoProduction = async () => {
+    const isConfirmed = await HmiAlert.confirm(
+      'Send Batch to Production?',
+      'This will inject the optimized nested batch into the Auto CNC Production queue. Ensure stock bars are loaded.'
+    );
+    if (!isConfirmed) return;
+    HmiAlert.success('Nested batch successfully injected into CNC Auto Queue!');
   };
 
   const columns: Column<NestingOrder>[] = [
@@ -271,13 +274,6 @@ export const NestingAlignmentView: React.FC = () => {
           </button>
         </div>
       </div>
-
-      {appliedSuccess && (
-        <div className="p-3 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded text-xs font-semibold flex items-center gap-2">
-          <CheckCircle className="w-4 h-4 text-emerald-600" />
-          Nesting cycle successfully loaded into Auto Production line!
-        </div>
-      )}
 
       {/* KPI Optimization Yield Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">

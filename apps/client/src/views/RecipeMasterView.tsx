@@ -12,12 +12,12 @@ import {
   Save,
   List,
   Edit,
-  CheckCircle,
   FileCode,
   Calculator,
   ShieldCheck,
   FileText,
 } from 'lucide-react';
+import { HmiAlert } from '../utils/alerts.js';
 
 export const RecipeMasterView: React.FC = () => {
   const [recipes, setRecipes] = useState<ItemRecipe[]>([]);
@@ -25,7 +25,6 @@ export const RecipeMasterView: React.FC = () => {
   const [selectedRecipe, setSelectedRecipe] = useState<ItemRecipe | null>(null);
   const [highlightedStep, setHighlightedStep] = useState<number | undefined>(undefined);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
   const [isDstvModalOpen, setIsDstvModalOpen] = useState(false);
   const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
   const [isJobCardModalOpen, setIsJobCardModalOpen] = useState(false);
@@ -42,6 +41,26 @@ export const RecipeMasterView: React.FC = () => {
     value: 0,
     onApply: () => {},
   });
+
+  const handleDeleteRecipe = async (id: string) => {
+    const isConfirmed = await HmiAlert.confirm(
+      'Delete Item Recipe?',
+      'Are you sure you want to delete this recipe? This cannot be undone.'
+    );
+    if (!isConfirmed) return;
+
+    try {
+      const res = await fetch(`/api/recipes/${id}`, { method: 'DELETE' });
+      const json = await res.json();
+      if (json.success) {
+        HmiAlert.success('Item Recipe deleted successfully!');
+        fetchRecipes();
+      }
+    } catch (err) {
+      console.error('Failed to delete recipe', err);
+      HmiAlert.error('Failed to delete item recipe.');
+    }
+  };
 
   useEffect(() => {
     fetchRecipes();
@@ -116,6 +135,7 @@ export const RecipeMasterView: React.FC = () => {
   const handleDstvImportComplete = (importedRecipe: ItemRecipe) => {
     setSelectedRecipe(importedRecipe);
     setActiveTab('FORM');
+    HmiAlert.success('DSTV File Imported! Review and save the recipe.');
   };
 
   const handleAddStep = () => {
@@ -165,13 +185,13 @@ export const RecipeMasterView: React.FC = () => {
 
       const json = await res.json();
       if (json.success) {
-        setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 2500);
+        HmiAlert.success(isNew ? 'Item Recipe created successfully!' : 'Item Recipe updated successfully!');
         fetchRecipes();
         setActiveTab('LIST');
       }
     } catch (err) {
       console.error('Failed to save recipe', err);
+      HmiAlert.error('Failed to save item recipe.');
     } finally {
       setIsSaving(false);
     }
@@ -241,15 +261,26 @@ export const RecipeMasterView: React.FC = () => {
       align: 'right',
       sortable: false,
       render: (r) => (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleEditRecipe(r);
-          }}
-          className="btn-ca btn-ca-primary text-xs py-1 px-2.5"
-        >
-          <Edit className="w-3.5 h-3.5" /> Edit
-        </button>
+        <div className="flex items-center justify-end gap-1">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleEditRecipe(r);
+            }}
+            className="btn-ca btn-ca-primary text-xs py-1 px-2.5"
+          >
+            <Edit className="w-3.5 h-3.5" /> Edit
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteRecipe(r.id);
+            }}
+            className="btn-ca btn-ca-danger text-xs py-1 px-2.5"
+          >
+            <Trash2 className="w-3.5 h-3.5" /> Delete
+          </button>
+        </div>
       ),
     },
   ];
@@ -285,12 +316,6 @@ export const RecipeMasterView: React.FC = () => {
           )}
         </div>
       </div>
-
-      {saveSuccess && (
-        <div className="p-3 bg-teal-50 border border-teal-300 text-teal-800 rounded text-xs font-semibold flex items-center gap-2">
-          <CheckCircle className="w-4 h-4" /> Item Recipe saved successfully!
-        </div>
-      )}
 
       {/* TAB: LIST */}
       {activeTab === 'LIST' && (

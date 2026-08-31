@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {
   Wrench,
   RotateCcw,
-  CheckCircle,
   Scissors,
   Bookmark,
 } from 'lucide-react';
+
+import { HmiAlert } from '../utils/alerts.js';
 
 interface ToolStation {
   id: string;
@@ -23,7 +24,6 @@ const STORAGE_KEY = 'hpt_tooling_wear_master';
 
 export const ToolingWearView: React.FC = () => {
   const [stations, setStations] = useState<ToolStation[]>([]);
-  const [resetSuccess, setResetSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMachineTooling();
@@ -73,8 +73,13 @@ export const ToolingWearView: React.FC = () => {
     }
   };
 
-  const handleResetCounter = (id: string, headName: string) => {
-    if (!window.confirm(`Are you sure you want to reset the stroke counter for ${headName} after tool replacement/regrind?`)) return;
+  const handleResetCounter = async (id: string, headName: string) => {
+    const isConfirmed = await HmiAlert.confirm(
+      'Reset Stroke Counter?',
+      `Are you sure you want to reset the stroke counter for ${headName} after tool replacement/regrind?`
+    );
+    if (!isConfirmed) return;
+
     const updated = stations.map((s) =>
       s.id === id ? { ...s, currentStrokes: 0, lastRegrindDate: new Date().toISOString().split('T')[0] } : s
     );
@@ -86,8 +91,7 @@ export const ToolingWearView: React.FC = () => {
     });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(savedWear));
 
-    setResetSuccess(`Stroke counter for ${headName} reset to 0!`);
-    setTimeout(() => setResetSuccess(null), 3000);
+    HmiAlert.success(`Stroke counter for ${headName} reset to 0!`);
   };
 
   const totalHits = stations.reduce((acc, s) => acc + s.currentStrokes, 0);
@@ -110,12 +114,6 @@ export const ToolingWearView: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {resetSuccess && (
-        <div className="p-3 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded text-xs font-semibold flex items-center gap-2">
-          <CheckCircle className="w-4 h-4 text-emerald-600" /> {resetSuccess}
-        </div>
-      )}
 
       {/* Grid of Tooling Stations */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

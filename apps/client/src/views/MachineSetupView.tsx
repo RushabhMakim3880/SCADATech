@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { MachineDetail } from '@innovance-hmi/shared';
-import { Save, CheckCircle } from 'lucide-react';
+import { Save } from 'lucide-react';
+import { HmiAlert } from '../utils/alerts.js';
 
 export const MachineSetupView: React.FC = () => {
   const [machine, setMachine] = useState<any | null>(null);
   const [heads, setHeads] = useState<MachineDetail[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
     fetchMachineConfig();
@@ -51,11 +51,11 @@ export const MachineSetupView: React.FC = () => {
           })
         )
       );
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 2500);
+      HmiAlert.success('Tooling Configuration Saved!');
       fetchMachineConfig();
     } catch (err) {
       console.error('Failed to save tooling', err);
+      HmiAlert.error('Failed to save tooling configuration.');
     } finally {
       setIsSaving(false);
     }
@@ -73,12 +73,6 @@ export const MachineSetupView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          {saveSuccess && (
-            <span className="text-xs font-semibold text-emerald-800 bg-emerald-100 px-3 py-1 rounded border border-emerald-300 flex items-center gap-1">
-              <CheckCircle className="w-4 h-4" /> Tooling Configuration Saved!
-            </span>
-          )}
-
           <button
             onClick={handleSaveAll}
             disabled={isSaving}

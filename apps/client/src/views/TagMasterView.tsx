@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { wsClient } from '../services/wsClient.js';
 import { PlcTagDefinition } from '@innovance-hmi/shared';
+import { HmiAlert } from '../utils/alerts.js';
 import { DataTable, Column } from '../components/common/DataTable.js';
 import {
   RefreshCw,
@@ -10,7 +11,6 @@ import {
   Check,
   X,
   Download,
-  CheckCircle,
 } from 'lucide-react';
 
 interface TagFormData {
@@ -45,7 +45,6 @@ export const TagMasterView: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState<TagFormData>(EMPTY_TAG_FORM);
   const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     fetchTags();
@@ -94,7 +93,7 @@ export const TagMasterView: React.FC = () => {
   const handleSaveTag = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.tagName || !formData.tagAddress) {
-      alert('Tag Identifier Name and PLC Register Address are required.');
+      HmiAlert.warning('Tag Identifier Name and PLC Register Address are required.');
       return;
     }
 
@@ -112,31 +111,35 @@ export const TagMasterView: React.FC = () => {
 
       const json = await res.json();
       if (json.success) {
-        setSuccessMessage(isNew ? `Tag "${formData.tagName}" created successfully!` : `Tag "${formData.tagName}" updated successfully!`);
-        setTimeout(() => setSuccessMessage(null), 3000);
+        HmiAlert.success(isNew ? `Tag "${formData.tagName}" created successfully!` : `Tag "${formData.tagName}" updated successfully!`);
         setIsModalOpen(false);
         fetchTags();
       }
     } catch (err) {
       console.error('Failed to save tag mapping', err);
+      HmiAlert.error('Failed to save tag mapping.');
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDeleteTag = async (tag: PlcTagDefinition) => {
-    if (!window.confirm(`Are you sure you want to delete tag mapping "${tag.tagName}" (${tag.tagAddress})?`)) return;
+    const isConfirmed = await HmiAlert.confirm(
+      'Delete Tag Mapping?',
+      `Are you sure you want to delete tag mapping "${tag.tagName}" (${tag.tagAddress})?`
+    );
+    if (!isConfirmed) return;
 
     try {
       const res = await fetch(`/api/tags/${tag.id}`, { method: 'DELETE' });
       const json = await res.json();
       if (json.success) {
-        setSuccessMessage(`Tag "${tag.tagName}" deleted!`);
-        setTimeout(() => setSuccessMessage(null), 3000);
+        HmiAlert.success(`Tag "${tag.tagName}" deleted!`);
         fetchTags();
       }
     } catch (err) {
       console.error('Failed to delete tag', err);
+      HmiAlert.error('Failed to delete tag.');
     }
   };
 
@@ -308,12 +311,6 @@ export const TagMasterView: React.FC = () => {
           </button>
         </div>
       </div>
-
-      {successMessage && (
-        <div className="p-3 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded text-xs font-semibold flex items-center gap-2">
-          <CheckCircle className="w-4 h-4 text-emerald-600" /> {successMessage}
-        </div>
-      )}
 
       {/* Category Filter Pills */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
