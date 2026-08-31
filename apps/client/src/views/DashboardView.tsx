@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { usePlcStore } from '../stores/usePlcStore.js';
+import { wsClient } from '../services/wsClient.js';
 import {
   ArrowRight,
   ArrowLeft,
@@ -25,34 +26,35 @@ export const DashboardView: React.FC = () => {
   const [jogSpeed, setJogSpeed] = useState<'FAST' | 'SLOW'>('SLOW');
 
   const handleJog = (direction: 'FWD' | 'REV', isDown: boolean) => {
-    if (!isDown) {
-      batchUpdateTags({ feedSpeedMPerMin: 0 });
-      return;
+    const speed = jogSpeed === 'FAST' ? 80.0 : 20.0;
+    if (isDown) {
+      wsClient.jogStart(direction, speed);
+    } else {
+      wsClient.jogStop(direction);
     }
-    const delta = jogSpeed === 'FAST' ? 15.0 : 3.0;
-    const newPos = direction === 'FWD' ? feedPositionMm + delta : Math.max(0, feedPositionMm - delta);
-    batchUpdateTags({
-      feedPositionMm: newPos,
-      feedSpeedMPerMin: direction === 'FWD' ? (jogSpeed === 'FAST' ? 24.0 : 6.0) : -(jogSpeed === 'FAST' ? 24.0 : 6.0),
-    });
   };
 
-  const toggleClamp = (clamp: 'infeedClamp' | 'carriageClamp' | 'outfeedClamp') => {
-    const current = usePlcStore.getState()[clamp];
-    batchUpdateTags({ [clamp]: !current });
+  const toggleClamp = (clamp: 'infeed' | 'carriage' | 'outfeed') => {
+    wsClient.toggleValve(clamp);
   };
 
   const toggleHydraulic = () => {
-    batchUpdateTags({
-      hydraulicPumpRunning: !hydraulicPumpRunning,
-      hydraulicPressureBar: !hydraulicPumpRunning ? 160.0 : 0.0,
-    });
+    wsClient.toggleValve('pump');
   };
 
   const fireHead = (headName: string) => {
     batchUpdateTags({
       headsFiring: { ...headsFiring, [headName]: true },
     });
+    const tagName =
+      headName === 'Marking'
+        ? 'Marking_Trigger'
+        : headName === 'Cutter'
+        ? 'Shear_Cut_Trigger'
+        : `Head_${headName}_Punch_Trigger`;
+
+    wsClient.writeTag(tagName, true, 'Boolean');
+
     setTimeout(() => {
       batchUpdateTags({
         headsFiring: { ...usePlcStore.getState().headsFiring, [headName]: false },
@@ -128,7 +130,7 @@ export const DashboardView: React.FC = () => {
           <div className="text-xs text-slate-400 font-mono mb-2">MATERIAL GRIPPERS & CLAMPS</div>
           <div className="grid grid-cols-3 gap-2 text-[11px] font-bold font-mono">
             <button
-              onClick={() => toggleClamp('infeedClamp')}
+              onClick={() => toggleClamp('infeed')}
               className={`p-2 rounded border text-center transition-all ${
                 infeedClamp
                   ? 'bg-emerald-950/80 border-emerald-600 text-emerald-300'
@@ -140,7 +142,7 @@ export const DashboardView: React.FC = () => {
             </button>
 
             <button
-              onClick={() => toggleClamp('carriageClamp')}
+              onClick={() => toggleClamp('carriage')}
               className={`p-2 rounded border text-center transition-all ${
                 carriageClamp
                   ? 'bg-emerald-950/80 border-emerald-600 text-emerald-300'
@@ -152,7 +154,7 @@ export const DashboardView: React.FC = () => {
             </button>
 
             <button
-              onClick={() => toggleClamp('outfeedClamp')}
+              onClick={() => toggleClamp('outfeed')}
               className={`p-2 rounded border text-center transition-all ${
                 outfeedClamp
                   ? 'bg-emerald-950/80 border-emerald-600 text-emerald-300'
@@ -244,7 +246,7 @@ export const DashboardView: React.FC = () => {
                   jogSpeed === 'SLOW' ? 'bg-cyan-600 text-white' : 'text-slate-400'
                 }`}
               >
-                SLOW (3mm)
+                SLOW (20mm/s)
               </button>
               <button
                 onClick={() => setJogSpeed('FAST')}
@@ -252,7 +254,7 @@ export const DashboardView: React.FC = () => {
                   jogSpeed === 'FAST' ? 'bg-cyan-600 text-white' : 'text-slate-400'
                 }`}
               >
-                FAST (15mm)
+                FAST (80mm/s)
               </button>
             </div>
           </div>
@@ -262,7 +264,9 @@ export const DashboardView: React.FC = () => {
               onMouseDown={() => handleJog('REV', true)}
               onMouseUp={() => handleJog('REV', false)}
               onMouseLeave={() => handleJog('REV', false)}
-              className="industrial-btn-secondary h-20 text-base font-bold flex flex-col items-center justify-center gap-1 active:bg-cyan-700"
+              onTouchStart={() => handleJog('REV', true)}
+              onTouchEnd={() => handleJog('REV', false)}
+              className="industrial-btn-secondary h-20 text-base font-bold flex flex-col items-center justify-center gap-1 active:bg-cyan-700 select-none"
             >
               <ArrowLeft className="w-6 h-6 text-cyan-400" />
               <span>JOG REVERSE (&lt;&lt;)</span>
@@ -272,7 +276,9 @@ export const DashboardView: React.FC = () => {
               onMouseDown={() => handleJog('FWD', true)}
               onMouseUp={() => handleJog('FWD', false)}
               onMouseLeave={() => handleJog('FWD', false)}
-              className="industrial-btn-primary h-20 text-base font-bold flex flex-col items-center justify-center gap-1"
+              onTouchStart={() => handleJog('FWD', true)}
+              onTouchEnd={() => handleJog('FWD', false)}
+              className="industrial-btn-primary h-20 text-base font-bold flex flex-col items-center justify-center gap-1 select-none"
             >
               <ArrowRight className="w-6 h-6 text-white" />
               <span>JOG FORWARD (&gt;&gt;)</span>

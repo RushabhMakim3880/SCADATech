@@ -3,20 +3,23 @@ import { AppLayout } from './components/layout/AppLayout.js';
 import { ActiveTab } from './components/layout/Sidebar.js';
 import { DashboardView } from './views/DashboardView.js';
 import { usePlcStore } from './stores/usePlcStore.js';
+import { wsClient } from './services/wsClient.js';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('PRODUCTION');
-  const { setConnected, updateTag } = usePlcStore();
+  const { setConnected, updateTag, setAlarms } = usePlcStore();
 
   useEffect(() => {
     // Connect to WebSocket gateway
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
-    
+    const host = window.location.port === '3000' ? 'localhost:5000' : window.location.host;
+    const wsUrl = `${protocol}//${host}/ws`;
+
     let ws: WebSocket | null = null;
     try {
       ws = new WebSocket(wsUrl);
-      
+      wsClient.setSocket(ws);
+
       ws.onopen = () => {
         setConnected(true, true);
         console.log('✅ Connected to HMI WebSocket gateway');
@@ -25,8 +28,12 @@ export const App: React.FC = () => {
       ws.onmessage = (event) => {
         try {
           const msg = JSON.parse(event.data);
-          if (msg.type === 'TAG_UPDATES') {
+          if (msg.type === 'TAG_UPDATES' && Array.isArray(msg.payload)) {
             msg.payload.forEach((u: any) => updateTag(u));
+          } else if (msg.type === 'ACTIVE_ALARMS' && Array.isArray(msg.payload)) {
+            setAlarms(msg.payload);
+          } else if (msg.type === 'PLC_STATUS') {
+            setConnected(msg.payload.connected, msg.payload.isSimulator);
           }
         } catch (e) {
           console.error('WS Parse Error', e);
@@ -43,8 +50,9 @@ export const App: React.FC = () => {
 
     return () => {
       ws?.close();
+      wsClient.setSocket(null);
     };
-  }, [setConnected, updateTag]);
+  }, [setConnected, updateTag, setAlarms]);
 
   return (
     <AppLayout activeTab={activeTab} onTabChange={setActiveTab}>
