@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ItemRecipe } from '@innovance-hmi/shared';
-import { AngleBarVisualizer } from '../components/canvas/AngleBarVisualizer.js';
+import { AngleBarViewer } from '../components/canvas/AngleBarViewer.js';
 import { usePlcStore } from '../stores/usePlcStore.js';
 import { wsClient } from '../services/wsClient.js';
 import {
@@ -197,9 +197,9 @@ export const LiveProductionView: React.FC = () => {
         )}
       </div>
 
-      {/* 2D Angle Bar Visual Blueprint */}
-      <div className="h-[340px] rounded-lg overflow-hidden border border-slate-300 shadow-sm">
-        <AngleBarVisualizer
+      {/* Unified 2D/3D Interactive Visualizer */}
+      <div className="h-[500px] rounded-lg overflow-hidden border border-slate-300 shadow-sm">
+        <AngleBarViewer
           recipe={selectedRecipe}
           activeFeedPosition={feedPositionMm}
           highlightStepIndex={currentStepIdx}

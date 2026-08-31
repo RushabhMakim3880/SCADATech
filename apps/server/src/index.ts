@@ -21,8 +21,10 @@ async function startServer() {
   const plcManager = PlcManager.getInstance();
 
   try {
-    // Initialize PLC Driver (Hardware OPC-UA / Modbus TCP by default)
-    await plcManager.init(IS_SIMULATOR, PLC_ENDPOINT);
+    // Initialize PLC Driver in the background so it doesn't block server boot
+    plcManager.init(IS_SIMULATOR, PLC_ENDPOINT).catch((err) => {
+      console.error('Failed to initialize PLC Manager:', err);
+    });
 
     await app.listen({ port: PORT, host: HOST });
     console.log(`🚀 Innovance Angle Punching Production Server running at http://localhost:${PORT}`);

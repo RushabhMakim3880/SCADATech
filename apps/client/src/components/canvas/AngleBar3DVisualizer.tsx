@@ -1,15 +1,13 @@
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { ItemRecipe } from '@innovance-hmi/shared';
-import {
-  RotateCcw,
-  Box,
-} from 'lucide-react';
+import { RotateCcw, Box } from 'lucide-react';
 
 interface AngleBar3DVisualizerProps {
   recipe?: ItemRecipe | null;
   activeFeedPosition?: number;
   highlightStepIndex?: number;
+  onSelectStep?: (stepIndex: number) => void;
 }
 
 const DEFAULT_DEMO_RECIPE: ItemRecipe = {
@@ -39,6 +37,7 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
   recipe,
   activeFeedPosition = 0,
   highlightStepIndex,
+  onSelectStep,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -54,31 +53,31 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const laserMeshRef = useRef<THREE.Group | null>(null);
+  
+  // Click-to-edit maps
+  const interactiveMeshesRef = useRef<THREE.Mesh[]>([]);
+  const meshToStepIndexMapRef = useRef<Map<string, number>>(new Map());
 
   const isDraggingRef = useRef(false);
   const isPanningRef = useRef(false);
   const previousMousePositionRef = useRef({ x: 0, y: 0 });
-  // Default 3/4 Isometric perspective looking cleanly down at both Flanges
   const cameraRotationRef = useRef({ theta: 0.75, phi: 0.60, radius: Math.max(800, lengthMm * 0.8) });
-  const targetLookAtRef = useRef(new THREE.Vector3(lengthMm / 2, widthA / 2, widthB / 2));
+  const targetLookAtRef = useRef(new THREE.Vector3(lengthMm / 2, widthA / 2, -widthB / 2));
 
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
     if (!container || !canvas) return;
 
-    // 1. Engineering CAD Background
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0f172a);
     sceneRef.current = scene;
 
-    // 2. Camera
     const width = container.clientWidth;
     const height = container.clientHeight;
     const camera = new THREE.PerspectiveCamera(35, width / height, 1, 30000);
     cameraRef.current = camera;
 
-    // 3. Renderer
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
@@ -90,7 +89,6 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     rendererRef.current = renderer;
 
-    // 4. Studio CAD Lighting
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x334155, 1.2);
     scene.add(hemiLight);
 
@@ -106,42 +104,29 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
     bottomLight.position.set(lengthMm / 2, -800, 600);
     scene.add(bottomLight);
 
-    // 5. Ground Grid
     const gridHelper = new THREE.GridHelper(Math.max(2500, lengthMm * 1.5), 50, 0x38bdf8, 0x1e293b);
-    gridHelper.position.set(lengthMm / 2, -1, widthB / 2);
+    gridHelper.position.set(lengthMm / 2, -1, -widthB / 2);
     scene.add(gridHelper);
 
-    // 6. Mathematically Flawless Extruded L-Profile Geometry (Extruded along +X axis)
-    // Cross-section in (Z, Y) plane:
-    // Flange A extends along +Y [0, widthA] with thickness in Z [0, thickness]
-    // Flange B extends along +Z [0, widthB] with thickness in Y [0, thickness]
     const shape = new THREE.Shape();
-    shape.moveTo(0, 0); // Corner Heel (0, 0)
-    shape.lineTo(widthB, 0); // Flange B outer tip (Z=widthB, Y=0)
-    shape.lineTo(widthB, thickness); // Flange B top tip (Z=widthB, Y=thickness)
-    shape.lineTo(thickness, thickness); // Inner corner root (Z=thickness, Y=thickness)
-    shape.lineTo(thickness, widthA); // Flange A inner tip (Z=thickness, Y=widthA)
-    shape.lineTo(0, widthA); // Flange A outer tip (Z=0, Y=widthA)
+    shape.moveTo(0, 0); 
+    shape.lineTo(widthB, 0); 
+    shape.lineTo(widthB, thickness); 
+    shape.lineTo(thickness, thickness); 
+    shape.lineTo(thickness, widthA); 
+    shape.lineTo(0, widthA); 
     shape.closePath();
 
-    const extrudeSettings = {
-      steps: 1,
-      depth: lengthMm,
-      bevelEnabled: false,
-    };
-
-    // Extrude along Z, then rotate around Y by -90 deg so length is along +X and (Z,Y) is cross-section
+    const extrudeSettings = { steps: 1, depth: lengthMm, bevelEnabled: false };
     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.rotateY(-Math.PI / 2);
-    // After -Math.PI/2 rotation:
-    // 2D Shape X (which was +Z widthB) is now along +Z
-    // Extrude depth (which was along +Z) is now along +X
-    // 2D Shape Y (which was +Y widthA) is still along +Y
+    // Rotate +90 degrees around Y so the depth (Z) goes along positive X
+    geometry.rotateY(Math.PI / 2);
 
     const steelMaterial = new THREE.MeshStandardMaterial({
-      color: 0x94a3b8, // Bright Galvanized Structural Steel
+      color: 0x94a3b8, 
       metalness: 0.82,
       roughness: 0.28,
+      transparent: true,
     });
 
     const angleMesh = new THREE.Mesh(geometry, steelMaterial);
@@ -149,25 +134,31 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
     angleMesh.receiveShadow = true;
     scene.add(angleMesh);
 
-    // Edge Outlines
     const edgesGeom = new THREE.EdgesGeometry(geometry, 20);
     const edgesMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 1.5 });
     const edgesMesh = new THREE.LineSegments(edgesGeom, edgesMat);
     scene.add(edgesMesh);
 
-    // 7. Render Holes DIRECTLY Inside Flange A and Flange B
+    // Clear previous hit meshes
+    interactiveMeshesRef.current = [];
+    meshToStepIndexMapRef.current.clear();
+
     if (activeRecipe.steps) {
+      const cuts = activeRecipe.steps.filter(s => s.operationType === 'CUT' || s.isCutOff);
+
       activeRecipe.steps.forEach((step, idx) => {
         const isHighlight = highlightStepIndex === idx;
+        const isDone = activeFeedPosition > step.xPosition;
 
         if (step.operationType === 'PUNCH') {
           const holeRadius = (step.toolSize || 18) / 2;
           const isSideA = step.side === 'A';
-          const punchColor = isSideA ? 0x00e5ff : 0x00e676; // Cyan for A, Emerald for B
+          
+          let punchColor = isSideA ? 0x00e5ff : 0x00e676;
+          if (isDone) punchColor = isSideA ? 0x083344 : 0x064e3b; // Ghosting color in 3D
 
           const holeGroup = new THREE.Group();
 
-          // Dark Inner Bore Cavity
           const boreGeom = new THREE.CylinderGeometry(holeRadius, holeRadius, thickness + 1.5, 32, 1, false);
           const boreMat = new THREE.MeshStandardMaterial({
             color: 0x020617,
@@ -175,9 +166,13 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
             metalness: 0.1,
           });
           const boreMesh = new THREE.Mesh(boreGeom, boreMat);
+          
+          // Make bore mesh interactive for raycasting click-to-edit
+          interactiveMeshesRef.current.push(boreMesh);
+          meshToStepIndexMapRef.current.set(boreMesh.uuid, idx);
+
           holeGroup.add(boreMesh);
 
-          // Outer Chamfer Rim Rings
           const rimGeom = new THREE.RingGeometry(holeRadius - 0.2, holeRadius + 2.5, 32);
           const rimMat = new THREE.MeshBasicMaterial({
             color: isHighlight ? 0xffffff : punchColor,
@@ -185,8 +180,10 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
           });
           const frontRim = new THREE.Mesh(rimGeom, rimMat);
           const backRim = new THREE.Mesh(rimGeom, rimMat);
+          
+          interactiveMeshesRef.current.push(frontRim);
+          meshToStepIndexMapRef.current.set(frontRim.uuid, idx);
 
-          // Center Crosshair Indicator
           const crossGeom = new THREE.BufferGeometry();
           const arm = holeRadius + 3.5;
           const crossVertices = new Float32Array([
@@ -198,25 +195,16 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
           const crossMesh = new THREE.LineSegments(crossGeom, crossMat);
 
           if (isSideA) {
-            // Flange A (Vertical Leg):
-            // Center is at X = step.xPosition, Y = step.yPosition, Z = thickness / 2
-            // Cylinder axis goes through Z
             boreGeom.rotateX(Math.PI / 2);
-            holeGroup.position.set(step.xPosition, step.yPosition, thickness / 2);
-
+            holeGroup.position.set(step.xPosition, step.yPosition, -thickness / 2);
             frontRim.position.set(0, 0, -thickness / 2 - 0.05);
             backRim.position.set(0, 0, thickness / 2 + 0.05);
             crossMesh.position.set(0, 0, -thickness / 2 - 0.1);
           } else {
-            // Flange B (Horizontal Leg):
-            // Center is at X = step.xPosition, Y = thickness / 2, Z = step.yPosition
-            // Cylinder axis goes through Y (vertical)
-            holeGroup.position.set(step.xPosition, thickness / 2, step.yPosition);
-
+            holeGroup.position.set(step.xPosition, thickness / 2, -step.yPosition);
             rimGeom.rotateX(Math.PI / 2);
             frontRim.position.set(0, thickness / 2 + 0.05, 0);
             backRim.position.set(0, -thickness / 2 - 0.05, 0);
-
             crossGeom.rotateX(Math.PI / 2);
             crossMesh.position.set(0, thickness / 2 + 0.1, 0);
           }
@@ -224,20 +212,34 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
           holeGroup.add(frontRim);
           holeGroup.add(backRim);
           holeGroup.add(crossMesh);
+
+          // 3D Collision Zone Warning
+          const isCollision = cuts.some(cut => Math.abs(cut.xPosition - step.xPosition) < 20);
+          if (isCollision) {
+            const warningGeom = new THREE.BoxGeometry(30, widthA + 20, widthB + 20);
+            const warningMat = new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.15, depthWrite: false });
+            const warningBox = new THREE.Mesh(warningGeom, warningMat);
+            // Center the box around the origin of the holeGroup (which is local 0,0,0)
+            warningBox.position.set(0, 0, 0); 
+            holeGroup.add(warningBox);
+          }
+
           scene.add(holeGroup);
         } else if (step.operationType === 'MARK') {
-          // 3D Stamping Stamp Marker on Flange A front face
           const markGeom = new THREE.BoxGeometry(45, 14, 0.6);
           const markMat = new THREE.MeshStandardMaterial({
-            color: 0xf59e0b,
-            emissive: 0xf59e0b,
+            color: isDone ? 0x78350f : 0xf59e0b,
+            emissive: isDone ? 0x000000 : 0xf59e0b,
             emissiveIntensity: 0.4,
           });
           const markMesh = new THREE.Mesh(markGeom, markMat);
           markMesh.position.set(step.xPosition, step.yPosition, -0.3);
+          
+          interactiveMeshesRef.current.push(markMesh);
+          meshToStepIndexMapRef.current.set(markMesh.uuid, idx);
+
           scene.add(markMesh);
         } else if (step.operationType === 'CUT' || step.isCutOff) {
-          // Hydraulic Shear Cut-off Wire Outline at X = step.xPosition
           const cutProfile = new THREE.Shape();
           cutProfile.moveTo(-2, -2);
           cutProfile.lineTo(widthB + 4, -2);
@@ -248,9 +250,8 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
           cutProfile.closePath();
 
           const cutGeom = new THREE.BufferGeometry().setFromPoints(cutProfile.getPoints());
-          // Align cut profile with (Z, Y)
-          cutGeom.rotateY(-Math.PI / 2);
-          const cutMat = new THREE.LineBasicMaterial({ color: 0xff3366, linewidth: 2.5 });
+          cutGeom.rotateY(Math.PI / 2);
+          const cutMat = new THREE.LineBasicMaterial({ color: isDone ? 0x9f1239 : 0xff3366, linewidth: 2.5 });
           const cutMesh = new THREE.LineLoop(cutGeom, cutMat);
           cutMesh.position.set(step.xPosition, 0, 0);
           scene.add(cutMesh);
@@ -258,7 +259,6 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
       });
     }
 
-    // 8. 3D Live Feed Carriage Beam Ring
     const laserGroup = new THREE.Group();
     const laserProfile = new THREE.Shape();
     laserProfile.moveTo(-4, -4);
@@ -270,7 +270,7 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
     laserProfile.closePath();
 
     const laserGeom = new THREE.BufferGeometry().setFromPoints(laserProfile.getPoints());
-    laserGeom.rotateY(-Math.PI / 2);
+    laserGeom.rotateY(Math.PI / 2);
     const laserMat = new THREE.LineBasicMaterial({ color: 0x00ffcc, linewidth: 2.5 });
     const laserRing = new THREE.LineLoop(laserGeom, laserMat);
     laserGroup.add(laserRing);
@@ -279,12 +279,10 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
     scene.add(laserGroup);
     laserMeshRef.current = laserGroup;
 
-    // 9. Coordinate Origin Triad at Heel Datum (0,0,0)
     const axesHelper = new THREE.AxesHelper(90);
     axesHelper.position.set(0, 0, 0);
     scene.add(axesHelper);
 
-    // 10. Update Camera & Animation Loop
     const updateCameraPos = () => {
       const { theta, phi, radius } = cameraRotationRef.current;
       const target = targetLookAtRef.current;
@@ -322,15 +320,33 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
       resizeObserver.disconnect();
       renderer.dispose();
     };
-  }, [activeRecipe, lengthMm, widthA, widthB, thickness, highlightStepIndex]);
+  }, [activeRecipe, lengthMm, widthA, widthB, thickness, highlightStepIndex, activeFeedPosition]);
 
-  useEffect(() => {
-    if (laserMeshRef.current) {
-      laserMeshRef.current.position.x = activeFeedPosition;
+  // Click-to-edit raycasting
+  const handleCanvasClick = (e: React.MouseEvent) => {
+    if (!onSelectStep || isDraggingRef.current || isPanningRef.current) return;
+    const canvas = canvasRef.current;
+    const camera = cameraRef.current;
+    if (!canvas || !camera) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const mouse = new THREE.Vector2();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+
+    const intersects = raycaster.intersectObjects(interactiveMeshesRef.current);
+    if (intersects.length > 0) {
+      const hitMesh = intersects[0].object;
+      const stepIdx = meshToStepIndexMapRef.current.get(hitMesh.uuid);
+      if (stepIdx !== undefined) {
+        onSelectStep(stepIdx);
+      }
     }
-  }, [activeFeedPosition]);
+  };
 
-  // Orbit & Pan Controls
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button === 0) {
       isDraggingRef.current = true;
@@ -360,8 +376,11 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
   };
 
   const handleMouseUp = () => {
-    isDraggingRef.current = false;
-    isPanningRef.current = false;
+    // Delay setting false slightly so click handler doesn't trigger if it was a drag
+    setTimeout(() => {
+      isDraggingRef.current = false;
+      isPanningRef.current = false;
+    }, 10);
   };
 
   const handleWheel = (e: React.WheelEvent) => {
@@ -386,7 +405,7 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
   };
 
   const setPresetView = (view: 'ISO' | 'TOP' | 'FRONT' | 'CROSS') => {
-    targetLookAtRef.current.set(lengthMm / 2, widthA / 2, widthB / 2);
+    targetLookAtRef.current.set(lengthMm / 2, widthA / 2, -widthB / 2);
     if (view === 'ISO') {
       cameraRotationRef.current = { theta: 0.75, phi: 0.60, radius: Math.max(800, lengthMm * 0.8) };
     } else if (view === 'TOP') {
@@ -407,49 +426,28 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onClick={handleCanvasClick}
       onWheel={handleWheel}
       className="relative w-full h-full flex flex-col bg-[#0f172a] rounded overflow-hidden select-none border border-slate-700 cursor-grab active:cursor-grabbing"
     >
-      {/* 3D CAD Toolbar */}
       <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5 bg-[#1e293b]/90 backdrop-blur-sm p-1 rounded border border-slate-700">
-        <button
-          onClick={() => setPresetView('ISO')}
-          className="btn-ca btn-ca-dark text-xs py-1 px-2 font-bold"
-          title="Isometric 3D View"
-        >
+        <button onClick={() => setPresetView('ISO')} className="btn-ca btn-ca-dark text-xs py-1 px-2 font-bold" title="Isometric 3D View">
           <Box className="w-3.5 h-3.5" /> 3D ISO
         </button>
-        <button
-          onClick={() => setPresetView('TOP')}
-          className="btn-ca btn-ca-dark text-xs py-1 px-2"
-          title="Top View (Flange B)"
-        >
+        <button onClick={() => setPresetView('TOP')} className="btn-ca btn-ca-dark text-xs py-1 px-2" title="Top View (Flange B)">
           Top Flange (B)
         </button>
-        <button
-          onClick={() => setPresetView('FRONT')}
-          className="btn-ca btn-ca-dark text-xs py-1 px-2"
-          title="Front View (Flange A)"
-        >
+        <button onClick={() => setPresetView('FRONT')} className="btn-ca btn-ca-dark text-xs py-1 px-2" title="Front View (Flange A)">
           Front Flange (A)
         </button>
-        <button
-          onClick={() => setPresetView('CROSS')}
-          className="btn-ca btn-ca-dark text-xs py-1 px-2"
-          title="Cross-Section End Profile"
-        >
+        <button onClick={() => setPresetView('CROSS')} className="btn-ca btn-ca-dark text-xs py-1 px-2" title="Cross-Section End Profile">
           End Profile
         </button>
-        <button
-          onClick={() => setPresetView('ISO')}
-          className="btn-ca btn-ca-dark text-xs py-1 px-2"
-          title="Reset Camera"
-        >
+        <button onClick={() => setPresetView('ISO')} className="btn-ca btn-ca-dark text-xs py-1 px-2" title="Reset Camera">
           <RotateCcw className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* Legend */}
       <div className="absolute bottom-2 left-2 z-10 bg-[#1e293b]/90 backdrop-blur-sm px-3 py-1 rounded border border-slate-700 text-[10px] text-slate-300 flex items-center gap-3">
         <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#00e5ff] inline-block" /> Flange A (DA1-3)</span>
         <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#00e676] inline-block" /> Flange B (DB1-3)</span>

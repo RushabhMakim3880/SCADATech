@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ItemRecipe, ItemRecipeStep, SideType } from '@innovance-hmi/shared';
-import { AngleBarVisualizer } from '../components/canvas/AngleBarVisualizer.js';
+import { AngleBarViewer } from '../components/canvas/AngleBarViewer.js';
 import { DataTable, Column } from '../components/common/DataTable.js';
 import { DstvImporterModal } from '../components/importers/DstvImporterModal.js';
 import { VirtualKeypadModal } from '../components/common/VirtualKeypadModal.js';
@@ -469,14 +469,17 @@ export const RecipeMasterView: React.FC = () => {
                 </div>
               </div>
 
-              {/* 2D CAD Visualizer Blueprint */}
+              {/* Unified 2D/3D CAD Visualizer Blueprint */}
               <div className="pt-3 border-t border-slate-200">
-                <label className="font-bold text-xs text-slate-700 mb-2 block">2D Angle Bar Visual Blueprint Preview</label>
-                <div className="h-[340px] rounded overflow-hidden">
-                  <AngleBarVisualizer
+                <label className="font-bold text-xs text-slate-700 mb-2 block">Unified Interactive Visualizer (2D & 3D)</label>
+                <div className="h-[500px] rounded overflow-hidden">
+                  <AngleBarViewer
                     recipe={selectedRecipe}
                     highlightStepIndex={highlightedStep}
-                    onSelectStep={(idx) => setHighlightedStep(idx)}
+                    onSelectStep={(idx) => {
+                      setHighlightedStep(idx);
+                      // In a real app, this might scroll the table to the selected step
+                    }}
                   />
                 </div>
               </div>
