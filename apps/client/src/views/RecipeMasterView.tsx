@@ -357,7 +357,7 @@ export const RecipeMasterView: React.FC = () => {
               {/* 2D CAD Visualizer Blueprint */}
               <div className="pt-3 border-t border-slate-200">
                 <label className="font-bold text-xs text-slate-700 mb-2 block">2D Angle Bar Visual Blueprint Preview</label>
-                <div className="h-56 rounded overflow-hidden">
+                <div className="h-[320px] rounded overflow-hidden">
                   <AngleBarVisualizer
                     recipe={selectedRecipe}
                     highlightStepIndex={highlightedStep}

@@ -19,7 +19,6 @@ interface AngleBarVisualizerProps {
   onSelectStep?: (stepIndex: number) => void;
 }
 
-// Fallback demo recipe if none provided
 const DEFAULT_DEMO_RECIPE: ItemRecipe = {
   id: 'demo-recipe',
   itemCode: 'L75x75x6 - 1500mm',
@@ -55,7 +54,7 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
 
   // Viewport transformations
   const [zoom, setZoom] = useState<number>(1.0);
-  const [panX, setPanX] = useState<number>(60);
+  const [panX, setPanX] = useState<number>(50);
   const [panY, setPanY] = useState<number>(0);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
   const [showDimensions, setShowDimensions] = useState<boolean>(true);
@@ -68,7 +67,7 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
 
   const handleReset = () => {
     setZoom(1.0);
-    setPanX(60);
+    setPanX(50);
     setPanY(0);
     setIsFlipped(false);
   };
@@ -76,9 +75,10 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
   const handleFit = useCallback(() => {
     if (!containerRef.current) return;
     const width = containerRef.current.clientWidth;
-    const targetScale = (width - 140) / lengthMm;
-    setZoom(Math.max(0.15, Math.min(2.5, targetScale)));
-    setPanX(60);
+    // Leave 200px margin for datum text and left axis
+    const targetScale = (width - 220) / lengthMm;
+    setZoom(Math.max(0.12, Math.min(2.5, targetScale)));
+    setPanX(50);
     setPanY(0);
   }, [lengthMm]);
 
@@ -122,10 +122,10 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     ctx.stroke();
 
     // 3. Geometry Setup with comfortable visual flange heights
-    const centerY = h / 2 + panY;
+    const centerY = h / 2 + panY - 8;
     const scaleX = zoom;
-    // Keep flange visual height at a readable, proportioned size (at least 60-80px per flange)
-    const flangeVisualHeight = Math.max(55, Math.min(100, 75 * Math.max(0.9, zoom)));
+    // Visual flange height
+    const flangeVisualHeight = Math.max(50, Math.min(80, 65 * Math.max(0.85, zoom)));
     const scaleY = flangeVisualHeight / widthA;
 
     const startX = panX;
@@ -137,7 +137,7 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     const topFlangeY = centerY - topFlangeHeight;
     const bottomFlangeY = centerY + bottomFlangeHeight;
 
-    // 4. Render Steel Angle Bar Flanges (Distinct Metallic Blue-Grey)
+    // 4. Render Steel Angle Bar Flanges (Metallic Gradient)
     // Top Flange
     const topGradient = ctx.createLinearGradient(0, topFlangeY, 0, centerY);
     topGradient.addColorStop(0, '#1c2836');
@@ -167,49 +167,51 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Datum Label
+    // Datum Label with plenty of room
     ctx.font = 'bold 9px monospace';
     ctx.fillStyle = '#f59e0b';
-    ctx.fillText('◄ BEND HEEL DATUM ►', startX + barPixelLength + 10, centerY + 3);
+    ctx.fillText('◄ BEND HEEL DATUM', startX + barPixelLength + 10, centerY + 3);
 
-    // 6. Dimension Annotations
+    // 6. Dimension Annotations with guaranteed clearance
     if (showDimensions) {
       ctx.font = 'bold 11px sans-serif';
       ctx.fillStyle = '#7dd3fc';
       ctx.fillText(
         `▲ FLANGE ${isFlipped ? 'B' : 'A'} (${isFlipped ? widthB : widthA} mm)`,
-        startX + 12,
-        topFlangeY - 8
+        startX + 14,
+        topFlangeY - 10
       );
 
       ctx.fillStyle = '#86efac';
       ctx.fillText(
         `▼ FLANGE ${isFlipped ? 'A' : 'B'} (${isFlipped ? widthA : widthB} mm)`,
-        startX + 12,
+        startX + 14,
         bottomFlangeY + 18
       );
 
       // Total Length Dimension Bar
-      const dimY = bottomFlangeY + 34;
-      ctx.strokeStyle = '#94a3b8';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      // Left tick
-      ctx.moveTo(startX, dimY - 6);
-      ctx.lineTo(startX, dimY + 6);
-      // Right tick
-      ctx.moveTo(startX + barPixelLength, dimY - 6);
-      ctx.lineTo(startX + barPixelLength, dimY + 6);
-      // Horizontal span
-      ctx.moveTo(startX, dimY);
-      ctx.lineTo(startX + barPixelLength, dimY);
-      ctx.stroke();
+      const dimY = bottomFlangeY + 36;
+      if (dimY < h - 5) {
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        // Left tick
+        ctx.moveTo(startX, dimY - 5);
+        ctx.lineTo(startX, dimY + 5);
+        // Right tick
+        ctx.moveTo(startX + barPixelLength, dimY - 5);
+        ctx.lineTo(startX + barPixelLength, dimY + 5);
+        // Horizontal line
+        ctx.moveTo(startX, dimY);
+        ctx.lineTo(startX + barPixelLength, dimY);
+        ctx.stroke();
 
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 11px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(`TOTAL LENGTH: ${lengthMm} mm`, startX + barPixelLength / 2, dimY - 4);
-      ctx.textAlign = 'left';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`TOTAL LENGTH: ${lengthMm} mm`, startX + barPixelLength / 2, dimY - 4);
+        ctx.textAlign = 'left';
+      }
     }
 
     // 7. Render Punch Holes, Markings, and Cut Lines
@@ -258,7 +260,7 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
           ctx.textAlign = 'left';
         } else {
           // Punch Hole Die
-          const radius = Math.max(7, Math.min(16, ((step.toolSize || 18) / 2) * scaleY * 1.3));
+          const radius = Math.max(7, Math.min(15, ((step.toolSize || 18) / 2) * scaleY * 1.25));
 
           // Outer Glow / Ring
           ctx.fillStyle = step.side === 'A' ? '#00e5ff' : '#00e676';
@@ -294,20 +296,20 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
       ctx.strokeStyle = '#00ffcc';
       ctx.lineWidth = 2.5;
       ctx.shadowColor = '#00ffcc';
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 8;
       ctx.beginPath();
       ctx.moveTo(laserX, 0);
       ctx.lineTo(laserX, h);
       ctx.stroke();
       ctx.shadowBlur = 0;
 
-      // Laser Tag Badge
+      // Laser Tag Badge placed above without covering text
       ctx.fillStyle = '#00ffcc';
-      ctx.fillRect(laserX - 35, 8, 70, 20);
+      ctx.fillRect(laserX - 32, 6, 64, 18);
       ctx.fillStyle = '#0a0e14';
       ctx.font = 'bold 10px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText(`X: ${activeFeedPosition.toFixed(1)}mm`, laserX, 22);
+      ctx.fillText(`X: ${activeFeedPosition.toFixed(1)}mm`, laserX, 19);
       ctx.textAlign = 'left';
     }
   }, [activeRecipe, activeFeedPosition, highlightStepIndex, zoom, panX, panY, isFlipped, showDimensions, widthA, widthB, lengthMm]);
@@ -321,9 +323,9 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
     const mouseY = e.clientY - rect.top;
     setMousePos({ x: e.clientX, y: e.clientY });
 
-    const centerY = rect.height / 2 + panY;
+    const centerY = rect.height / 2 + panY - 8;
     const scaleX = zoom;
-    const flangeVisualHeight = Math.max(55, Math.min(100, 75 * Math.max(0.9, zoom)));
+    const flangeVisualHeight = Math.max(50, Math.min(80, 65 * Math.max(0.85, zoom)));
     const scaleY = flangeVisualHeight / widthA;
     const startX = panX;
 
@@ -367,7 +369,7 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
           <button onClick={() => setZoom((z) => Math.min(2.5, z * 1.25))} title="Zoom In" className="btn-ca btn-ca-dark text-xs py-1 px-2">
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
-          <button onClick={() => setZoom((z) => Math.max(0.15, z / 1.25))} title="Zoom Out" className="btn-ca btn-ca-dark text-xs py-1 px-2">
+          <button onClick={() => setZoom((z) => Math.max(0.12, z / 1.25))} title="Zoom Out" className="btn-ca btn-ca-dark text-xs py-1 px-2">
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
           <button onClick={() => setIsFlipped((f) => !f)} title="Flip Flange A/B" className={`btn-ca text-xs py-1 px-2 ${isFlipped ? 'btn-ca-primary' : 'btn-ca-dark'}`}>
@@ -395,12 +397,12 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
         </div>
       </div>
 
-      {/* 2. Canvas */}
+      {/* 2. Canvas with generous height */}
       <canvas
         ref={canvasRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setHoveredStep(null)}
-        className="w-full flex-1 cursor-crosshair min-h-[220px]"
+        className="w-full flex-1 cursor-crosshair min-h-[300px]"
       />
 
       {/* 3. Tooltip */}

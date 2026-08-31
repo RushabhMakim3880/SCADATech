@@ -243,7 +243,7 @@ export const LiveProductionView: React.FC = () => {
         </div>
 
         <div className="panel-body space-y-3">
-          <div className="h-60 rounded overflow-hidden">
+          <div className="h-[340px] rounded overflow-hidden">
             <AngleBarVisualizer
               recipe={currentRecipe}
               activeFeedPosition={feedPositionMm}
