@@ -6,12 +6,17 @@ async function main() {
   console.log('🌱 Initializing Clean Production Database for HPT 6-Head Angle Processing Line...');
 
   // Clean out any legacy seed data
-  await prisma.productionCycleOperation.deleteMany();
-  await prisma.productionCycle.deleteMany();
+  await prisma.productionUnit.deleteMany();
+  await prisma.productionBar.deleteMany();
+  await prisma.programCycleOperation.deleteMany();
+  await prisma.programCycle.deleteMany();
+  await prisma.jobCardItem.deleteMany();
+  await prisma.jobCard.deleteMany();
   await prisma.itemRecipeStep.deleteMany();
   await prisma.itemRecipe.deleteMany();
   await prisma.plcTag.deleteMany();
   await prisma.plcConfig.deleteMany();
+  await prisma.machineSetup.deleteMany();
   await prisma.machineDetail.deleteMany();
   await prisma.machine.deleteMany();
 
