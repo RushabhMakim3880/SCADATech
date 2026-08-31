@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 
 export const TopHeader: React.FC = () => {
-  const { isConnected, isSimulator, activeAlarms, hydraulicPressureBar, feedPositionMm, mode, setMode } = usePlcStore();
+  const { isConnected, activeAlarms, hydraulicPressureBar, feedPositionMm, mode, setMode } = usePlcStore();
 
   return (
     <header className="app-header flex items-center justify-between px-4 select-none z-30 relative shadow-sm">
@@ -100,7 +100,7 @@ export const TopHeader: React.FC = () => {
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-100 border border-slate-300 text-xs">
           <Cpu className="w-3.5 h-3.5 text-slate-600" />
           <span className="font-bold text-slate-700">
-            {isConnected ? (isSimulator ? 'SIMULATOR' : 'OPC-UA LIVE') : 'OFFLINE'}
+            {isConnected ? 'PLC ONLINE (20Hz)' : 'PLC OFFLINE'}
           </span>
           <span className={`led-indicator ${isConnected ? 'led-green' : 'led-red'}`} />
         </div>

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ItemRecipe } from '@innovance-hmi/shared';
 import { DataTable, Column } from '../components/common/DataTable.js';
 import {
   Sparkles,
   Settings,
   CheckCircle,
   Play,
+  Trash2,
 } from 'lucide-react';
 
 interface NestingOrder {
@@ -31,24 +33,73 @@ interface NestedBar {
 }
 
 export const NestingAlignmentView: React.FC = () => {
+  const [recipes, setRecipes] = useState<ItemRecipe[]>([]);
   const [stockBarLength, setStockBarLength] = useState<number>(6000);
   const [kerfCutAllowance, setKerfCutAllowance] = useState<number>(6); // mm shear loss
   const [gripperDeadZone, setGripperDeadZone] = useState<number>(120); // mm tail clamp margin
   const [isConfigOpen, setIsConfigOpen] = useState<boolean>(false);
 
   // Batch work order queue
-  const [batchOrders, setBatchOrders] = useState<NestingOrder[]>([
-    { recipeId: 'r1', itemCode: 'TOWER-LEG-01', lengthMm: 1800, quantity: 4, flangeSize: 'L75x75x6' },
-    { recipeId: 'r2', itemCode: 'BRACING-BR-04', lengthMm: 1250, quantity: 6, flangeSize: 'L75x75x6' },
-    { recipeId: 'r3', itemCode: 'CROSS-ARM-A', lengthMm: 950, quantity: 5, flangeSize: 'L75x75x6' },
-  ]);
-
+  const [batchOrders, setBatchOrders] = useState<NestingOrder[]>([]);
   const [nestedBars, setNestedBars] = useState<NestedBar[]>([]);
   const [isOptimizing, setIsOptimizing] = useState<boolean>(false);
   const [appliedSuccess, setAppliedSuccess] = useState<boolean>(false);
 
+  useEffect(() => {
+    fetchRecipes();
+  }, []);
+
+  const fetchRecipes = async () => {
+    try {
+      const res = await fetch('/api/recipes');
+      const json = await res.json();
+      if (json.success && json.data.length > 0) {
+        setRecipes(json.data);
+        // Initialize batch from first real recipe if queue is empty
+        if (batchOrders.length === 0) {
+          const first = json.data[0];
+          setBatchOrders([
+            {
+              recipeId: first.id,
+              itemCode: first.itemCode,
+              lengthMm: first.totalLength,
+              quantity: 10,
+              flangeSize: `L${first.angleWidthA}x${first.angleWidthB}x${first.thickness}`,
+            },
+          ]);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch recipes', err);
+    }
+  };
+
+  const handleAddRecipeToBatch = (recipeId: string) => {
+    const found = recipes.find((r) => r.id === recipeId);
+    if (!found) return;
+    setBatchOrders((prev) => [
+      ...prev,
+      {
+        recipeId: found.id,
+        itemCode: found.itemCode,
+        lengthMm: found.totalLength,
+        quantity: 5,
+        flangeSize: `L${found.angleWidthA}x${found.angleWidthB}x${found.thickness}`,
+      },
+    ]);
+  };
+
+  const handleDeleteBatchItem = (index: number) => {
+    setBatchOrders((prev) => prev.filter((_, i) => i !== index));
+  };
+
   // Linear First-Fit Decreasing (FFD) Multibar Nesting Algorithm
   const runNestingOptimization = React.useCallback(() => {
+    if (batchOrders.length === 0) {
+      setNestedBars([]);
+      return;
+    }
+
     setIsOptimizing(true);
 
     setTimeout(() => {
@@ -81,7 +132,7 @@ export const NestingAlignmentView: React.FC = () => {
               lengthMm: piece.lengthMm,
               startMm,
               endMm,
-              color: pieceColors[colorIdx],
+              color: pieceColors[colorIdx >= 0 ? colorIdx : 0],
             });
             bar.utilizedLengthMm = endMm + kerfCutAllowance;
             bar.scrapLengthMm = stockBarLength - bar.utilizedLengthMm;
@@ -110,7 +161,7 @@ export const NestingAlignmentView: React.FC = () => {
                 lengthMm: piece.lengthMm,
                 startMm,
                 endMm,
-                color: pieceColors[colorIdx],
+                color: pieceColors[colorIdx >= 0 ? colorIdx : 0],
               },
             ],
           });
@@ -119,7 +170,7 @@ export const NestingAlignmentView: React.FC = () => {
 
       setNestedBars(bars);
       setIsOptimizing(false);
-    }, 300);
+    }, 200);
   }, [batchOrders, stockBarLength, gripperDeadZone, kerfCutAllowance]);
 
   React.useEffect(() => {
@@ -160,9 +211,22 @@ export const NestingAlignmentView: React.FC = () => {
     },
     {
       key: 'actions',
-      header: 'Total Run (Meters)',
+      header: 'Total Run / Actions',
       align: 'right',
-      render: (o) => <span className="font-mono font-bold text-slate-800">{((o.lengthMm * o.quantity) / 1000).toFixed(2)} m</span>,
+      render: (o, idx) => (
+        <div className="flex items-center justify-end gap-2">
+          <span className="font-mono font-bold text-slate-800">{((o.lengthMm * o.quantity) / 1000).toFixed(2)} m</span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteBatchItem(idx);
+            }}
+            className="btn-ca btn-ca-danger text-xs py-0.5 px-1.5"
+          >
+            <Trash2 className="w-3 h-3" />
+          </button>
+        </div>
+      ),
     },
   ];
 
@@ -178,6 +242,27 @@ export const NestingAlignmentView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Add Recipe to Batch */}
+          {recipes.length > 0 && (
+            <select
+              onChange={(e) => {
+                if (e.target.value) {
+                  handleAddRecipeToBatch(e.target.value);
+                  e.target.value = '';
+                }
+              }}
+              defaultValue=""
+              className="form-control-ca text-xs py-1.5"
+            >
+              <option value="" disabled>+ Add Recipe to Nesting...</option>
+              {recipes.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.itemCode} ({r.totalLength}mm)
+                </option>
+              ))}
+            </select>
+          )}
+
           <button
             onClick={() => setIsConfigOpen(true)}
             className="btn-ca btn-ca-default text-xs py-1.5"
@@ -252,43 +337,49 @@ export const NestingAlignmentView: React.FC = () => {
         </div>
 
         <div className="panel-body space-y-4">
-          {nestedBars.map((bar) => (
-            <div key={bar.barIndex} className="p-3 bg-slate-50 rounded border border-slate-200 space-y-2 text-xs">
-              <div className="flex items-center justify-between font-bold">
-                <span className="text-slate-800">
-                  Raw Stock Bar #{bar.barIndex} ({bar.stockLengthMm}mm) • {bar.pieces.length} Nested Parts
-                </span>
-                <span className="text-slate-600">
-                  Scrap Remnant: <b className="text-amber-700">{bar.scrapLengthMm}mm ({bar.scrapPercentage}%)</b>
-                </span>
-              </div>
+          {nestedBars.length === 0 ? (
+            <div className="text-center py-6 text-slate-500 text-xs font-semibold">
+              No batch items queued. Select a recipe from the dropdown above to calculate nesting layout.
+            </div>
+          ) : (
+            nestedBars.map((bar) => (
+              <div key={bar.barIndex} className="p-3 bg-slate-50 rounded border border-slate-200 space-y-2 text-xs">
+                <div className="flex items-center justify-between font-bold">
+                  <span className="text-slate-800">
+                    Raw Stock Bar #{bar.barIndex} ({bar.stockLengthMm}mm) • {bar.pieces.length} Nested Parts
+                  </span>
+                  <span className="text-slate-600">
+                    Scrap Remnant: <b className="text-amber-700">{bar.scrapLengthMm}mm ({bar.scrapPercentage}%)</b>
+                  </span>
+                </div>
 
-              {/* Graphical Bar */}
-              <div className="w-full h-8 bg-slate-800 rounded overflow-hidden flex border border-slate-700 p-0.5">
-                {bar.pieces.map((p, pIdx) => {
-                  const widthPct = (p.lengthMm / bar.stockLengthMm) * 100;
-                  return (
-                    <div
-                      key={pIdx}
-                      style={{ width: `${widthPct}%`, backgroundColor: p.color }}
-                      className="h-full border-r border-slate-900 flex items-center justify-center text-[10px] font-bold text-slate-900 truncate px-1"
-                      title={`${p.itemCode} (${p.lengthMm}mm)`}
-                    >
-                      {p.itemCode} ({p.lengthMm}mm)
-                    </div>
-                  );
-                })}
+                {/* Graphical Bar */}
+                <div className="w-full h-8 bg-slate-800 rounded overflow-hidden flex border border-slate-700 p-0.5">
+                  {bar.pieces.map((p, pIdx) => {
+                    const widthPct = (p.lengthMm / bar.stockLengthMm) * 100;
+                    return (
+                      <div
+                        key={pIdx}
+                        style={{ width: `${widthPct}%`, backgroundColor: p.color }}
+                        className="h-full border-r border-slate-900 flex items-center justify-center text-[10px] font-bold text-slate-900 truncate px-1"
+                        title={`${p.itemCode} (${p.lengthMm}mm)`}
+                      >
+                        {p.itemCode} ({p.lengthMm}mm)
+                      </div>
+                    );
+                  })}
 
-                {/* Scrap Tail */}
-                <div
-                  style={{ width: `${(bar.scrapLengthMm / bar.stockLengthMm) * 100}%` }}
-                  className="h-full bg-amber-600/60 flex items-center justify-center text-[9px] font-black text-amber-200"
-                >
-                  Tail ({bar.scrapLengthMm}mm)
+                  {/* Scrap Tail */}
+                  <div
+                    style={{ width: `${(bar.scrapLengthMm / bar.stockLengthMm) * 100}%` }}
+                    className="h-full bg-amber-600/60 flex items-center justify-center text-[9px] font-black text-amber-200"
+                  >
+                    Tail ({bar.scrapLengthMm}mm)
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
