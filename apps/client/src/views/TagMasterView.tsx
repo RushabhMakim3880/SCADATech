@@ -387,10 +387,10 @@ export const TagMasterView: React.FC = () => {
           <button
             key={c}
             onClick={() => setSelectedCategory(c)}
-            className={`px-3 py-1 text-xs font-bold rounded-full transition-all border ${
+            className={`px-3 py-1.5 text-xs font-bold rounded-full transition-all border ${
               selectedCategory === c
-                ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                ? 'bg-blue-600 text-white border-blue-400 shadow-sm'
+                : 'bg-[#131b27] text-slate-300 border-[#293a50] hover:bg-[#1c2738] hover:text-white'
             }`}
           >
             {c}
@@ -408,49 +408,49 @@ export const TagMasterView: React.FC = () => {
 
       {/* Add / Edit Tag Mapping Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-lg overflow-hidden text-xs">
-            <div className="panel-heading bg-slate-800 text-white px-4 py-3 flex items-center justify-between">
-              <span className="font-bold text-sm">{formData.id ? 'Edit PLC Tag Mapping' : 'Add New PLC Tag Register Mapping'}</span>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-300 hover:text-white">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#141d2b] rounded-lg shadow-2xl border border-[#2b3c53] w-full max-w-lg overflow-hidden text-xs">
+            <div className="panel-heading bg-[#1a2536] text-white px-4 py-3 flex items-center justify-between border-b border-[#293a50]">
+              <span className="font-extrabold text-sm">{formData.id ? 'Edit PLC Tag Mapping' : 'Add New PLC Tag Register Mapping'}</span>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSaveTag} className="p-5 space-y-4">
               <div>
-                <label className="font-bold text-slate-700 block">Tag Identifier Name <span className="text-red-500">*</span></label>
+                <label className="font-bold text-slate-300 block">Tag Identifier Name <span className="text-red-400">*</span></label>
                 <input
                   type="text"
                   value={formData.tagName}
                   onChange={(e) => setFormData({ ...formData, tagName: e.target.value })}
                   placeholder="e.g. Infeed_Roller_Motor_Speed"
-                  className="form-control-ca mt-1 font-bold text-blue-900"
+                  className="form-control-ca mt-1 font-bold text-white w-full"
                   required
                 />
-                <span className="text-[10px] text-slate-500">Unique SCADA tag identifier used by views and alarms</span>
+                <span className="text-[10px] text-slate-400">Unique SCADA tag identifier used by views and alarms</span>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block">PLC Register Address <span className="text-red-500">*</span></label>
+                  <label className="font-bold text-slate-300 block">PLC Register Address <span className="text-red-400">*</span></label>
                   <input
                     type="text"
                     value={formData.tagAddress}
                     onChange={(e) => setFormData({ ...formData, tagAddress: e.target.value })}
                     placeholder="e.g. D1020, M140, X15, Y22"
-                    className="form-control-ca mt-1 font-mono font-bold text-slate-800"
+                    className="form-control-ca mt-1 font-mono font-bold text-cyan-300 w-full"
                     required
                   />
-                  <span className="text-[10px] text-slate-500">Innovance Modbus register address</span>
+                  <span className="text-[10px] text-slate-400">Innovance Modbus register address</span>
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block">Data Type</label>
+                  <label className="font-bold text-slate-300 block">Data Type</label>
                   <select
                     value={formData.dataType}
                     onChange={(e) => setFormData({ ...formData, dataType: e.target.value })}
-                    className="form-control-ca mt-1 font-semibold"
+                    className="form-control-ca mt-1 font-semibold w-full"
                   >
                     <option value="Float">Float (32-bit Real)</option>
                     <option value="Boolean">Boolean (1-bit Bit / Coil)</option>
@@ -461,11 +461,11 @@ export const TagMasterView: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block">Category</label>
+                  <label className="font-bold text-slate-300 block">Category</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="form-control-ca mt-1"
+                    className="form-control-ca mt-1 w-full"
                   >
                     <option value="AXIS_DRO">AXIS_DRO</option>
                     <option value="HEAD_CONTROL">HEAD_CONTROL</option>
@@ -479,33 +479,33 @@ export const TagMasterView: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block">Engineering Unit</label>
+                  <label className="font-bold text-slate-300 block">Engineering Unit</label>
                   <input
                     type="text"
                     value={formData.unit}
                     onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
                     placeholder="e.g. mm, bar, m/min, °C"
-                    className="form-control-ca mt-1"
+                    className="form-control-ca mt-1 w-full"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block">Tag Description</label>
+                <label className="font-bold text-slate-300 block">Tag Description</label>
                 <input
                   type="text"
                   value={formData.tagDescription}
                   onChange={(e) => setFormData({ ...formData, tagDescription: e.target.value })}
                   placeholder="Optional functional description"
-                  className="form-control-ca mt-1"
+                  className="form-control-ca mt-1 w-full"
                 />
               </div>
 
-              <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
+              <div className="pt-3 border-t border-[#293a50] flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="btn-ca btn-ca-default"
+                  className="btn-ca btn-ca-dark"
                 >
                   Cancel
                 </button>

@@ -4,3 +4,4 @@ export * from './types/recipe.js';
 export * from './types/production.js';
 export * from './types/alarm.js';
 export * from './types/websocket.js';
+export * from './types/auth.js';

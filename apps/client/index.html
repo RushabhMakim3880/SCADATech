@@ -9,6 +9,31 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <script>
+      // Suppress noisy Chrome extension port closure errors
+      window.addEventListener('unhandledrejection', function(event) {
+        var reason = event.reason;
+        var msg = (reason && (reason.message || reason)) ? String(reason.message || reason) : '';
+        if (
+          msg.includes('message channel closed before a response was received') ||
+          msg.includes('A listener indicated an asynchronous response by returning true')
+        ) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+      }, true);
+
+      // Clean development console output
+      (function() {
+        var origInfo = console.info;
+        console.info = function() {
+          if (arguments.length > 0 && typeof arguments[0] === 'string' && arguments[0].includes('Download the React DevTools')) {
+            return;
+          }
+          return origInfo.apply(console, arguments);
+        };
+      })();
+    </script>
   </head>
   <body class="bg-industrial-950 text-slate-100 font-sans antialiased overflow-hidden select-none">
     <div id="root"></div>

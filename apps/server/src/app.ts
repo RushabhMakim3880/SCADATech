@@ -7,6 +7,8 @@ import { tagRoutes } from './routes/tags.js';
 import { recipeRoutes } from './routes/recipes.js';
 import { productionRoutes } from './routes/production.js';
 import { alarmRoutes } from './routes/alarms.js';
+import { userRoutes } from './routes/users.js';
+import { menuConfigRoutes } from './routes/menuConfig.js';
 import { PlcManager } from './plc/plcManager.js';
 import { WsClientMessage, WsServerMessage } from '@innovance-hmi/shared';
 
@@ -41,6 +43,8 @@ export function buildApp(): FastifyInstance {
   app.register(recipeRoutes, { prefix: '/api' });
   app.register(productionRoutes, { prefix: '/api' });
   app.register(alarmRoutes, { prefix: '/api' });
+  app.register(userRoutes, { prefix: '/api' });
+  app.register(menuConfigRoutes, { prefix: '/api' });
 
   // WebSocket Route for Real-time Streaming & Client Control
   app.register(async (fastify) => {

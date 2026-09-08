@@ -189,10 +189,10 @@ export const IoDiagnosticsView: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setActiveSubTab('INPUTS')}
-            className={`px-4 py-2 rounded-lg font-bold transition-all shadow-sm ${
+            className={`px-4 py-2.5 rounded-lg font-extrabold transition-all shadow-sm ${
               activeSubTab === 'INPUTS'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
+                ? 'bg-blue-600 text-white border border-blue-400 shadow-md'
+                : 'bg-[#131b27] border border-[#25354b] text-slate-300 hover:bg-[#1b2536] hover:text-white'
             }`}
           >
             Digital Inputs (X0–X37) • {activeInputsCount}/{inputs.length} Active
@@ -200,10 +200,10 @@ export const IoDiagnosticsView: React.FC = () => {
 
           <button
             onClick={() => setActiveSubTab('OUTPUTS')}
-            className={`px-4 py-2 rounded-lg font-bold transition-all shadow-sm ${
+            className={`px-4 py-2.5 rounded-lg font-extrabold transition-all shadow-sm ${
               activeSubTab === 'OUTPUTS'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
+                ? 'bg-blue-600 text-white border border-blue-400 shadow-md'
+                : 'bg-[#131b27] border border-[#25354b] text-slate-300 hover:bg-[#1b2536] hover:text-white'
             }`}
           >
             Digital Outputs (Y0–Y37) • {activeOutputsCount}/{outputs.length} Active

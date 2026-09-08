@@ -367,10 +367,10 @@ and then generate the necessary files for the Frontend and Backend modules."
             }
         }
 
-        $this->createFileFromTemplate($this->frontendPath . "Config/Routes.php", 'Frontend/' . $this->crudType . '/Routes.tpl.php');
-        $this->createFileFromTemplate($this->frontendPath . "Controllers/{$this->moduleName}.php", 'Frontend/' . $this->crudType . '/Controller.tpl.php');
-        $this->createFileFromTemplate($this->frontendPath . "Views/add{$this->itemName}.php", 'Frontend/' . $this->crudType . '/addEdit.tpl.php');
-        $this->createFileFromTemplate($this->frontendPath . "Views/manage{$this->itemName}.php", 'Frontend/' . $this->crudType . '/manage.tpl.php');
+        $this->createFileFromTemplate($this->frontendPath . "Config/Routes.php", 'Frontend/' . $this->crudType . '/Routes.tpl');
+        $this->createFileFromTemplate($this->frontendPath . "Controllers/{$this->moduleName}.php", 'Frontend/' . $this->crudType . '/Controller.tpl');
+        $this->createFileFromTemplate($this->frontendPath . "Views/add{$this->itemName}.php", 'Frontend/' . $this->crudType . '/addEdit.tpl');
+        $this->createFileFromTemplate($this->frontendPath . "Views/manage{$this->itemName}.php", 'Frontend/' . $this->crudType . '/manage.tpl');
     }
 
     private function createBackEndModuleStructure()
@@ -388,15 +388,18 @@ and then generate the necessary files for the Frontend and Backend modules."
             }
         }
 
-        $this->createFileFromTemplate($this->backendPath . "Config/Routes.php", 'Backend/' . $this->crudType . '/Routes.tpl.php');
-        $this->createFileFromTemplate($this->backendPath . "Controllers/{$this->moduleName}.php", 'Backend/' . $this->crudType . '/Controller.tpl.php');
-        $this->createFileFromTemplate($this->backendPath . "Models/{$this->moduleName}Model.php", 'Backend/' . $this->crudType . '/Model.tpl.php');
-        $this->createFileFromTemplate($this->backendPath . "Config/Permissions.php", 'Backend/' . $this->crudType . '/Permissions.tpl.php');
+        $this->createFileFromTemplate($this->backendPath . "Config/Routes.php", 'Backend/' . $this->crudType . '/Routes.tpl');
+        $this->createFileFromTemplate($this->backendPath . "Controllers/{$this->moduleName}.php", 'Backend/' . $this->crudType . '/Controller.tpl');
+        $this->createFileFromTemplate($this->backendPath . "Models/{$this->moduleName}Model.php", 'Backend/' . $this->crudType . '/Model.tpl');
+        $this->createFileFromTemplate($this->backendPath . "Config/Permissions.php", 'Backend/' . $this->crudType . '/Permissions.tpl');
     }
 
     private function createFileFromTemplate($filePath, $templateFile)
     {
         $templatePath = ROOTPATH . "autoCrudTemplates/{$templateFile}";
+        if (!file_exists($templatePath) && file_exists($templatePath . '.php')) {
+            $templatePath .= '.php';
+        }
         if (!file_exists($templatePath)) {
             CLI::error("Template file {$templateFile} not found!");
             return;
@@ -411,7 +414,11 @@ and then generate the necessary files for the Frontend and Backend modules."
 
     private function getToggleContent()
     {
-        $content = file_get_contents(ROOTPATH . "autoCrudTemplates/Backend/{$this->crudType}/toggleBooleanFunction.tpl.php");
+        $path = ROOTPATH . "autoCrudTemplates/Backend/{$this->crudType}/toggleBooleanFunction.tpl";
+        if (!file_exists($path) && file_exists($path . '.php')) {
+            $path .= '.php';
+        }
+        $content = file_get_contents($path);
         $content = str_replace("<?php", "", $content);
         $content = str_replace('{{MODULE_NAME}}', $this->moduleName, $content);
         $content = str_replace('{{ITEM_NAME}}', $this->itemName, $content);
@@ -423,7 +430,11 @@ and then generate the necessary files for the Frontend and Backend modules."
 
     private function getSwitchContent()
     {
-        $content = file_get_contents(ROOTPATH . "autoCrudTemplates/Backend/{$this->crudType}/switchEnumFunction.tpl.php");
+        $path = ROOTPATH . "autoCrudTemplates/Backend/{$this->crudType}/switchEnumFunction.tpl";
+        if (!file_exists($path) && file_exists($path . '.php')) {
+            $path .= '.php';
+        }
+        $content = file_get_contents($path);
         $content = str_replace("<?php", "", $content);
         $content = str_replace('{{MODULE_NAME}}', $this->moduleName, $content);
         $content = str_replace('{{ITEM_NAME}}', $this->itemName, $content);

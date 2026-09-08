@@ -20,26 +20,89 @@ async function main() {
   await prisma.machineDetail.deleteMany();
   await prisma.machine.deleteMany();
 
-  // 1. Create Default Operator & Admin Users
+  // 1. Create Default Super Admin, Admin & Operator Users
+  await prisma.user.upsert({
+    where: { username: 'superadmin' },
+    update: {
+      role: 'SUPER_ADMIN',
+      pinCode: '7788',
+      name: 'Super Admin (With US only)',
+      permissions: JSON.stringify([
+        'menu:dashboard', 'menu:production', 'menu:manual', 'menu:recipes', 'menu:alignment',
+        'menu:oee', 'menu:wear', 'menu:io', 'menu:setup', 'menu:tags', 'menu:alarms',
+        'menu:users', 'menu:config',
+        'action:start_production', 'action:jog_axis', 'action:fire_heads', 'action:toggle_valves',
+        'action:edit_recipe', 'action:import_dstv', 'action:reset_tool_wear', 'action:force_io',
+        'action:manage_users', 'action:super_menu_config'
+      ]),
+    },
+    create: {
+      username: 'superadmin',
+      name: 'Super Admin (With US only)',
+      role: 'SUPER_ADMIN',
+      pinCode: '7788',
+      permissions: JSON.stringify([
+        'menu:dashboard', 'menu:production', 'menu:manual', 'menu:recipes', 'menu:alignment',
+        'menu:oee', 'menu:wear', 'menu:io', 'menu:setup', 'menu:tags', 'menu:alarms',
+        'menu:users', 'menu:config',
+        'action:start_production', 'action:jog_axis', 'action:fire_heads', 'action:toggle_valves',
+        'action:edit_recipe', 'action:import_dstv', 'action:reset_tool_wear', 'action:force_io',
+        'action:manage_users', 'action:super_menu_config'
+      ]),
+    },
+  });
+
   await prisma.user.upsert({
     where: { username: 'admin' },
-    update: {},
+    update: {
+      role: 'ADMIN',
+      pinCode: '9999',
+      name: 'Plant Administrator',
+      permissions: JSON.stringify([
+        'menu:dashboard', 'menu:production', 'menu:manual', 'menu:recipes', 'menu:alignment',
+        'menu:oee', 'menu:wear', 'menu:io', 'menu:setup', 'menu:tags', 'menu:alarms',
+        'menu:users',
+        'action:start_production', 'action:jog_axis', 'action:fire_heads', 'action:toggle_valves',
+        'action:edit_recipe', 'action:import_dstv', 'action:reset_tool_wear', 'action:manage_users'
+      ]),
+    },
     create: {
       username: 'admin',
       name: 'Plant Administrator',
       role: 'ADMIN',
       pinCode: '9999',
+      permissions: JSON.stringify([
+        'menu:dashboard', 'menu:production', 'menu:manual', 'menu:recipes', 'menu:alignment',
+        'menu:oee', 'menu:wear', 'menu:io', 'menu:setup', 'menu:tags', 'menu:alarms',
+        'menu:users',
+        'action:start_production', 'action:jog_axis', 'action:fire_heads', 'action:toggle_valves',
+        'action:edit_recipe', 'action:import_dstv', 'action:reset_tool_wear', 'action:manage_users'
+      ]),
     },
   });
 
   await prisma.user.upsert({
     where: { username: 'operator' },
-    update: {},
-    create: {
-      username: 'operator',
-      name: 'Line Operator 1',
+    update: {
       role: 'OPERATOR',
       pinCode: '1234',
+      name: 'Shopfloor Line Operator',
+      permissions: JSON.stringify([
+        'menu:dashboard', 'menu:production', 'menu:manual', 'menu:recipes', 'menu:alignment',
+        'menu:oee', 'menu:wear', 'menu:alarms',
+        'action:start_production', 'action:jog_axis', 'action:fire_heads', 'action:toggle_valves'
+      ]),
+    },
+    create: {
+      username: 'operator',
+      name: 'Shopfloor Line Operator',
+      role: 'OPERATOR',
+      pinCode: '1234',
+      permissions: JSON.stringify([
+        'menu:dashboard', 'menu:production', 'menu:manual', 'menu:recipes', 'menu:alignment',
+        'menu:oee', 'menu:wear', 'menu:alarms',
+        'action:start_production', 'action:jog_axis', 'action:fire_heads', 'action:toggle_valves'
+      ]),
     },
   });
 
@@ -118,7 +181,116 @@ async function main() {
     },
   });
 
-  console.log('✅ Clean production database seeded with real Innovance PLC registers. Zero dummy recipes.');
+  // 4. Create Standard Industrial CNC Angle Processing Recipes
+  await prisma.itemRecipe.create({
+    data: {
+      itemCode: 'ISA-100x100x10-BRACE-L1',
+      itemName: 'Transmission Tower Diagonal Cross-Brace L1',
+      description: 'High-tensile 3200mm angle bar with 6-head staggered punch pattern, automated part stamping, and cut-off.',
+      angleWidthA: 100.0,
+      angleWidthB: 100.0,
+      thickness: 10.0,
+      totalLength: 3200.0,
+      measurementType: 'ABSOLUTE',
+      steps: {
+        create: [
+          { stepNumber: 1, operationType: 'PUNCH', side: 'A', xPosition: 120.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 2, operationType: 'PUNCH', side: 'A', xPosition: 280.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 3, operationType: 'PUNCH', side: 'B', xPosition: 120.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 4, operationType: 'PUNCH', side: 'B', xPosition: 280.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 5, operationType: 'MARK', side: 'NA', xPosition: 550.0, yPosition: 0.0, markingText: 'TWR-A101' },
+          { stepNumber: 6, operationType: 'PUNCH', side: 'A', xPosition: 1600.0, yPosition: 50.0, toolSize: 22.0, toolShape: 'ROUND' },
+          { stepNumber: 7, operationType: 'PUNCH', side: 'B', xPosition: 1600.0, yPosition: 50.0, toolSize: 22.0, toolShape: 'ROUND' },
+          { stepNumber: 8, operationType: 'PUNCH', side: 'A', xPosition: 2920.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 9, operationType: 'PUNCH', side: 'A', xPosition: 3080.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 10, operationType: 'PUNCH', side: 'B', xPosition: 2920.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 11, operationType: 'PUNCH', side: 'B', xPosition: 3080.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 12, operationType: 'CUT', side: 'NA', xPosition: 3200.0, yPosition: 0.0, isCutOff: true },
+        ],
+      },
+    },
+  });
+
+  await prisma.itemRecipe.create({
+    data: {
+      itemCode: 'ISA-75x75x6-SOLAR-S2',
+      itemName: 'Solar Tracker Structure Leg Strut S2',
+      description: 'Galvanized 2400mm angle leg strut with slotted & round mounting holes and part stamping.',
+      angleWidthA: 75.0,
+      angleWidthB: 75.0,
+      thickness: 6.0,
+      totalLength: 2400.0,
+      measurementType: 'ABSOLUTE',
+      steps: {
+        create: [
+          { stepNumber: 1, operationType: 'PUNCH', side: 'A', xPosition: 100.0, yPosition: 35.0, toolSize: 14.0, toolShape: 'ROUND' },
+          { stepNumber: 2, operationType: 'PUNCH', side: 'A', xPosition: 250.0, yPosition: 35.0, toolSize: 14.0, toolShape: 'ROUND' },
+          { stepNumber: 3, operationType: 'PUNCH', side: 'B', xPosition: 100.0, yPosition: 35.0, toolSize: 14.0, toolShape: 'ROUND' },
+          { stepNumber: 4, operationType: 'MARK', side: 'NA', xPosition: 400.0, yPosition: 0.0, markingText: 'SOL-P99' },
+          { stepNumber: 5, operationType: 'PUNCH', side: 'A', xPosition: 1200.0, yPosition: 35.0, toolSize: 14.0, toolShape: 'ROUND' },
+          { stepNumber: 6, operationType: 'PUNCH', side: 'B', xPosition: 1200.0, yPosition: 35.0, toolSize: 14.0, toolShape: 'ROUND' },
+          { stepNumber: 7, operationType: 'PUNCH', side: 'A', xPosition: 2280.0, yPosition: 35.0, toolSize: 14.0, toolShape: 'ROUND' },
+          { stepNumber: 8, operationType: 'CUT', side: 'NA', xPosition: 2400.0, yPosition: 0.0, isCutOff: true },
+        ],
+      },
+    },
+  });
+
+  await prisma.itemRecipe.create({
+    data: {
+      itemCode: 'ISA-130x130x12-SUB-M1',
+      itemName: 'High-Voltage Substation Gantry Column M1',
+      description: 'Heavy 4500mm structural angle with dual-gauge Ø22 and Ø26 punch patterns.',
+      angleWidthA: 130.0,
+      angleWidthB: 130.0,
+      thickness: 12.0,
+      totalLength: 4500.0,
+      measurementType: 'ABSOLUTE',
+      steps: {
+        create: [
+          { stepNumber: 1, operationType: 'PUNCH', side: 'A', xPosition: 150.0, yPosition: 45.0, toolSize: 22.0, toolShape: 'ROUND' },
+          { stepNumber: 2, operationType: 'PUNCH', side: 'A', xPosition: 150.0, yPosition: 85.0, toolSize: 22.0, toolShape: 'ROUND' },
+          { stepNumber: 3, operationType: 'PUNCH', side: 'B', xPosition: 150.0, yPosition: 45.0, toolSize: 22.0, toolShape: 'ROUND' },
+          { stepNumber: 4, operationType: 'PUNCH', side: 'B', xPosition: 150.0, yPosition: 85.0, toolSize: 22.0, toolShape: 'ROUND' },
+          { stepNumber: 5, operationType: 'MARK', side: 'NA', xPosition: 700.0, yPosition: 0.0, markingText: 'SUB-M01' },
+          { stepNumber: 6, operationType: 'PUNCH', side: 'A', xPosition: 2250.0, yPosition: 65.0, toolSize: 26.0, toolShape: 'ROUND' },
+          { stepNumber: 7, operationType: 'PUNCH', side: 'B', xPosition: 2250.0, yPosition: 65.0, toolSize: 26.0, toolShape: 'ROUND' },
+          { stepNumber: 8, operationType: 'PUNCH', side: 'A', xPosition: 4350.0, yPosition: 45.0, toolSize: 22.0, toolShape: 'ROUND' },
+          { stepNumber: 9, operationType: 'PUNCH', side: 'A', xPosition: 4350.0, yPosition: 85.0, toolSize: 22.0, toolShape: 'ROUND' },
+          { stepNumber: 10, operationType: 'PUNCH', side: 'B', xPosition: 4350.0, yPosition: 45.0, toolSize: 22.0, toolShape: 'ROUND' },
+          { stepNumber: 11, operationType: 'PUNCH', side: 'B', xPosition: 4350.0, yPosition: 85.0, toolSize: 22.0, toolShape: 'ROUND' },
+          { stepNumber: 12, operationType: 'CUT', side: 'NA', xPosition: 4500.0, yPosition: 0.0, isCutOff: true },
+        ],
+      },
+    },
+  });
+
+  await prisma.itemRecipe.create({
+    data: {
+      itemCode: 'ISA-90x90x8-GANTRY-G3',
+      itemName: 'Overhead Crane Gantry Tie Member G3',
+      description: 'Medium 1800mm tie angle bar with high-speed 6-hole punching sequence.',
+      angleWidthA: 90.0,
+      angleWidthB: 90.0,
+      thickness: 8.0,
+      totalLength: 1800.0,
+      measurementType: 'ABSOLUTE',
+      steps: {
+        create: [
+          { stepNumber: 1, operationType: 'PUNCH', side: 'A', xPosition: 100.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 2, operationType: 'PUNCH', side: 'B', xPosition: 100.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 3, operationType: 'MARK', side: 'NA', xPosition: 350.0, yPosition: 0.0, markingText: 'GNT-303' },
+          { stepNumber: 4, operationType: 'PUNCH', side: 'A', xPosition: 900.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 5, operationType: 'PUNCH', side: 'B', xPosition: 900.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 6, operationType: 'PUNCH', side: 'A', xPosition: 1700.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 7, operationType: 'PUNCH', side: 'B', xPosition: 1700.0, yPosition: 45.0, toolSize: 18.0, toolShape: 'ROUND' },
+          { stepNumber: 8, operationType: 'CUT', side: 'NA', xPosition: 1800.0, yPosition: 0.0, isCutOff: true },
+        ],
+      },
+    },
+  });
+
+  console.log('✅ Clean production database seeded with real Innovance PLC registers and 4 production recipes.');
 }
 
 main()

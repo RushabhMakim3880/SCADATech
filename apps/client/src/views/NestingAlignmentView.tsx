@@ -368,20 +368,20 @@ export const NestingAlignmentView: React.FC = () => {
 
       {/* Config Modal */}
       {isConfigOpen && (
-        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden text-xs">
-            <div className="panel-heading bg-slate-800 text-white px-4 py-3 flex items-center justify-between">
-              <span className="font-bold text-sm">Configure Nesting & Machine Margins</span>
-              <button onClick={() => setIsConfigOpen(false)} className="text-slate-300 hover:text-white">✕</button>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#141d2b] rounded-lg shadow-2xl border border-[#2b3c53] w-full max-w-md overflow-hidden text-xs">
+            <div className="panel-heading bg-[#1a2536] text-white px-4 py-3 flex items-center justify-between border-b border-[#293a50]">
+              <span className="font-extrabold text-sm">Configure Nesting & Machine Margins</span>
+              <button onClick={() => setIsConfigOpen(false)} className="text-slate-400 hover:text-white font-bold">✕</button>
             </div>
 
             <div className="p-4 space-y-3">
               <div>
-                <label className="font-bold text-slate-700 block">Raw Stock Bar Length (mm)</label>
+                <label className="font-bold text-slate-300 block">Raw Stock Bar Length (mm)</label>
                 <select
                   value={stockBarLength}
                   onChange={(e) => setStockBarLength(parseInt(e.target.value) || 6000)}
-                  className="form-control-ca mt-1 font-bold"
+                  className="form-control-ca mt-1 font-bold w-full"
                 >
                   <option value="6000">6,000 mm (Standard 6 Meter)</option>
                   <option value="9000">9,000 mm (9 Meter Commercial)</option>
@@ -390,32 +390,35 @@ export const NestingAlignmentView: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block">Hydraulic Shear Kerf Loss (mm)</label>
+                <label className="font-bold text-slate-300 block">Hydraulic Shear Kerf Loss (mm)</label>
                 <input
                   type="number"
                   value={kerfCutAllowance}
                   onChange={(e) => setKerfCutAllowance(parseInt(e.target.value) || 6)}
-                  className="form-control-ca mt-1"
+                  className="form-control-ca mt-1 w-full"
                 />
-                <span className="text-[10px] text-slate-500">Material blade cutting waste per piece</span>
+                <span className="text-[10px] text-slate-400">Material blade cutting waste per piece</span>
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block">Carriage Gripper Dead-Zone Margin (mm)</label>
+                <label className="font-bold text-slate-300 block">Carriage Gripper Dead-Zone Margin (mm)</label>
                 <input
                   type="number"
                   value={gripperDeadZone}
                   onChange={(e) => setGripperDeadZone(parseInt(e.target.value) || 120)}
-                  className="form-control-ca mt-1"
+                  className="form-control-ca mt-1 w-full"
                 />
-                <span className="text-[10px] text-slate-500">Tail clamping distance required by carriage</span>
+                <span className="text-[10px] text-slate-400">Clamp safety clearance limit before shear cutoff blade</span>
               </div>
-            </div>
 
-            <div className="p-3 bg-slate-100 border-t border-slate-200 flex justify-end">
-              <button onClick={() => setIsConfigOpen(false)} className="btn-ca btn-ca-primary">
-                Apply Parameters
-              </button>
+              <div className="pt-3 border-t border-[#293a50] flex justify-end">
+                <button
+                  onClick={() => setIsConfigOpen(false)}
+                  className="btn-ca btn-ca-primary font-bold px-4"
+                >
+                  Done
+                </button>
+              </div>
             </div>
           </div>
         </div>

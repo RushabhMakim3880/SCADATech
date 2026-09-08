@@ -8,13 +8,15 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  username  String   @unique
-  name      String
-  role      String   @default("OPERATOR") // OPERATOR, SUPERVISOR, ADMIN
-  pinCode   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  username    String   @unique
+  name        String
+  role        String   @default("OPERATOR") // SUPER_ADMIN, ADMIN, OPERATOR
+  pinCode     String?
+  permissions String   @default("[]") // JSON array of permission strings
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Machine {
@@ -247,3 +249,20 @@ model AlarmLog {
   clearedAt         DateTime?
   durationSeconds   Int?
 }
+
+model MenuConfig {
+  id          String   @id @default(uuid())
+  menuKey     String   @unique
+  label       String
+  icon        String
+  description String?
+  order       Int      @default(0)
+  isEnabled   Boolean  @default(true)
+  roles       String   @default("[\"SUPER_ADMIN\",\"ADMIN\",\"OPERATOR\"]") // JSON array of allowed roles
+  category    String   @default("OPERATIONAL") // OPERATIONAL, ENGINEERING, ADMINISTRATION
+  badgeText   String?
+  badgeColor  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+

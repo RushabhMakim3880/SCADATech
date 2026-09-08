@@ -127,28 +127,28 @@ export function DataTable<T extends Record<string, any>>({
       )}
 
       {/* Table Toolbar (Search & Page Size) */}
-      <div className="p-3 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="p-3 bg-[#141c28] border-b border-[#25354b] flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
-          <span className="text-slate-600 font-semibold">Show:</span>
+          <span className="text-slate-300 font-bold">Show:</span>
           <select
             value={pageSize}
             onChange={(e) => {
               setPageSize(Number(e.target.value));
               setCurrentPage(1);
             }}
-            className="form-control-ca w-16 py-1"
+            className="form-control-ca w-16 py-1 bg-[#0f1622] text-white border-[#30415a]"
           >
             {[10, 25, 50, 100].map((size) => (
-              <option key={size} value={size}>
+              <option key={size} value={size} className="bg-[#0f1622] text-white">
                 {size}
               </option>
             ))}
           </select>
-          <span className="text-slate-500">entries per page</span>
+          <span className="text-slate-400 font-medium">entries per page</span>
         </div>
 
-        <div className="flex items-center gap-2 bg-white px-2.5 py-1 rounded border border-slate-300 w-64">
-          <Search className="w-3.5 h-3.5 text-slate-400" />
+        <div className="flex items-center gap-2 bg-[#0f1622] px-3 py-1.5 rounded border border-[#30415a] w-72">
+          <Search className="w-4 h-4 text-cyan-400 shrink-0" />
           <input
             type="text"
             placeholder="Search records..."
@@ -157,7 +157,7 @@ export function DataTable<T extends Record<string, any>>({
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-transparent border-none text-xs text-slate-800 placeholder-slate-400 focus:outline-none w-full"
+            className="bg-transparent border-none text-xs text-white placeholder-slate-400 focus:outline-none w-full"
           />
         </div>
       </div>
@@ -172,7 +172,7 @@ export function DataTable<T extends Record<string, any>>({
                   key={col.key}
                   style={{ width: col.width, textAlign: col.align || 'left' }}
                   onClick={() => col.sortable !== false && handleSort(col.key)}
-                  className={col.sortable !== false ? 'cursor-pointer select-none hover:bg-slate-200' : ''}
+                  className={col.sortable !== false ? 'cursor-pointer select-none hover:bg-[#202c3e]' : ''}
                 >
                   <div className="flex items-center gap-1.5" style={{ justifyContent: col.align === 'right' ? 'flex-end' : 'flex-start' }}>
                     <span>{col.header}</span>
@@ -188,7 +188,7 @@ export function DataTable<T extends Record<string, any>>({
                 <tr
                   key={item.id || idx}
                   onClick={() => onRowClick && onRowClick(item)}
-                  className={onRowClick ? 'cursor-pointer hover:bg-blue-50' : ''}
+                  className={onRowClick ? 'cursor-pointer hover:bg-[#1a2536]' : ''}
                 >
                   {columns.map((col) => (
                     <td key={col.key} style={{ textAlign: col.align || 'left' }}>
@@ -209,8 +209,8 @@ export function DataTable<T extends Record<string, any>>({
       </div>
 
       {/* Pagination Footer */}
-      <div className="p-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="text-slate-600">
+      <div className="p-3 bg-[#141c28] border-t border-[#25354b] flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="text-slate-300 font-medium">
           Showing {sortedData.length === 0 ? 0 : (currentPage - 1) * pageSize + 1} to{' '}
           {Math.min(currentPage * pageSize, sortedData.length)} of {sortedData.length} entries
         </div>
@@ -219,19 +219,17 @@ export function DataTable<T extends Record<string, any>>({
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="btn-ca btn-ca-default py-1 px-2.5 disabled:opacity-40"
+            className="btn-ca btn-ca-dark py-1 px-2.5 disabled:opacity-40"
           >
-            <ChevronLeft className="w-3.5 h-3.5" /> Prev
+            <ChevronLeft className="w-3.5 h-3.5" /> Previous
           </button>
-
-          <span className="px-3 py-1 bg-white border border-slate-300 rounded font-bold text-slate-700">
+          <span className="px-3 py-1 font-bold text-cyan-300 bg-[#0f1622] rounded border border-[#2b3c53]">
             {currentPage} / {totalPages}
           </span>
-
           <button
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-            className="btn-ca btn-ca-default py-1 px-2.5 disabled:opacity-40"
+            disabled={currentPage >= totalPages}
+            className="btn-ca btn-ca-dark py-1 px-2.5 disabled:opacity-40"
           >
             Next <ChevronRight className="w-3.5 h-3.5" />
           </button>

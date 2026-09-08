@@ -3,326 +3,361 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    background-color: #d9e0e7;
-    color: #242a30;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  *, ::before, ::after {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    background-color: #0b1019;
+    color: #f8fafc;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     user-select: none;
     overflow-x: hidden;
     margin: 0;
     padding: 0;
+    touch-action: manipulation;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button, input, select {
+    touch-action: manipulation;
+  }
+
+  select option {
+    background-color: #121a26;
+    color: #f8fafc;
   }
 }
 
 /* ==========================================================================
-   Color Admin Industrial Layout Containers
+   Precision Industrial HMI Layout Containers (High-Visibility Slate Standard)
    ========================================================================== */
 .app-header {
-  background: #ffffff;
-  border-bottom: 1px solid #c8d1db;
-  height: 52px;
+  background: #141d2b;
+  border-bottom: 2px solid #233246;
+  height: 60px;
 }
 
 .app-sidebar {
-  background: #242a30;
-  width: 240px;
+  background: #0f1622;
+  width: 260px;
+  border-right: 2px solid #202d3e;
 }
 
 .app-content {
-  background: #d9e0e7;
-  min-height: calc(100vh - 52px);
+  background: #0b1019;
+  min-height: calc(100vh - 60px);
 }
 
 /* ==========================================================================
-   Color Admin Panels & Cards
+   Monolithic Touchscreen SCADA Tiles (Glove-Friendly, Professional CNC)
    ========================================================================== */
-.panel {
-  background: #ffffff;
-  border-radius: 4px;
-  border: 1px solid #d0d7de;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-.panel-heading {
-  background: #2d353c;
-  color: #ffffff;
-  padding: 8px 14px;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-  font-weight: 600;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-}
-
-.panel-body {
-  padding: 14px;
-}
-
-/* ==========================================================================
-   Industrial KPI Stat Widgets (Color Admin Authentic)
-   ========================================================================== */
-.widget-stats {
+.touch-tile {
   position: relative;
-  color: #ffffff;
-  padding: 14px 16px;
-  border-radius: 4px;
-  margin-bottom: 0px;
-  overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px 16px 14px 16px;
+  border-radius: 6px;
+  background: #141a24;
+  border: 1px solid #232e3e;
+  border-top: 1px solid #334259;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: background-color 0.1s ease, border-color 0.1s ease, transform 0.05s ease;
+  min-height: 150px;
 }
 
-.widget-stats.bg-blue {
-  background: linear-gradient(135deg, #348fe2 0%, #206dbb 100%) !important;
+.touch-tile:hover:not(:disabled) {
+  background: #19212f;
+  border-color: #38bdf8;
+  border-top-color: #7dd3fc;
 }
 
-.widget-stats.bg-green {
-  background: linear-gradient(135deg, #00acac 0%, #007a7a 100%) !important;
+.touch-tile:active:not(:disabled) {
+  background: #0f141c;
+  border-color: #0284c7;
+  transform: translateY(2px);
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.7);
 }
 
-.widget-stats.bg-orange {
-  background: linear-gradient(135deg, #f59c1a 0%, #c47608 100%) !important;
-}
-
-.widget-stats.bg-red {
-  background: linear-gradient(135deg, #ff5b57 0%, #cc3935 100%) !important;
-}
-
-.widget-stats.bg-dark {
-  background: linear-gradient(135deg, #343a40 0%, #212529 100%) !important;
-}
-
-.widget-stats .stats-icon {
-  position: absolute;
-  right: 14px;
-  top: 12px;
-  font-size: 38px;
-  opacity: 0.22;
-}
-
-.widget-stats .stats-info h4 {
-  font-size: 11px;
-  margin: 0 0 4px 0;
-  color: rgba(255, 255, 255, 0.85);
-  text-transform: uppercase;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.widget-stats .stats-info p {
-  font-size: 22px;
-  font-weight: 800;
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  margin: 0;
-  line-height: 1.2;
+.touch-tile:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: #0e121a;
+  border-color: #1a222e;
 }
 
 /* ==========================================================================
-   Industrial High-Contrast Digital DRO Display
+   Touch-Friendly Industrial Action Push Buttons
    ========================================================================== */
-.digital-dro-box {
-  background: #11161b;
-  border: 1px solid #323d47;
-  border-radius: 4px;
-  padding: 4px 10px;
+.touch-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  padding: 10px 18px;
+  min-height: 48px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: background-color 0.1s ease, transform 0.05s ease;
+}
+
+.touch-btn:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+.touch-btn-primary {
+  background: #1e3a8a;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+.touch-btn-primary:hover {
+  background: #2563eb;
+}
+
+.touch-btn-success {
+  background: #064e3b;
+  color: #ecfdf5;
+  border-color: #059669;
+}
+.touch-btn-success:hover {
+  background: #059669;
+}
+
+.touch-btn-danger {
+  background: #7f1d1d;
+  color: #fef2f2;
+  border-color: #dc2626;
+}
+.touch-btn-danger:hover {
+  background: #dc2626;
+}
+
+.touch-btn-warning {
+  background: #78350f;
+  color: #fffbeb;
+  border-color: #d97706;
+}
+.touch-btn-warning:hover {
+  background: #d97706;
+}
+
+.touch-btn-secondary {
+  background: #18202c;
+  color: #cbd5e1;
+  border-color: #293649;
+}
+.touch-btn-secondary:hover {
+  background: #212c3d;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   High-Visibility Digital Readout (DRO)
+   ========================================================================== */
+.digital-dro-box {
+  background: #080b10;
+  border: 1px solid #1e293b;
+  border-radius: 6px;
+  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.85);
 }
 
 .digital-dro-label {
-  font-size: 10px;
-  font-weight: 700;
-  color: #8a9ba8;
-  letter-spacing: 0.5px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.8px;
 }
 
 .digital-dro-val {
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
-  color: #00ffcc;
-  text-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
+  color: #38bdf8;
+  letter-spacing: 0.5px;
 }
 
 /* ==========================================================================
-   Industrial Dual-State LED Indicators
+   Industrial Status LED Indicators
    ========================================================================== */
 .led-indicator {
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   display: inline-block;
-  border: 1px solid rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
 }
 
 .led-indicator.led-green {
-  background: #00ff66;
-  box-shadow: 0 0 6px #00ff66;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
 }
 
 .led-indicator.led-red {
-  background: #ff3333;
-  box-shadow: 0 0 6px #ff3333;
+  background: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
 }
 
 .led-indicator.led-amber {
-  background: #ffaa00;
-  box-shadow: 0 0 6px #ffaa00;
+  background: #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
 }
 
 .led-indicator.led-off {
-  background: #444c54;
+  background: #334155;
   box-shadow: none;
 }
 
 /* ==========================================================================
-   DataTables & Custom Table Components
+   Touchscreen Numeric Keypad Buttons (64px Height)
    ========================================================================== */
+.touch-key-btn {
+  background: #1a2230;
+  border: 1px solid #283548;
+  border-top: 1px solid #3b4d66;
+  color: #f8fafc;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 24px;
+  font-weight: 800;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: background-color 0.1s ease, transform 0.05s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.touch-key-btn:hover {
+  background: #243044;
+  border-color: #475a75;
+}
+
+.touch-key-btn:active {
+  background: #121822;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.8);
+  transform: translateY(2px);
+}
+
+/* Backward-compatible utilities */
+.panel {
+  background: #131c28;
+  border-radius: 8px;
+  border: 1px solid #243449;
+  margin-bottom: 16px;
+  color: #f8fafc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.panel-heading {
+  background: #1a2536;
+  color: #ffffff;
+  padding: 13px 18px;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #293a50;
+  letter-spacing: 0.3px;
+}
+
+.panel-body {
+  padding: 18px;
+  color: #e2e8f0;
+}
+
 .table-custom {
   width: 100%;
   border-collapse: collapse;
-  background: #ffffff;
-  font-size: 12px;
+  background: #0f1622;
+  font-size: 13px;
+  color: #e2e8f0;
 }
 
 .table-custom th {
-  background: #f1f3f5;
-  color: #242a30;
-  font-weight: 700;
-  border-bottom: 2px solid #ced4da;
-  border-top: 1px solid #e9ecef;
-  padding: 8px 12px;
+  background: #16202e;
+  color: #94a3b8;
+  font-weight: 800;
+  border-bottom: 2px solid #27384e;
+  border-top: 1px solid #223044;
+  padding: 13px 16px;
   text-align: left;
+  letter-spacing: 0.4px;
 }
 
 .table-custom td {
-  padding: 8px 12px;
-  border-bottom: 1px solid #e9ecef;
-  color: #333333;
+  padding: 13px 16px;
+  border-bottom: 1px solid #1c2738;
+  color: #f8fafc;
   vertical-align: middle;
 }
 
-.table-custom tbody tr:nth-child(even) {
-  background-color: #fafbfc;
-}
-
 .table-custom tbody tr:hover {
-  background-color: #ebf3fc;
+  background-color: #192435;
 }
 
-/* ==========================================================================
-   Standard Color Admin & Industrial Push Buttons
-   ========================================================================== */
+.form-control-ca {
+  background: #0d131d;
+  border: 1px solid #2d3e56;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #ffffff;
+  min-height: 42px;
+}
+.form-control-ca:focus {
+  border-color: #38bdf8;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+}
+
 .btn-ca {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-weight: 600;
+  font-weight: 800;
   font-size: 12px;
-  padding: 5px 12px;
-  border-radius: 3px;
-  transition: all 0.12s ease-in-out;
+  padding: 8px 16px;
+  min-height: 42px;
+  border-radius: 6px;
+  transition: all 0.1s ease;
   cursor: pointer;
-  border: 1px solid transparent;
   user-select: none;
+  touch-action: manipulation;
+  letter-spacing: 0.3px;
 }
-
 .btn-ca:active {
   transform: translateY(1px);
 }
-
-.btn-ca-primary {
-  background: #348fe2;
-  color: #ffffff;
-  border-color: #2777c2;
-}
-.btn-ca-primary:hover {
-  background: #2475c4;
-}
-
-.btn-ca-success {
-  background: #00acac;
-  color: #ffffff;
-  border-color: #008787;
-}
-.btn-ca-success:hover {
-  background: #008e8e;
-}
-
-.btn-ca-warning {
-  background: #f59c1a;
-  color: #ffffff;
-  border-color: #cf7c08;
-}
-.btn-ca-warning:hover {
-  background: #d88307;
-}
-
-.btn-ca-danger {
-  background: #ff5b57;
-  color: #ffffff;
-  border-color: #e03c38;
-}
-.btn-ca-danger:hover {
-  background: #ea4541;
-}
-
-.btn-ca-default {
-  background: #ffffff;
-  color: #333333;
-  border: 1px solid #ced4da;
-}
-.btn-ca-default:hover {
-  background: #f8f9fa;
-  border-color: #adb5bd;
-}
-
-.btn-ca-dark {
-  background: #2d353c;
-  color: #ffffff;
-  border: 1px solid #1a2024;
-}
-.btn-ca-dark:hover {
-  background: #1f252a;
-}
-
-/* Industrial Push Button (.plc-btn) */
-.btn-industrial {
-  font-weight: 700;
-  font-size: 11px;
-  padding: 8px 12px;
-  border-radius: 4px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.1s ease-in-out;
-  text-align: center;
-}
-
-.btn-industrial:active {
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-  transform: translateY(1px);
-}
-
-.form-control-ca {
-  background: #ffffff;
-  border: 1px solid #ced4da;
-  border-radius: 3px;
-  padding: 5px 8px;
-  font-size: 12px;
-  color: #333333;
-}
-.form-control-ca:focus {
-  border-color: #348fe2;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(52, 143, 226, 0.2);
-}
+.btn-ca-primary { background: #2563eb; color: #fff; border: 1px solid #3b82f6; }
+.btn-ca-primary:hover { background: #1d4ed8; }
+.btn-ca-success { background: #16a34a; color: #fff; border: 1px solid #22c55e; }
+.btn-ca-success:hover { background: #15803d; }
+.btn-ca-danger { background: #dc2626; color: #fff; border: 1px solid #ef4444; }
+.btn-ca-danger:hover { background: #b91c1c; }
+.btn-ca-dark { background: #1e293b; color: #f1f5f9; border: 1px solid #3b4d68; }
+.btn-ca-dark:hover { background: #334155; color: #fff; }

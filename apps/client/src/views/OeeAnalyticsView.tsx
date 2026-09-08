@@ -113,17 +113,17 @@ export const OeeAnalyticsView: React.FC = () => {
       </div>
 
       {/* Shift Selector Pill Tabs */}
-      <div className="flex items-center gap-2 bg-white p-2 rounded border border-slate-200 shadow-sm text-xs">
-        <span className="font-bold text-slate-600 ml-1">Active Production Shift:</span>
-        <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2 bg-[#131b27] p-2.5 rounded-lg border border-[#26374c] shadow-sm text-xs">
+        <span className="font-bold text-slate-300 ml-1">Active Production Shift:</span>
+        <div className="flex items-center gap-1.5">
           {shifts.map((s, idx) => (
             <button
               key={s.shiftName}
               onClick={() => setSelectedShiftIdx(idx)}
-              className={`px-3 py-1.5 rounded font-bold transition-all ${
+              className={`px-3 py-1.5 rounded-md font-bold transition-all ${
                 selectedShiftIdx === idx
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  ? 'bg-blue-600 text-white border border-blue-400 shadow-sm'
+                  : 'bg-[#0f1622] text-slate-300 border border-[#26374c] hover:bg-[#1a2536] hover:text-white'
               }`}
             >
               {s.shiftName} ({s.startTime} - {s.endTime})
@@ -252,17 +252,17 @@ export const OeeAnalyticsView: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-3 gap-2 pt-2 text-center text-xs">
-                <div className="p-2 bg-white rounded border">
-                  <div className="text-slate-500 text-[10px]">REMAINING TONNAGE</div>
-                  <div className="font-bold text-slate-800">{Math.max(0, targetTons - processedTons).toFixed(2)} Tons</div>
+                <div className="p-2.5 bg-[#0f1622] rounded-lg border border-[#25354b]">
+                  <div className="text-slate-400 text-[10px] font-extrabold uppercase">Remaining Tonnage</div>
+                  <div className="font-mono text-base font-black text-white mt-0.5">{Math.max(0, targetTons - processedTons).toFixed(2)} Tons</div>
                 </div>
-                <div className="p-2 bg-white rounded border">
-                  <div className="text-slate-500 text-[10px]">AVG TONNAGE / HR</div>
-                  <div className="font-bold text-emerald-700">{runningHours > 0 ? (processedTons / runningHours).toFixed(2) : '0.00'} Tons/h</div>
+                <div className="p-2.5 bg-[#0f1622] rounded-lg border border-[#25354b]">
+                  <div className="text-slate-400 text-[10px] font-extrabold uppercase">Avg Tonnage / Hr</div>
+                  <div className="font-mono text-base font-black text-emerald-300 mt-0.5">{runningHours > 0 ? (processedTons / runningHours).toFixed(2) : '0.00'} Tons/h</div>
                 </div>
-                <div className="p-2 bg-white rounded border">
-                  <div className="text-slate-500 text-[10px]">ESTIMATED FINISH</div>
-                  <div className="font-bold text-blue-700">On Track</div>
+                <div className="p-2.5 bg-[#0f1622] rounded-lg border border-[#25354b]">
+                  <div className="text-slate-400 text-[10px] font-extrabold uppercase">Estimated Finish</div>
+                  <div className="font-mono text-base font-black text-cyan-300 mt-0.5">On Track</div>
                 </div>
               </div>
             </div>
@@ -272,20 +272,20 @@ export const OeeAnalyticsView: React.FC = () => {
 
       {/* Config Modal */}
       {isConfigOpen && (
-        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-lg overflow-hidden text-xs">
-            <div className="panel-heading bg-slate-800 text-white px-4 py-3 flex items-center justify-between">
-              <span className="font-bold text-sm">Configure Shift Timings & Tonnage Targets</span>
-              <button onClick={() => setIsConfigOpen(false)} className="text-slate-300 hover:text-white">✕</button>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#141d2b] rounded-lg shadow-2xl border border-[#2b3c53] w-full max-w-lg overflow-hidden text-xs">
+            <div className="panel-heading bg-[#1a2536] text-white px-4 py-3 flex items-center justify-between border-b border-[#293a50]">
+              <span className="font-extrabold text-sm">Configure Shift Timings & Tonnage Targets</span>
+              <button onClick={() => setIsConfigOpen(false)} className="text-slate-400 hover:text-white font-bold">✕</button>
             </div>
 
             <div className="p-4 space-y-3">
               {shifts.map((s, idx) => (
-                <div key={idx} className="p-3 bg-slate-50 rounded border border-slate-200 space-y-2">
-                  <div className="font-bold text-slate-800">{s.shiftName}</div>
+                <div key={idx} className="p-3 bg-[#0f1622] rounded-lg border border-[#25354b] space-y-2">
+                  <div className="font-extrabold text-white text-sm">{s.shiftName}</div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-slate-600 block text-[10px]">Start Time</label>
+                      <label className="text-slate-300 block text-[10px] font-bold">Start Time</label>
                       <input
                         type="time"
                         value={s.startTime}

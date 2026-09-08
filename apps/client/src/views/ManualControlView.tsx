@@ -272,8 +272,8 @@ export const ManualControlView: React.FC = () => {
 
             {/* 6-Head Single Stroke Test Matrix */}
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1.5">Single Tool Test Stroke</label>
-              <div className="grid grid-cols-4 gap-1 text-xs">
+              <label className="text-xs font-bold text-slate-300 block mb-1.5">Single Tool Test Stroke</label>
+              <div className="grid grid-cols-4 gap-1.5 text-xs">
                 {['DA1', 'DA2', 'DA3', 'DB1', 'DB2', 'DB3', 'Marking', 'Cutter'].map((head) => {
                   const isFiring = headsFiring[head];
                   return (
@@ -281,14 +281,14 @@ export const ManualControlView: React.FC = () => {
                       key={head}
                       onClick={() => handleTestHead(head)}
                       disabled={!hydraulicPumpRunning}
-                      className={`p-1.5 rounded border flex flex-col items-center justify-center font-bold transition-all ${
+                      className={`p-2 rounded border flex flex-col items-center justify-center font-bold transition-all ${
                         isFiring
-                          ? 'bg-red-600 text-white border-red-700'
-                          : 'bg-white text-slate-800 border-slate-300 hover:bg-slate-50'
+                          ? 'bg-red-600 text-white border-red-500 shadow-md scale-105'
+                          : 'bg-[#0f1622] text-white border-[#2b3c53] hover:bg-[#182333] hover:border-cyan-400'
                       } disabled:opacity-40`}
                     >
-                      <span className="text-xs">{head}</span>
-                      <span className="text-[9px] text-slate-500">{isFiring ? 'Firing' : 'Stroke'}</span>
+                      <span className="text-xs font-mono font-black">{head}</span>
+                      <span className="text-[10px] text-slate-400 mt-0.5">{isFiring ? 'Firing' : 'Stroke'}</span>
                     </button>
                   );
                 })}

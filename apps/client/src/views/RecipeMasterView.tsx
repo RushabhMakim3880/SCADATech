@@ -210,7 +210,7 @@ export const RecipeMasterView: React.FC = () => {
     {
       key: 'itemCode',
       header: 'Item Code',
-      render: (r) => <span className="font-bold text-blue-700">{r.itemCode}</span>,
+      render: (r) => <span className="font-bold text-cyan-400 tracking-wide">{r.itemCode}</span>,
     },
     { key: 'itemName', header: 'Material / Description' },
     {
@@ -231,13 +231,13 @@ export const RecipeMasterView: React.FC = () => {
     {
       key: 'totalLength',
       header: 'Program Length',
-      render: (r) => <span className="font-bold text-slate-800">{r.totalLength} mm</span>,
+      render: (r) => <span className="font-bold text-white font-mono">{r.totalLength} mm</span>,
     },
     {
       key: 'steps',
       header: 'Steps Count',
       render: (r) => (
-        <span className="badge bg-slate-100 border text-slate-700 px-2 py-0.5 rounded text-xs font-semibold">
+        <span className="badge bg-slate-800/80 border border-slate-700 text-slate-200 px-2 py-0.5 rounded text-xs font-semibold">
           {r.steps?.length || 0} Steps
         </span>
       ),
@@ -248,7 +248,9 @@ export const RecipeMasterView: React.FC = () => {
       render: (r) => (
         <span
           className={`px-2 py-0.5 rounded text-[11px] font-bold ${
-            r.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            r.isActive
+              ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-600/60'
+              : 'bg-rose-950/80 text-rose-300 border border-rose-600/60'
           }`}
         >
           {r.isActive ? 'Active' : 'In Active'}
@@ -288,10 +290,10 @@ export const RecipeMasterView: React.FC = () => {
   return (
     <div className="p-4 space-y-4 flex-1 overflow-y-auto">
       {/* Top Header */}
-      <div className="flex items-center justify-between pb-2 border-b border-slate-300">
+      <div className="flex items-center justify-between pb-2 border-b border-slate-800">
         <div>
-          <h2 className="text-lg font-black text-slate-900">Item Recipe Master (HPT Standard)</h2>
-          <p className="text-xs text-slate-600 font-medium mt-0.5">
+          <h2 className="text-lg font-black text-white">Item Recipe Master (HPT Standard)</h2>
+          <p className="text-xs text-slate-300 font-medium mt-0.5">
             Define part geometry, punch hole coordinates, import Tekla DSTV files, verify IS 802 tower design rules, and generate job cards.
           </p>
         </div>
@@ -367,18 +369,18 @@ export const RecipeMasterView: React.FC = () => {
               {/* Form Input Row */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
                 <div>
-                  <label className="font-bold text-slate-700">Item Code <span className="text-red-500">*</span></label>
+                  <label className="font-bold text-slate-300">Item Code <span className="text-red-400">*</span></label>
                   <input
                     type="text"
                     value={selectedRecipe.itemCode}
                     onChange={(e) => setSelectedRecipe({ ...selectedRecipe, itemCode: e.target.value })}
-                    className="form-control-ca mt-1 font-bold text-blue-800"
+                    className="form-control-ca mt-1 font-bold text-cyan-300"
                     placeholder="Enter Item Code"
                   />
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700">Side A Width (mm) <span className="text-red-500">*</span></label>
+                  <label className="font-bold text-slate-300">Side A Width (mm) <span className="text-red-400">*</span></label>
                   <div className="flex items-center gap-1 mt-1">
                     <input
                       type="number"
@@ -397,7 +399,7 @@ export const RecipeMasterView: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700">Side B Width (mm) <span className="text-red-500">*</span></label>
+                  <label className="font-bold text-slate-300">Side B Width (mm) <span className="text-red-400">*</span></label>
                   <div className="flex items-center gap-1 mt-1">
                     <input
                       type="number"
@@ -416,7 +418,7 @@ export const RecipeMasterView: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700">Thickness (mm) <span className="text-red-500">*</span></label>
+                  <label className="font-bold text-slate-300">Thickness (mm) <span className="text-red-400">*</span></label>
                   <input
                     type="number"
                     value={selectedRecipe.thickness}
@@ -427,13 +429,13 @@ export const RecipeMasterView: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700">Program Length (mm) <span className="text-red-500">*</span></label>
+                  <label className="font-bold text-slate-300">Program Length (mm) <span className="text-red-400">*</span></label>
                   <div className="flex items-center gap-1 mt-1">
                     <input
                       type="number"
                       value={selectedRecipe.totalLength}
                       onChange={(e) => setSelectedRecipe({ ...selectedRecipe, totalLength: parseFloat(e.target.value) || 0 })}
-                      className="form-control-ca font-bold"
+                      className="form-control-ca font-bold text-white"
                     />
                     <button
                       type="button"
@@ -446,7 +448,7 @@ export const RecipeMasterView: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700">Material Description</label>
+                  <label className="font-bold text-slate-300">Material Description</label>
                   <input
                     type="text"
                     value={selectedRecipe.itemName}
@@ -457,7 +459,7 @@ export const RecipeMasterView: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700">Status</label>
+                  <label className="font-bold text-slate-300">Status</label>
                   <select
                     value={selectedRecipe.isActive ? '1' : '0'}
                     onChange={(e) => setSelectedRecipe({ ...selectedRecipe, isActive: e.target.value === '1' })}
@@ -470,8 +472,8 @@ export const RecipeMasterView: React.FC = () => {
               </div>
 
               {/* Unified 2D/3D CAD Visualizer Blueprint */}
-              <div className="pt-3 border-t border-slate-200">
-                <label className="font-bold text-xs text-slate-700 mb-2 block">Unified Interactive Visualizer (2D & 3D)</label>
+              <div className="pt-3 border-t border-slate-800">
+                <label className="font-bold text-xs text-slate-300 mb-2 block">Unified Interactive Visualizer (2D & 3D)</label>
                 <div className="h-[500px] rounded overflow-hidden">
                   <AngleBarViewer
                     recipe={selectedRecipe}
@@ -511,9 +513,9 @@ export const RecipeMasterView: React.FC = () => {
               </div>
 
               {/* itemRecipeSteps Table */}
-              <div className="pt-3 border-t border-slate-200">
+              <div className="pt-3 border-t border-slate-800">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="font-bold text-xs text-slate-800">Item Recipe Operations Table</label>
+                  <label className="font-bold text-xs text-slate-200">Item Recipe Operations Table</label>
                   <div className="flex gap-2">
                     <button
                       onClick={() => {
@@ -536,13 +538,13 @@ export const RecipeMasterView: React.FC = () => {
                   </div>
                 </div>
 
-                <table className="table-custom border">
+                <table className="table-custom border border-slate-800">
                   <thead>
                     <tr>
                       <th style={{ width: '70px' }}>Step #</th>
-                      <th>Operation <span className="text-red-500">*</span></th>
+                      <th>Operation <span className="text-red-400">*</span></th>
                       <th>Side / Flange</th>
-                      <th>X Pos (mm) <span className="text-red-500">*</span></th>
+                      <th>X Pos (mm) <span className="text-red-400">*</span></th>
                       <th>Y Pos (mm)</th>
                       <th>Tool Die (mm)</th>
                       <th>Measurement Type</th>
@@ -553,11 +555,11 @@ export const RecipeMasterView: React.FC = () => {
                     {selectedRecipe.steps.map((step, idx) => (
                       <tr
                         key={step.id || idx}
-                        className={highlightedStep === idx ? 'bg-blue-50' : ''}
+                        className={highlightedStep === idx ? 'bg-blue-900/40 text-white' : ''}
                         onMouseEnter={() => setHighlightedStep(idx)}
                         onMouseLeave={() => setHighlightedStep(undefined)}
                       >
-                        <td className="font-bold text-slate-600">#{step.stepNumber}</td>
+                        <td className="font-bold text-cyan-400">#{step.stepNumber}</td>
                         <td>
                           <select
                             value={step.operationType}
