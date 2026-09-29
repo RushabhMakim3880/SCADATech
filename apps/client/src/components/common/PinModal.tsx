@@ -20,29 +20,40 @@ export const PinModal: React.FC = () => {
 
   const visibleUsers = users.filter((u) => u.role !== 'SUPER_ADMIN');
 
+  // Open modal initialization - ONLY runs once when modal opens
   useEffect(() => {
     if (isPinModalOpen) {
-      fetchUsers();
       setPin('');
       setErrorMsg(null);
+      fetchUsers();
+
       if (targetUserForPin && targetUserForPin.role !== 'SUPER_ADMIN') {
         setSelectedUserId(targetUserForPin.id);
       } else if (currentUser && currentUser.role !== 'SUPER_ADMIN') {
         setSelectedUserId(currentUser.id);
-      } else {
-        const defaultOp = users.find((u) => u.role === 'OPERATOR') || users.find((u) => u.role !== 'SUPER_ADMIN');
-        if (defaultOp) setSelectedUserId(defaultOp.id);
       }
     }
-  }, [isPinModalOpen, targetUserForPin, currentUser, fetchUsers, users]);
+  }, [isPinModalOpen]);
 
-  if (!isPinModalOpen) return null;
+  // Fallback to select first available user if none is selected yet
+  useEffect(() => {
+    if (isPinModalOpen && !selectedUserId && visibleUsers.length > 0) {
+      const defaultUser = visibleUsers.find((u) => u.role === 'OPERATOR') || visibleUsers[0];
+      if (defaultUser) setSelectedUserId(defaultUser.id);
+    }
+  }, [isPinModalOpen, visibleUsers, selectedUserId]);
 
   const handleKeyPress = (digit: string) => {
-    if (pin.length < 8) {
-      setPin((prev) => prev + digit);
-      setErrorMsg(null);
-    }
+    setPin((prev) => {
+      if (prev.length >= 8) return prev;
+      const nextPin = prev + digit;
+      const matched = users.find((u) => u.pinCode === nextPin);
+      if (matched && matched.role !== 'SUPER_ADMIN') {
+        setSelectedUserId(matched.id);
+      }
+      return nextPin;
+    });
+    setErrorMsg(null);
   };
 
   const handleBackspace = () => {
@@ -73,6 +84,36 @@ export const PinModal: React.FC = () => {
       setPin('');
     }
   };
+
+  // Keyboard navigation & numpad support
+  useEffect(() => {
+    if (!isPinModalOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      if (/^[0-9]$/.test(e.key)) {
+        e.preventDefault();
+        handleKeyPress(e.key);
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+        handleBackspace();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        closePinModal();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        handleSubmit();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isPinModalOpen, pin, selectedUserId, users, isSubmitting]);
+
+  if (!isPinModalOpen) return null;
 
   const activeTarget = visibleUsers.find((u) => u.id === selectedUserId) || visibleUsers[0] || currentUser;
 
@@ -241,6 +282,16 @@ export const PinModal: React.FC = () => {
             <Check className="w-5 h-5" />
             <span>{isSubmitting ? 'VERIFYING...' : 'VERIFY & SIGN IN'}</span>
           </button>
+
+          {/* Quick Credential Hint */}
+          <div className="pt-1 flex items-center justify-between text-[11px] text-slate-400 bg-[#0c1017] px-3 py-2 rounded-lg border border-[#1b2331]">
+            <span className="text-slate-400">Default PINs:</span>
+            <span className="font-mono text-amber-300">Admin: <strong>9999</strong></span>
+            <span className="text-slate-600">|</span>
+            <span className="font-mono text-emerald-300">Operator: <strong>1234</strong></span>
+            <span className="text-slate-600">|</span>
+            <span className="font-mono text-rose-300">Super: <strong>7788</strong></span>
+          </div>
         </div>
       </div>
     </div>

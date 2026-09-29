@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { usePlcStore } from '../stores/usePlcStore.js';
 import { useAuthStore } from '../stores/useAuthStore.js';
 import { ActiveTab } from '../components/layout/Sidebar.js';
@@ -16,12 +16,9 @@ import {
   Tag,
   ShieldCheck,
   Settings2,
-  Lock,
-  Compass,
-  Gauge,
-  ShieldAlert,
-  Radio,
+  Play,
   CheckCircle2,
+  Lock,
 } from 'lucide-react';
 
 interface DashboardViewProps {
@@ -32,352 +29,328 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
   const {
     isConnected,
     feedPositionMm,
+    feedSpeedMPerMin,
     hydraulicPressureBar,
     activeAlarms,
     mode,
     eStopOk,
   } = usePlcStore();
 
-  const { currentUser, hasPermission, isSuperAdmin } = useAuthStore();
-  const [logoError, setLogoError] = useState(false);
-  const logoClickCount = useRef(0);
+  const { currentUser, isSuperAdmin, hasPermission } = useAuthStore();
   const [isSecretModalOpen, setIsSecretModalOpen] = useState(false);
 
-  const handleLogoTap = () => {
-    logoClickCount.current += 1;
-    if (logoClickCount.current >= 5) {
-      logoClickCount.current = 0;
-      setIsSecretModalOpen(true);
-    }
-  };
-
-  // Tab mapping
-  const tabMap: Record<string, ActiveTab> = {
-    PRODUCTION: 'PRODUCTION',
-    MANUAL: 'MANUAL',
-    RECIPES: 'RECIPES',
-    ALIGNMENT: 'ALIGNMENT',
-    OEE_ANALYTICS: 'OEE_ANALYTICS',
-    TOOLING_WEAR: 'TOOLING_WEAR',
-    IO_DIAGNOSTICS: 'IO_DIAGNOSTICS',
-    ALARMS: 'ALARMS',
-    MACHINE_SETUP: 'MACHINE_SETUP',
-    TAGS: 'TAGS',
-    USERS: 'USER_MANAGEMENT',
-    MENU_CONFIG: 'MENU_CONFIG',
-  };
-
-  // Permission mapping
-  const permissionMap: Record<string, string> = {
-    PRODUCTION: 'menu:production',
-    MANUAL: 'menu:manual',
-    RECIPES: 'menu:recipes',
-    ALIGNMENT: 'menu:alignment',
-    OEE_ANALYTICS: 'menu:oee',
-    TOOLING_WEAR: 'menu:wear',
-    IO_DIAGNOSTICS: 'menu:io',
-    ALARMS: 'menu:alarms',
-    MACHINE_SETUP: 'menu:setup',
-    TAGS: 'menu:tags',
-    USERS: 'menu:users',
-    MENU_CONFIG: 'menu:config',
-  };
-
-  // Uniform precision industrial modules
+  // 12 Primary CNC SCADA Modules
   const modules = [
     {
-      id: 'PRODUCTION',
+      id: 'PRODUCTION' as ActiveTab,
       label: 'MANAGE PRODUCTION',
-      subtitle: '2D CAD & Automatic Processing Cycle',
+      subtitle: '2D CAD visualizer & auto cycle execution',
       icon: PlaySquare,
       readout: `X: ${feedPositionMm.toFixed(1)} mm`,
-      status: 'READY',
       statusType: 'normal' as const,
+      perm: 'menu:production',
     },
     {
-      id: 'MANUAL',
+      id: 'MANUAL' as ActiveTab,
       label: 'MANUAL CONTROL',
-      subtitle: 'Feed Axis Jog & Cylinder Valves',
+      subtitle: 'Carriage jog, valve test & single stroke',
       icon: SlidersHorizontal,
       readout: `${hydraulicPressureBar.toFixed(0)} BAR`,
-      status: 'STANDBY',
       statusType: 'warning' as const,
+      perm: 'menu:manual',
     },
     {
-      id: 'RECIPES',
+      id: 'RECIPES' as ActiveTab,
       label: 'ITEM RECIPES',
-      subtitle: 'DSTV / NC1 CAD File Importer',
+      subtitle: 'DSTV/NC1 CAD importer & angle tool setup',
       icon: FileCode2,
       readout: 'TEKLA / NC1',
-      status: 'ACTIVE',
       statusType: 'normal' as const,
+      perm: 'menu:recipes',
     },
     {
-      id: 'ALIGNMENT',
-      label: 'PROGRAM ALIGN',
-      subtitle: 'Linear Multibar Nesting & IS 802 Rules',
+      id: 'ALIGNMENT' as ActiveTab,
+      label: 'PROGRAM ALIGN & NEST',
+      subtitle: 'Multibar linear nesting & IS 802 rules',
       icon: Layers,
       readout: 'SCRAP <1.2%',
-      status: 'OPTIMIZED',
       statusType: 'normal' as const,
+      perm: 'menu:alignment',
     },
     {
-      id: 'OEE_ANALYTICS',
+      id: 'OEE_ANALYTICS' as ActiveTab,
       label: 'SHIFT & OEE TELEMETRY',
-      subtitle: 'Metric Tonnage Processed & OEE',
+      subtitle: 'Processed metric tonnage & productivity',
       icon: TrendingUp,
       readout: 'TONNAGE',
-      status: 'MONITORING',
       statusType: 'normal' as const,
+      perm: 'menu:oee',
     },
     {
-      id: 'TOOLING_WEAR',
+      id: 'TOOLING_WEAR' as ActiveTab,
       label: 'TOOLING LIFE & WEAR',
-      subtitle: 'Stroke Counters (6 Dies & Shear)',
+      subtitle: 'Stroke counters for 6 dies & shear blade',
       icon: Activity,
       readout: '6 HEADS OK',
-      status: 'NORMAL',
       statusType: 'normal' as const,
+      perm: 'menu:wear',
     },
     {
-      id: 'IO_DIAGNOSTICS',
+      id: 'IO_DIAGNOSTICS' as ActiveTab,
       label: 'PLC I/O MATRIX',
-      subtitle: '32 Inputs (X0-X37) & 32 Outputs (Y0-Y37)',
+      subtitle: '64-channel bus monitor (32 In / 32 Out)',
       icon: Cpu,
       readout: '20 Hz BUS',
-      status: '64 CHANNELS',
       statusType: 'normal' as const,
+      perm: 'menu:io',
     },
     {
-      id: 'ALARMS',
+      id: 'ALARMS' as ActiveTab,
       label: 'ALARM CONFIG & LOGS',
-      subtitle: 'Real-time Fault Interlocks & History',
+      subtitle: 'Real-time safety interlocks & fault history',
       icon: AlertTriangle,
-      readout: `${activeAlarms.length} FAULTS`,
-      status: activeAlarms.length > 0 ? 'ALERT' : 'CLEAR',
+      readout: `${activeAlarms.length} ALERTS`,
       statusType: activeAlarms.length > 0 ? ('critical' as const) : ('normal' as const),
+      perm: 'menu:alarms',
     },
     {
-      id: 'MACHINE_SETUP',
+      id: 'MACHINE_SETUP' as ActiveTab,
       label: 'MACHINE SETTINGS',
-      subtitle: 'HA-203 Limits & Tool Station Offsets',
+      subtitle: 'HA-203 physical limits & station pitch',
       icon: Wrench,
       readout: 'HA-203',
-      status: 'CONFIG',
       statusType: 'normal' as const,
+      perm: 'menu:setup',
     },
     {
-      id: 'TAGS',
+      id: 'TAGS' as ActiveTab,
       label: 'PLC & UI TAG MASTER',
-      subtitle: 'Modbus TCP & High-Speed Tag Regs',
+      subtitle: 'Modbus TCP register mapping & polling',
       icon: Tag,
       readout: 'MODBUS TCP',
-      status: 'REGISTERED',
       statusType: 'normal' as const,
+      perm: 'menu:tags',
     },
     {
-      id: 'USERS',
+      id: 'USER_MANAGEMENT' as ActiveTab,
       label: 'USER PERMISSIONS',
-      subtitle: 'Plant Administrator RBAC Matrix',
+      subtitle: 'Role-based access matrix & operator PINs',
       icon: ShieldCheck,
       readout: 'RBAC MATRIX',
-      status: 'ADMIN',
       statusType: 'normal' as const,
+      perm: 'menu:users',
     },
     {
-      id: 'MENU_CONFIG',
-      label: 'MENU CONFIGURATION',
-      subtitle: 'OEM Button Layout & Role Rights',
-      icon: Settings2,
-      readout: 'OEM ONLY',
-      status: 'WITH US ONLY',
-      statusType: 'warning' as const,
+      id: (isSuperAdmin() ? 'MENU_CONFIG' : 'OEE_ANALYTICS') as ActiveTab,
+      label: isSuperAdmin() ? 'OEM CONFIGURATION' : 'PRODUCTION REPORTS',
+      subtitle: isSuperAdmin() ? 'OEM Button Layout & Developer Rights' : 'Daily inspection, shift & batch run reports',
+      icon: isSuperAdmin() ? Settings2 : FileCode2,
+      readout: isSuperAdmin() ? 'OEM DEV' : 'REPORTS',
+      statusType: 'normal' as const,
+      perm: isSuperAdmin() ? 'menu:config' : 'menu:oee',
     },
   ];
 
   return (
-    <div className="flex-1 flex flex-col justify-between overflow-y-auto bg-[#0b1019] text-white">
-      {/* 1. Industrial Machinery Brand Header */}
-      <div className="bg-[#141d2b] border-b border-[#233246] px-6 py-4 shadow-md">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            {/* HPT Logo slot (Tap 5x for OEM Developer Access) */}
-            <div
-              onClick={handleLogoTap}
-              className="h-12 flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
-              title="HPT Innovance CNC (Tap 5x for Developer Access)"
-            >
-              {!logoError ? (
-                <img
-                  src="/hpt-logo.png"
-                  alt="HPT Logo"
-                  onError={() => setLogoError(true)}
-                  className="h-12 w-auto object-contain"
-                />
-              ) : (
-                <div className="w-12 h-12 rounded bg-[#18202d] border border-[#2b394d] flex items-center justify-center font-black text-white text-base tracking-wider shadow-inner">
-                  HPT
-                </div>
-              )}
-            </div>
+    <div className="flex-1 p-6 md:p-8 space-y-6 max-w-[1600px] w-full mx-auto">
+      {/* 1. HERO OPERATIONAL STATUS BANNER */}
+      <div className="bg-gradient-to-r from-[#101726] via-[#141d2f] to-[#101726] border border-[#212f45] rounded-2xl p-5 shadow-xl flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-black text-white tracking-wide uppercase font-sans">
+              HYDRO POWER TECH • MODEL HA-203
+            </h1>
+            <span className="text-[10px] bg-sky-950 text-sky-300 font-extrabold px-2 py-0.5 rounded border border-sky-800 font-mono">
+              6-HEAD ANGLE CNC
+            </span>
+          </div>
+          <p className="text-xs text-slate-400 font-medium mt-1">
+            Angle Punching, Character Stamping & Shearing Touchscreen SCADA Center
+          </p>
+        </div>
 
-            <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-lg font-black text-white tracking-wide font-sans uppercase">
-                  HYDRO POWER TECH ENGINEERING
-                </h1>
-                <span className="text-[10px] bg-[#162130] text-sky-400 font-extrabold px-2 py-0.5 rounded border border-[#23334a] font-mono">
-                  MODEL HA-203
-                </span>
-              </div>
-              <p className="text-xs text-slate-300 font-medium tracking-wide">
-                6-Head CNC Angle Punching, Character Stamping & Shearing Touchscreen SCADA
-              </p>
-            </div>
+        {/* Operating Badges */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 bg-[#090d16] px-3.5 py-2 rounded-xl border border-[#1e2a3c] text-xs font-mono">
+            <span className={`w-2.5 h-2.5 rounded-full ${eStopOk ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]' : 'bg-rose-500 animate-pulse'}`} />
+            <span className="font-bold text-slate-300">{eStopOk ? 'SAFETY OK' : 'E-STOP'}</span>
           </div>
 
-          {/* Precision Industrial Telemetry Readout Bar */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* E-Stop Status */}
-            <div
-              className={`flex items-center gap-2 px-3 py-1.5 rounded border text-xs font-bold font-mono ${
-                eStopOk
-                  ? 'bg-[#0f1f18] text-emerald-300 border-emerald-900/60'
-                  : 'bg-[#291010] text-rose-300 border-rose-900/80 animate-pulse'
-              }`}
-            >
-              <ShieldAlert className="w-4 h-4" />
-              <span>{eStopOk ? 'INTERLOCK OK' : 'E-STOP ACTIVE'}</span>
-            </div>
+          <div className="flex items-center gap-2 bg-[#090d16] px-3.5 py-2 rounded-xl border border-[#1e2a3c] text-xs font-mono">
+            <span className="text-slate-400 font-bold">MODE:</span>
+            <span className={`font-black ${mode === 'AUTO' ? 'text-emerald-400' : mode === 'SEMI_AUTO' ? 'text-amber-400' : 'text-sky-400'}`}>
+              {mode}
+            </span>
+          </div>
 
-            {/* Mode */}
-            <div className="flex items-center gap-2 bg-[#141b26] px-3 py-1.5 rounded border border-[#232e3e] text-xs font-bold font-mono">
-              <Radio className="w-3.5 h-3.5 text-sky-400" />
-              <span className="text-slate-400">MODE:</span>
-              <span className="text-white font-extrabold">{mode}</span>
-            </div>
-
-            {/* Carriage DRO */}
-            <div className="flex items-center gap-2 bg-[#090c12] px-3 py-1.5 rounded border border-[#1b2432] text-xs font-mono">
-              <Compass className="w-3.5 h-3.5 text-sky-400" />
-              <span className="text-slate-400 font-bold">X:</span>
-              <span className="font-extrabold text-cyan-400 text-sm">
-                {feedPositionMm.toFixed(2)} mm
-              </span>
-            </div>
-
-            {/* Pressure */}
-            <div className="flex items-center gap-2 bg-[#090c12] px-3 py-1.5 rounded border border-[#1b2432] text-xs font-mono">
-              <Gauge className="w-3.5 h-3.5 text-amber-400" />
-              <span className="text-slate-400 font-bold">HPU:</span>
-              <span className="font-extrabold text-amber-300 text-sm">
-                {hydraulicPressureBar.toFixed(1)} bar
-              </span>
-            </div>
-
-            {/* PLC Connection */}
-            <div className="flex items-center gap-2 bg-[#141b26] px-3 py-1.5 rounded border border-[#232e3e] text-xs font-bold">
-              <span className={`led-indicator ${isConnected ? 'led-green' : 'led-red'}`} />
-              <span className="text-slate-300 font-mono">
-                {isConnected ? 'PLC 20Hz' : 'PLC OFFLINE'}
-              </span>
-            </div>
+          <div className="flex items-center gap-2 bg-[#090d16] px-3.5 py-2 rounded-xl border border-[#1e2a3c] text-xs font-mono">
+            <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-400' : 'bg-rose-500'}`} />
+            <span className="text-slate-300 font-bold">{isConnected ? 'PLC 20Hz' : 'OFFLINE'}</span>
           </div>
         </div>
       </div>
 
-      {/* 2. Main Touchscreen SCADA Grid Launcher */}
-      <div className="flex-1 p-6 max-w-7xl w-full mx-auto flex flex-col justify-center">
-        {/* Launcher Subtitle Bar */}
-        <div className="flex items-center justify-between mb-4 px-1">
-          <div className="text-xs font-black tracking-wider text-slate-400 uppercase flex items-center gap-2">
-            <span className="w-2 h-2 rounded bg-sky-500" />
-            <span>TOUCH MODULE LAUNCHER</span>
+      {/* 2. REAL-TIME HIGH-VISIBILITY PRECISION DRO CARDS */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* DRO 1: Feed Position X */}
+        <div className="cnc-dro flex flex-col justify-between p-4 rounded-2xl border border-[#212f45] shadow-lg">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">CARRIAGE FEED (X)</div>
+          <div className="cnc-dro-val text-3xl font-black text-cyan-300 mt-2">
+            {feedPositionMm.toFixed(2)} <span className="text-sm font-bold text-slate-400">mm</span>
           </div>
-          <div className="text-xs text-slate-400">
-            Current Operator:{' '}
-            <span className="font-bold text-white">
-              {currentUser?.name || 'Line Operator'}
-            </span>{' '}
-            <span className="font-mono text-sky-400 font-bold">
-              [{currentUser?.role === 'SUPER_ADMIN' ? 'OEM DEVELOPER' : currentUser?.role || 'OPERATOR'}]
-            </span>
+          <div className="text-[11px] text-slate-400 font-medium mt-1">Carriage axis encoder</div>
+        </div>
+
+        {/* DRO 2: Hydraulic Pressure */}
+        <div className="cnc-dro flex flex-col justify-between p-4 rounded-2xl border border-[#212f45] shadow-lg">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">HYDRAULIC PRESSURE</div>
+          <div className="cnc-dro-val text-3xl font-black text-amber-300 mt-2">
+            {hydraulicPressureBar.toFixed(1)} <span className="text-sm font-bold text-slate-400">BAR</span>
+          </div>
+          <div className="text-[11px] text-slate-400 font-medium mt-1">Target: 145.0 Bar nominal</div>
+        </div>
+
+        {/* DRO 3: Feed Speed */}
+        <div className="cnc-dro flex flex-col justify-between p-4 rounded-2xl border border-[#212f45] shadow-lg">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">FEED AXIS SPEED</div>
+          <div className="cnc-dro-val text-3xl font-black text-emerald-400 mt-2">
+            {feedSpeedMPerMin.toFixed(1)} <span className="text-sm font-bold text-slate-400">m/min</span>
+          </div>
+          <div className="text-[11px] text-slate-400 font-medium mt-1">IS620N Servo Velocity</div>
+        </div>
+
+        {/* DRO 4: Active Interlock / Alarms */}
+        <div className="cnc-dro flex flex-col justify-between p-4 rounded-2xl border border-[#212f45] shadow-lg">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">MACHINE HEALTH</div>
+          <div className={`cnc-dro-val text-2xl font-black mt-2 ${activeAlarms.length > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+            {activeAlarms.length > 0 ? `${activeAlarms.length} ACTIVE FAULTS` : 'ALL SYSTEMS NORMAL'}
+          </div>
+          <div className="text-[11px] text-slate-400 font-medium mt-1">Zero safety trips detected</div>
+        </div>
+      </div>
+
+      {/* 3. QUICK FLOOR ACTION STRIP (TACTILE 52px TOUCH BUTTONS) */}
+      <div className="bg-[#0e1422] border border-[#212f45] p-3.5 rounded-2xl shadow-xl flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2 pl-1">
+          <span className="text-xs font-black text-slate-400 uppercase tracking-widest">QUICK FLOOR STRIP:</span>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => onNavigate('PRODUCTION')}
+            className="h-12 px-5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-black text-xs flex items-center gap-2 hover:from-emerald-500 hover:to-emerald-600 border border-emerald-400 shadow-md shadow-emerald-950/50 active:scale-95 transition-all"
+          >
+            <Play className="w-4 h-4 fill-white" />
+            <span>START PRODUCTION</span>
+          </button>
+
+          <button
+            onClick={() => onNavigate('RECIPES')}
+            className="h-12 px-5 rounded-xl bg-gradient-to-r from-sky-600 to-sky-700 text-white font-black text-xs flex items-center gap-2 hover:from-sky-500 hover:to-sky-600 border border-sky-400 shadow-md shadow-sky-950/50 active:scale-95 transition-all"
+          >
+            <FileCode2 className="w-4 h-4" />
+            <span>RECIPE MASTER</span>
+          </button>
+
+          <button
+            onClick={() => onNavigate('MANUAL')}
+            className="h-12 px-5 rounded-xl bg-gradient-to-r from-[#222f44] to-[#172030] text-slate-100 font-black text-xs flex items-center gap-2 hover:bg-[#2c3d59] border border-[#374b68] shadow-md active:scale-95 transition-all"
+          >
+            <SlidersHorizontal className="w-4 h-4 text-sky-400" />
+            <span>MANUAL JOG & VALVES</span>
+          </button>
+
+          <button
+            onClick={() => onNavigate('ALARMS')}
+            className={`h-12 px-5 rounded-xl font-black text-xs flex items-center gap-2 border shadow-md active:scale-95 transition-all ${
+              activeAlarms.length > 0
+                ? 'bg-rose-900 border-rose-500 text-rose-100 animate-pulse'
+                : 'bg-[#151d2a] border-[#293649] text-slate-300 hover:bg-[#1e293b]'
+            }`}
+          >
+            <AlertTriangle className={`w-4 h-4 ${activeAlarms.length > 0 ? 'text-white' : 'text-amber-400'}`} />
+            <span>{activeAlarms.length > 0 ? `${activeAlarms.length} ALARMS` : 'ALARM LOGS'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 4. MAIN 12-MODULE BALANCED TOUCH GRID */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <div className="text-xs font-black tracking-wider text-slate-400 uppercase flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-sky-500 shadow-[0_0_8px_#38bdf8]" />
+            <span>PRIMARY TOUCH MODULE LAUNCHER</span>
+          </div>
+          <div className="text-xs text-slate-400 font-mono">
+            OPERATOR: <span className="font-bold text-white">{currentUser?.name || 'Line Operator'}</span> [{currentUser?.role || 'OPERATOR'}]
           </div>
         </div>
 
-        {/* The Precision Monolithic Square Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {/* Complete 12 Cards Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
           {modules.map((item) => {
             const Icon = item.icon;
-            const permKey = permissionMap[item.id];
-            const isMenuConfig = item.id === 'MENU_CONFIG';
-            const isUsers = item.id === 'USERS';
-
-            // Strictly hide Super Admin Menu Config from non-super admins (OEM Developer only)
-            if (isMenuConfig && !isSuperAdmin()) {
-              return null;
-            }
-
-            let isAllowed = true;
-            if (isMenuConfig) {
-              isAllowed = isSuperAdmin();
-            } else if (isUsers) {
-              isAllowed = hasPermission('menu:users') || currentUser?.role === 'ADMIN' || isSuperAdmin();
-            } else if (permKey) {
-              isAllowed = hasPermission(permKey);
-            }
-
-            const targetTab = tabMap[item.id];
+            const isAllowed = isSuperAdmin() || currentUser?.role === 'ADMIN' || hasPermission(item.perm);
 
             return (
               <button
                 key={item.id}
                 type="button"
                 disabled={!isAllowed}
-                onClick={() => targetTab && onNavigate(targetTab)}
-                className="touch-tile group text-left"
+                onClick={() => onNavigate(item.id)}
+                className={`group relative text-left p-5 rounded-2xl border transition-all select-none touch-action-manipulation active:scale-[0.98] min-h-[155px] flex flex-col justify-between shadow-lg ${
+                  isAllowed
+                    ? 'bg-gradient-to-b from-[#131b28] to-[#0c121c] border-[#212f45] hover:border-sky-400 hover:shadow-sky-500/10 hover:from-[#172233] hover:to-[#0f1624]'
+                    : 'bg-[#0f141e]/50 border-[#1a2230] opacity-50 cursor-not-allowed'
+                }`}
               >
-                {/* Top Row: Icon Container + Digital Readout */}
-                <div className="w-full flex items-center justify-between mb-3">
-                  <div className="w-11 h-11 rounded bg-[#1c2432] border border-[#2b374a] flex items-center justify-center text-slate-200 group-hover:text-sky-300 transition-colors shrink-0">
+                {/* Top Row: Icon Container + Readout Pill */}
+                <div className="w-full flex items-center justify-between">
+                  <div
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                      isAllowed
+                        ? 'bg-[#1b2537] border border-[#2b3d58] text-slate-100 group-hover:bg-sky-500 group-hover:text-white group-hover:shadow-[0_0_12px_rgba(56,189,248,0.5)]'
+                        : 'bg-[#141b26] border border-[#202a3a] text-slate-500'
+                    }`}
+                  >
                     <Icon className="w-6 h-6" />
                   </div>
 
                   {/* Readout Pill */}
-                  <div className="flex items-center gap-1.5 bg-[#0a0d13] px-2.5 py-1 rounded border border-[#1e2736]">
+                  <div className="flex items-center gap-1.5 bg-[#080d16] px-3 py-1.5 rounded-lg border border-[#1e293b] shadow-inner">
                     <span
-                      className={`led-indicator ${
+                      className={`w-2 h-2 rounded-full ${
                         item.statusType === 'critical'
-                          ? 'led-red'
+                          ? 'bg-rose-500 shadow-[0_0_8px_#f43f5e]'
                           : item.statusType === 'warning'
-                          ? 'led-amber'
-                          : 'led-green'
+                          ? 'bg-amber-400 shadow-[0_0_8px_#fbbf24]'
+                          : 'bg-emerald-400 shadow-[0_0_8px_#34d399]'
                       }`}
                     />
-                    <span className="font-mono font-bold text-[11px] text-slate-300">
+                    <span className="font-mono font-bold text-xs text-slate-300">
                       {item.readout}
                     </span>
                   </div>
                 </div>
 
-                {/* Center: Bold Industrial Label */}
-                <div className="flex-1 flex flex-col justify-center">
+                {/* Center: Bold Title & Subtitle */}
+                <div className="my-2">
                   <div className="font-black text-sm text-slate-100 tracking-wide group-hover:text-sky-300 transition-colors flex items-center justify-between">
                     <span>{item.label}</span>
                     {!isAllowed && <Lock className="w-4 h-4 text-rose-400 shrink-0" />}
                   </div>
-                  <div className="text-[11px] text-slate-400 mt-1 line-clamp-1 leading-snug">
+                  <div className="text-xs text-slate-400 mt-1 line-clamp-1 leading-snug font-medium">
                     {isAllowed ? item.subtitle : 'Access Restricted by Administrator'}
                   </div>
                 </div>
 
-                {/* Bottom Precision Accent Bar */}
-                <div className="w-full h-1 bg-[#1c2432] rounded-full mt-3 overflow-hidden">
+                {/* Bottom Accent Bar */}
+                <div className="w-full h-1 bg-[#17202f] rounded-full overflow-hidden">
                   <div
-                    className={`h-full transition-colors ${
+                    className={`h-full transition-all duration-300 ${
                       isAllowed
-                        ? 'bg-sky-500 group-hover:bg-sky-400'
-                        : 'bg-rose-900/60'
+                        ? 'w-1/3 bg-sky-500 group-hover:w-full group-hover:bg-gradient-to-r group-hover:from-sky-500 group-hover:to-cyan-400'
+                        : 'w-full bg-rose-900/60'
                     }`}
                   />
                 </div>
@@ -387,23 +360,26 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* 3. Industrial Bottom Status Strip */}
-      <div className="bg-[#0c1017] border-t border-[#1a2230] px-6 py-3 flex items-center justify-between text-xs text-slate-400">
+      {/* 5. INDUSTRIAL STATUS FOOTER */}
+      <div className="bg-[#090d14] border border-[#1a2538] rounded-xl px-5 py-3 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-3">
         <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 font-bold text-slate-300">
+          <span className="flex items-center gap-2 font-bold text-slate-200">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             <span>Innovance EtherCAT / Modbus TCP Gateway</span>
           </span>
-          <span className="text-slate-600">|</span>
-          <span className="font-mono">Scan Rate: 50 ms (20 Hz)</span>
-          <span className="text-slate-600">|</span>
-          <span className="font-mono text-emerald-400 font-bold">SYSTEM NORMAL</span>
+          <span className="text-slate-600 hidden sm:inline">|</span>
+          <span className="font-mono text-slate-300 hidden sm:inline">Scan Rate: 50 ms (20 Hz)</span>
+          <span className="text-slate-600 hidden sm:inline">|</span>
+          <span className="font-mono text-emerald-400 font-bold flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            SYSTEM NORMAL
+          </span>
         </div>
 
         <div className="flex items-center gap-4 font-mono text-[11px]">
-          <span>Rajkot, Gujarat, India</span>
+          <span>Hydro Power Tech Engineering • Rajkot, India</span>
           <span className="text-slate-600">•</span>
-          <span className="text-slate-300 font-bold">SCADA v1.0 PRO TOUCH</span>
+          <span className="text-sky-400 font-bold">SCADA v2.0 PRO</span>
         </div>
       </div>
 

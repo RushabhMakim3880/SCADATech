@@ -57,7 +57,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   }, []);
 
   return (
-    <header className="app-header flex items-center justify-between px-4 select-none z-30 relative bg-[#10151f] border-b-2 border-[#1f2a3a] shadow-lg">
+    <header className="app-header shrink-0 flex items-center justify-between px-3 md:px-5 select-none z-30 relative bg-gradient-to-r from-[#090d15] via-[#0f1523] to-[#090d15] border-b-2 border-[#1c2637] shadow-xl h-16">
       {/* 1. Left Zone: SCADA Home Button & Machine Identifier */}
       <div className="flex items-center gap-3">
         {/* Generous Glove-Friendly SCADA Home Touch Button */}
@@ -67,24 +67,24 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
             if (onNavigateHome) onNavigateHome();
             else if (onTabChange) onTabChange('DASHBOARD');
           }}
-          className={`h-11 px-4 rounded-lg flex items-center gap-2.5 font-black text-xs transition-all border touch-action-manipulation ${
+          className={`h-11 px-3.5 rounded-lg flex items-center gap-2.5 font-black text-xs transition-all border touch-action-manipulation active:scale-95 shadow-md ${
             activeTab === 'DASHBOARD'
-              ? 'bg-[#1e3a8a] border-[#38bdf8] text-white shadow-md'
-              : 'bg-[#17202e] border-[#29364a] text-slate-200 hover:bg-[#1f2c3f] active:translate-y-0.5'
+              ? 'bg-gradient-to-b from-sky-600 to-sky-700 border-sky-400 text-white shadow-sky-500/20'
+              : 'bg-[#131b28] border-[#253347] text-slate-200 hover:bg-[#1a2536] hover:border-sky-500/50'
           }`}
           title="Return to SCADA Home Launcher"
         >
           <LayoutGrid className="w-5 h-5 text-sky-400" />
-          <span className="tracking-wider uppercase font-sans">SCADA HOME</span>
+          <span className="tracking-wider uppercase font-sans hidden sm:inline">SCADA HOME</span>
         </button>
 
-        <div className="h-7 w-px bg-slate-700/60 hidden sm:block" />
+        <div className="h-8 w-px bg-slate-700/60 hidden sm:block" />
 
         {/* Machine Brand Badge with Secret Developer Tap Listener */}
         <div className="flex items-center gap-2.5">
           <div
             onClick={handleLogoClick}
-            className="w-9 h-9 rounded bg-[#162130] border border-[#2b3a4f] flex items-center justify-center font-black text-white text-xs tracking-wider cursor-pointer active:scale-95 transition-transform"
+            className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#1c283a] to-[#0f1724] border border-[#2b3d56] flex items-center justify-center font-black text-white text-xs tracking-wider cursor-pointer active:scale-90 transition-transform shadow-inner"
             title="HPT Innovance CNC (Tap 5x for Developer Access)"
           >
             HPT
@@ -94,12 +94,12 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
               <span className="font-black text-sm text-white tracking-wide">
                 HPT CNC SCADA
               </span>
-              <span className="text-[10px] bg-[#1a2636] text-sky-400 font-extrabold px-1.5 py-0.5 rounded border border-[#26374d] font-mono">
+              <span className="text-[10px] bg-sky-950 text-sky-300 font-extrabold px-1.5 py-0.5 rounded border border-sky-700 font-mono">
                 HA-203
               </span>
             </div>
             <span className="text-[11px] text-slate-400 font-medium hidden md:block">
-              6-Head Angle Processing System
+              6-Head Angle Punching & Shearing Center
             </span>
           </div>
         </div>
@@ -108,7 +108,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
       {/* 2. Center Zone: Mode Switcher & Digital DRO Display */}
       <div className="hidden lg:flex items-center gap-4">
         {/* Machine Mode Switcher (Tactile Glove-Friendly Buttons) */}
-        <div className="flex items-center bg-[#090d14] p-1 rounded-lg border border-[#1f293d] gap-1 shadow-inner">
+        <div className="flex items-center bg-[#06090e] p-1 rounded-xl border border-[#1e293b] gap-1 shadow-inner">
           {(
             [
               { id: 'MANUAL', label: 'MANUAL' },
@@ -121,21 +121,25 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
               <button
                 key={m.id}
                 onClick={() => setMode(m.id)}
-                className={`h-9 px-3.5 text-xs font-black rounded flex items-center gap-2 transition-all ${
+                className={`h-10 px-4 text-xs font-black rounded-lg flex items-center gap-2 transition-all active:scale-95 ${
                   isActive
                     ? m.id === 'AUTO'
-                      ? 'bg-[#065f46] text-white border border-[#10b981] shadow-sm'
-                      : 'bg-[#1e40af] text-white border border-[#3b82f6] shadow-sm'
-                    : 'text-slate-400 hover:bg-[#162030] hover:text-slate-200'
+                      ? 'bg-gradient-to-b from-emerald-600 to-emerald-700 text-white border border-emerald-400 shadow-md shadow-emerald-900/40'
+                      : m.id === 'SEMI_AUTO'
+                      ? 'bg-gradient-to-b from-amber-600 to-amber-700 text-white border border-amber-400 shadow-md shadow-amber-900/40'
+                      : 'bg-gradient-to-b from-sky-600 to-sky-700 text-white border border-sky-400 shadow-md shadow-sky-900/40'
+                    : 'text-slate-400 hover:bg-[#141c2a] hover:text-slate-200'
                 }`}
               >
                 <span
-                  className={`led-indicator ${
+                  className={`w-2 h-2 rounded-full ${
                     isActive
                       ? m.id === 'AUTO'
-                        ? 'led-green'
-                        : 'led-amber'
-                      : 'led-off'
+                        ? 'bg-emerald-300 shadow-[0_0_8px_#34d399]'
+                        : m.id === 'SEMI_AUTO'
+                        ? 'bg-amber-300 shadow-[0_0_8px_#fbbf24]'
+                        : 'bg-sky-300 shadow-[0_0_8px_#38bdf8]'
+                      : 'bg-slate-600'
                   }`}
                 />
                 <span className="tracking-wide">{m.label}</span>
@@ -146,55 +150,61 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
 
         {/* Safety Interlock Indicator */}
         <div
-          className={`hidden xl:flex items-center gap-2 px-3 h-11 rounded-lg border text-xs font-mono font-bold ${
+          className={`hidden xl:flex items-center gap-2 px-3.5 h-11 rounded-xl border text-xs font-mono font-black ${
             eStopOk
-              ? 'bg-[#0b1612] text-emerald-300 border-emerald-900/60'
-              : 'bg-[#291010] text-rose-300 border-rose-900/80 animate-pulse'
+              ? 'bg-[#091811] text-emerald-300 border-emerald-700/80 shadow-[0_0_10px_rgba(16,185,129,0.15)]'
+              : 'bg-[#2b0d0d] text-rose-300 border-rose-600 animate-pulse shadow-[0_0_15px_rgba(244,63,94,0.3)]'
           }`}
         >
-          <span className={`led-indicator ${eStopOk ? 'led-green' : 'led-red'}`} />
-          <span>{eStopOk ? 'SAFETY OK' : 'E-STOP'}</span>
+          <span className={`w-2.5 h-2.5 rounded-full ${eStopOk ? 'bg-emerald-400' : 'bg-rose-500'}`} />
+          <span>{eStopOk ? 'SAFETY OK' : 'E-STOP TRIPPED'}</span>
         </div>
 
         {/* Precision High-Visibility Digital DRO */}
-        <div className="digital-dro-box h-11 px-3.5">
-          <span className="digital-dro-label">CARRIAGE (X):</span>
-          <span className="digital-dro-val text-lg">{feedPositionMm.toFixed(2)} mm</span>
+        <div className="cnc-dro flex items-center gap-3 h-11 px-4 rounded-xl">
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">CARRIAGE (X):</span>
+          <span className="cnc-dro-val text-xl">{feedPositionMm.toFixed(2)}</span>
+          <span className="cnc-dro-unit text-xs">mm</span>
         </div>
       </div>
 
       {/* 3. Right Zone: Telemetry, Alarms & Operator Profile */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5 sm:gap-3">
         {/* Hydraulic Pressure */}
-        <div className="hidden sm:flex items-center gap-2 bg-[#0a0e16] px-3 py-1.5 rounded-lg border border-[#1d2737] text-xs h-10">
+        <div className="hidden sm:flex items-center gap-2 bg-[#080d14] px-3.5 h-11 rounded-xl border border-[#1f2b3e] text-xs">
           <Activity className="w-4 h-4 text-amber-400 shrink-0" />
-          <span className="text-slate-400 font-bold">HPU:</span>
-          <span className="font-mono font-bold text-amber-300">{hydraulicPressureBar.toFixed(1)} bar</span>
+          <span className="text-slate-400 font-extrabold">HPU:</span>
+          <span className="font-mono font-black text-amber-300 text-sm">{hydraulicPressureBar.toFixed(1)}</span>
+          <span className="text-[10px] text-slate-400 font-bold">BAR</span>
         </div>
 
         {/* PLC Connection */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0a0e16] border border-[#1d2737] text-xs h-10">
+        <div className="flex items-center gap-2 px-3 h-11 rounded-xl bg-[#080d14] border border-[#1f2b3e] text-xs">
           <Cpu className="w-4 h-4 text-slate-400 shrink-0" />
-          <span className="font-bold text-slate-300 hidden sm:inline">
+          <span className="font-extrabold text-slate-200 hidden sm:inline">
             {isConnected ? 'PLC ONLINE' : 'PLC OFFLINE'}
           </span>
-          <span className={`led-indicator ${isConnected ? 'led-green' : 'led-red'}`} />
+          <span
+            className={`w-2.5 h-2.5 rounded-full ${
+              isConnected ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]' : 'bg-rose-500 animate-ping'
+            }`}
+          />
         </div>
 
         {/* Active Alarms Button */}
         <button
           type="button"
           onClick={() => onTabChange && onTabChange('ALARMS')}
-          className={`relative h-10 px-3 rounded-lg border flex items-center justify-center transition-colors ${
+          className={`relative h-11 px-3.5 rounded-xl border flex items-center justify-center transition-all active:scale-95 ${
             activeAlarms.length > 0
-              ? 'bg-[#3b1212] border-red-700 text-red-200'
-              : 'bg-[#151c27] border-[#222d3d] text-slate-300 hover:bg-[#1c2635]'
+              ? 'bg-rose-950/80 border-rose-500 text-rose-200 shadow-[0_0_12px_rgba(244,63,94,0.3)] animate-pulse'
+              : 'bg-[#121926] border-[#222e42] text-slate-300 hover:bg-[#1a2538]'
           }`}
           title="Active Alarms"
         >
           <Bell className="w-4 h-4" />
           {activeAlarms.length > 0 && (
-            <span className="ml-1.5 bg-red-600 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full animate-pulse">
+            <span className="ml-1.5 bg-rose-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
               {activeAlarms.length}
             </span>
           )}
@@ -204,24 +214,24 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
         <button
           type="button"
           onClick={() => openPinModal()}
-          className="h-10 pl-2.5 pr-3 rounded-lg bg-[#141b26] border border-[#243042] hover:bg-[#1a2332] transition-colors flex items-center gap-2.5 text-left"
+          className="h-11 pl-2.5 pr-3.5 rounded-xl bg-[#121926] border border-[#24334a] hover:bg-[#1b2639] transition-all flex items-center gap-2.5 text-left active:scale-95 shadow-sm"
           title="Tap to switch operator / sign in with PIN"
         >
           <div
-            className={`w-7 h-7 rounded flex items-center justify-center font-bold text-xs ${
+            className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${
               isSuper
-                ? 'bg-rose-950 text-rose-300 border border-rose-800'
+                ? 'bg-rose-950 text-rose-300 border border-rose-700'
                 : isAdmin
-                ? 'bg-amber-950 text-amber-300 border border-amber-800'
-                : 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                ? 'bg-amber-950 text-amber-300 border border-amber-700'
+                : 'bg-sky-950 text-sky-300 border border-sky-700'
             }`}
           >
             {isSuper ? (
-              <ShieldAlert className="w-3.5 h-3.5" />
+              <ShieldAlert className="w-4 h-4" />
             ) : isAdmin ? (
-              <ShieldCheck className="w-3.5 h-3.5" />
+              <ShieldCheck className="w-4 h-4" />
             ) : (
-              <User className="w-3.5 h-3.5" />
+              <User className="w-4 h-4" />
             )}
           </div>
 
@@ -240,7 +250,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           <button
             type="button"
             onClick={() => onTabChange && onTabChange('MENU_CONFIG')}
-            className={`h-10 px-3 rounded-lg border flex items-center gap-1.5 text-xs font-bold transition-all ${
+            className={`h-11 px-3.5 rounded-xl border flex items-center gap-1.5 text-xs font-bold transition-all active:scale-95 ${
               activeTab === 'MENU_CONFIG'
                 ? 'bg-rose-900 border-rose-400 text-white shadow'
                 : 'bg-rose-950/70 border-rose-800/80 text-rose-300 hover:bg-rose-900/80'

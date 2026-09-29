@@ -14,7 +14,7 @@ dotenv.config();
 const PORT = parseInt(process.env.PORT || '5000', 10);
 const HOST = process.env.HOST || '0.0.0.0';
 const PLC_ENDPOINT = process.env.PLC_ENDPOINT || 'opc.tcp://192.168.1.10:4840';
-const IS_SIMULATOR = process.env.ENABLE_SIMULATOR === 'true';
+const IS_SIMULATOR = process.env.ENABLE_SIMULATOR === 'true' || process.env.SIMULATOR_MODE === 'true';
 
 async function startServer() {
   const app = buildApp();

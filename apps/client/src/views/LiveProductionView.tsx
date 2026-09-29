@@ -160,117 +160,122 @@ export const LiveProductionView: React.FC = () => {
   const currentOp = selectedRecipe?.steps[currentStepIdx] || null;
 
   return (
-    <div className="p-4 space-y-4 flex-1 overflow-y-auto bg-[#0b1019]">
+    <div className="p-4 md:p-6 space-y-4 flex-1 overflow-y-auto bg-[#070b12] text-white">
       {/* Top Production Control Header */}
-      <div className="flex flex-wrap items-center justify-between pb-3 border-b border-[#223044] gap-3">
+      <div className="bg-[#0e1420] border border-[#1e2a3c] rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-black text-white tracking-wide">
               Manage Live CNC Production Line
             </h2>
             <span
-              className={`px-3 py-1 text-xs rounded-full font-extrabold tracking-wider border shadow-sm ${
+              className={`px-3 py-1 text-xs rounded-full font-extrabold tracking-wider border shadow-sm flex items-center gap-1.5 ${
                 isConnected
-                  ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500'
-                  : 'bg-red-950/80 text-red-300 border-red-500'
+                  ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500 shadow-emerald-950/50'
+                  : 'bg-rose-950/80 text-rose-300 border-rose-500 shadow-rose-950/50 animate-pulse'
               }`}
             >
+              <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-400' : 'bg-rose-500'}`} />
               {isConnected ? 'PLC ONLINE (20Hz)' : 'PLC OFFLINE'}
             </span>
           </div>
-          <p className="text-xs text-slate-300 font-medium mt-1">
+          <p className="text-xs text-slate-400 font-medium mt-1">
             Real-time feed axis servo positioning, 6-head punch sequencing, character stamping, and hydraulic shearing telemetry.
           </p>
         </div>
 
-        {/* Master Cycle Controls */}
-        <div className="flex items-center gap-2.5">
+        {/* Master Cycle Controls (Tactile 48px+ Touch Buttons) */}
+        <div className="flex flex-wrap items-center gap-2.5">
           {!isRunning ? (
             <button
               onClick={handleStartAuto}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-2.5 px-5 font-extrabold rounded-md shadow-md border border-emerald-400 flex items-center gap-2 transition-all active:scale-[0.98]"
+              className="cnc-btn cnc-btn-success text-xs font-black shadow-lg shadow-emerald-950/40"
             >
-              <Play className="w-4 h-4" /> Start Auto Cycle
+              <Play className="w-4 h-4 fill-white" />
+              <span>START AUTO CYCLE</span>
             </button>
           ) : (
             <button
               onClick={handlePauseAuto}
-              className="bg-red-600 hover:bg-red-500 text-white text-xs py-2.5 px-5 font-extrabold rounded-md shadow-md border border-red-400 flex items-center gap-2 transition-all active:scale-[0.98]"
+              className="cnc-btn cnc-btn-danger text-xs font-black shadow-lg shadow-rose-950/40 animate-pulse"
             >
-              <Pause className="w-4 h-4" /> Pause Auto Cycle
+              <Pause className="w-4 h-4 fill-white" />
+              <span>PAUSE AUTO CYCLE</span>
             </button>
           )}
 
           <button
             onClick={handleStepForward}
-            className="bg-blue-600 hover:bg-blue-500 text-white text-xs py-2.5 px-4 font-bold rounded-md shadow border border-blue-400 flex items-center gap-1.5 transition-all active:scale-[0.98]"
+            className="cnc-btn cnc-btn-primary text-xs font-black"
           >
-            <SkipForward className="w-4 h-4" /> Step Next
+            <SkipForward className="w-4 h-4" />
+            <span>STEP NEXT</span>
           </button>
 
           <button
             onClick={handleResetCycle}
-            className="bg-[#1e293b] hover:bg-[#334155] text-slate-200 text-xs py-2.5 px-4 font-bold rounded-md border border-[#3b4d68] flex items-center gap-1.5 transition-all active:scale-[0.98]"
+            className="cnc-btn cnc-btn-secondary text-xs font-black"
           >
-            <RotateCcw className="w-3.5 h-3.5" /> Reset
+            <RotateCcw className="w-4 h-4" />
+            <span>RESET CYCLE</span>
           </button>
         </div>
       </div>
 
       {/* Live High-Contrast Digital Readout (DRO) Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="p-3 bg-[#131b27] rounded-lg border border-[#243347] shadow-md">
-          <div className="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider">Feed Position (X)</div>
-          <div className="font-mono text-2xl font-black text-cyan-300 mt-1">{feedPositionMm.toFixed(2)} mm</div>
+        <div className="cnc-dro flex flex-col justify-between p-3.5 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Feed Position (X)</div>
+          <div className="cnc-dro-val text-2xl font-black text-cyan-300 mt-1">{feedPositionMm.toFixed(2)} mm</div>
           <div className="text-[11px] text-slate-400 font-medium">Target: {currentOp ? currentOp.xPosition.toFixed(2) : '0.00'} mm</div>
         </div>
 
-        <div className="p-3 bg-[#131b27] rounded-lg border border-[#243347] shadow-md">
-          <div className="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider">Feed Speed</div>
-          <div className="font-mono text-2xl font-black text-emerald-300 mt-1">{feedSpeedMPerMin.toFixed(1)} m/min</div>
+        <div className="cnc-dro flex flex-col justify-between p-3.5 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Feed Speed</div>
+          <div className="cnc-dro-val text-2xl font-black text-emerald-400 mt-1">{feedSpeedMPerMin.toFixed(1)} m/min</div>
           <div className="text-[11px] text-slate-400 font-medium">IS620N Servo Velocity</div>
         </div>
 
-        <div className="p-3 bg-[#131b27] rounded-lg border border-[#243347] shadow-md">
-          <div className="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider">Hydraulic Pressure</div>
-          <div className="font-mono text-2xl font-black text-amber-300 mt-1">{hydraulicPressureBar.toFixed(1)} Bar</div>
+        <div className="cnc-dro flex flex-col justify-between p-3.5 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hydraulic Pressure</div>
+          <div className="cnc-dro-val text-2xl font-black text-amber-300 mt-1">{hydraulicPressureBar.toFixed(1)} Bar</div>
           <div className="text-[11px] text-slate-400 font-medium">Target: 145.0 Bar</div>
         </div>
 
-        <div className="p-3 bg-[#131b27] rounded-lg border border-[#243347] shadow-md">
-          <div className="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider">Active Step</div>
-          <div className="font-mono text-2xl font-black text-purple-300 mt-1">
+        <div className="cnc-dro flex flex-col justify-between p-3.5 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Step</div>
+          <div className="cnc-dro-val text-2xl font-black text-purple-300 mt-1">
             #{selectedRecipe?.steps.length ? currentStepIdx + 1 : 0} / {selectedRecipe?.steps.length || 0}
           </div>
           <div className="text-[11px] text-slate-400 font-medium">{currentOp?.operationType || 'IDLE'}</div>
         </div>
 
-        <div className="p-3 bg-[#131b27] rounded-lg border border-[#243347] shadow-md">
-          <div className="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider">Produced Pcs</div>
-          <div className="font-mono text-2xl font-black text-green-300 mt-1">{producedPcs} / {targetPcs}</div>
-          <div className="text-[11px] text-slate-400 font-medium">Shift Target</div>
+        <div className="cnc-dro flex flex-col justify-between p-3.5 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Produced Pcs</div>
+          <div className="cnc-dro-val text-2xl font-black text-green-300 mt-1">{producedPcs} / {targetPcs}</div>
+          <div className="text-[11px] text-slate-400 font-medium">Shift Target: {targetPcs} pcs</div>
         </div>
 
-        <div className="p-3 bg-[#131b27] rounded-lg border border-[#243347] shadow-md">
-          <div className="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider">Gripper Clamp</div>
-          <div className={`font-mono text-xl font-black mt-1 ${carriageClamp ? 'text-emerald-300' : 'text-slate-400'}`}>
+        <div className="cnc-dro flex flex-col justify-between p-3.5 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Gripper Clamp</div>
+          <div className={`cnc-dro-val text-xl font-black mt-1 ${carriageClamp ? 'text-emerald-400' : 'text-slate-400'}`}>
             {carriageClamp ? 'CLAMPED' : 'UNCLAMPED'}
           </div>
-          <div className="text-[11px] text-slate-400 font-medium">Cylinder Y10</div>
+          <div className="text-[11px] text-slate-400 font-medium">Cylinder Valve Y10</div>
         </div>
       </div>
 
       {/* Active Recipe Selector Bar (High-Visibility Professional Slate) */}
-      <div className="bg-[#16202e] p-3 rounded-lg border border-[#2b3c54] shadow-md flex flex-wrap items-center justify-between text-xs gap-3">
+      <div className="bg-[#0e1420] p-3 rounded-2xl border border-[#1e2a3c] shadow-lg flex flex-wrap items-center justify-between text-xs gap-3">
         <div className="flex items-center gap-3">
-          <span className="font-extrabold text-white text-sm">Loaded Recipe:</span>
+          <span className="font-black text-white text-xs uppercase tracking-wider pl-1">Loaded Recipe:</span>
           <select
             value={activeRecipeId}
             onChange={(e) => {
               setActiveRecipeId(e.target.value);
               setCurrentStepIdx(0);
             }}
-            className="bg-[#0b1018] text-white border border-[#3d516e] rounded-md px-3 py-2 font-bold focus:outline-none focus:border-cyan-400 cursor-pointer min-w-[320px]"
+            className="bg-[#06090e] text-white border border-[#2b3a4f] rounded-xl px-4 py-2.5 font-bold focus:outline-none focus:border-cyan-400 cursor-pointer min-w-[320px] shadow-inner"
           >
             {recipes.map((r) => (
               <option key={r.id} value={r.id} className="bg-[#0b1018] text-white py-1">
@@ -281,22 +286,22 @@ export const LiveProductionView: React.FC = () => {
         </div>
 
         {selectedRecipe && (
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="bg-[#0b1018] px-3 py-1.5 rounded-md border border-[#28384f] text-slate-200 font-medium">
-              Profile: <b className="text-cyan-300 font-extrabold">L{selectedRecipe.angleWidthA}x{selectedRecipe.angleWidthB}x{selectedRecipe.thickness} mm</b>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="bg-[#06090e] px-3.5 py-2 rounded-xl border border-[#1e293b] text-slate-300 font-medium">
+              Profile: <b className="text-cyan-300 font-black">L{selectedRecipe.angleWidthA}×{selectedRecipe.angleWidthB}×{selectedRecipe.thickness} mm</b>
             </span>
-            <span className="bg-[#0b1018] px-3 py-1.5 rounded-md border border-[#28384f] text-slate-200 font-medium">
-              Length: <b className="text-emerald-300 font-extrabold">{selectedRecipe.totalLength} mm</b>
+            <span className="bg-[#06090e] px-3.5 py-2 rounded-xl border border-[#1e293b] text-slate-300 font-medium">
+              Length: <b className="text-emerald-300 font-black">{selectedRecipe.totalLength} mm</b>
             </span>
-            <span className="bg-[#0b1018] px-3 py-1.5 rounded-md border border-[#28384f] text-slate-200 font-medium">
-              Total Steps: <b className="text-amber-300 font-extrabold">{selectedRecipe.steps.length} Ops</b>
+            <span className="bg-[#06090e] px-3.5 py-2 rounded-xl border border-[#1e293b] text-slate-300 font-medium">
+              Total Steps: <b className="text-amber-300 font-black">{selectedRecipe.steps.length} Ops</b>
             </span>
           </div>
         )}
       </div>
 
       {/* Unified 2D/3D Interactive Visualizer */}
-      <div className="h-[500px] rounded-lg overflow-hidden border border-[#25354b] shadow-lg">
+      <div className="h-[520px] rounded-2xl overflow-hidden border border-[#1e2a3c] shadow-2xl bg-[#090d14]">
         <AngleBarViewer
           recipe={selectedRecipe}
           activeFeedPosition={feedPositionMm}
@@ -306,13 +311,13 @@ export const LiveProductionView: React.FC = () => {
       </div>
 
       {/* 6-Head Punching Station Live Status Matrix */}
-      <div className="bg-[#141c28] rounded-lg border border-[#25354b] shadow-md overflow-hidden">
-        <div className="bg-[#1b2636] text-white px-4 py-3 font-extrabold text-sm flex items-center justify-between border-b border-[#27384f]">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block" />
-            6-Head Punching & Cutting Station Real-time Hardware Telemetry
+      <div className="bg-[#0e1420] rounded-2xl border border-[#1e2a3c] shadow-xl overflow-hidden">
+        <div className="bg-[#131b2a] text-white px-5 py-3.5 font-black text-xs flex items-center justify-between border-b border-[#1f2b3e]">
+          <span className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8] inline-block" />
+            <span>6-HEAD PUNCHING & CUTTING STATION REAL-TIME HARDWARE TELEMETRY</span>
           </span>
-          <span className="text-xs text-slate-300 font-mono">Innovance IS620N / H3U Coils M110–M121</span>
+          <span className="text-xs text-slate-400 font-mono">Innovance IS620N / H3U Coils M110–M121</span>
         </div>
 
         <div className="p-4">
@@ -323,22 +328,24 @@ export const LiveProductionView: React.FC = () => {
               return (
                 <div
                   key={head}
-                  className={`p-3 rounded-lg border text-center transition-all ${
+                  className={`p-3.5 rounded-xl border text-center transition-all ${
                     isFiring
-                      ? 'bg-cyan-500 text-slate-950 border-2 border-white shadow-xl scale-105 font-black'
-                      : 'bg-[#0f1622] border-[#243348] text-white hover:border-cyan-500/40'
+                      ? 'bg-gradient-to-b from-cyan-500 to-cyan-600 text-slate-950 border-2 border-white shadow-[0_0_20px_rgba(6,182,212,0.6)] scale-105 font-black'
+                      : 'bg-[#080d15] border-[#1b2738] text-white hover:border-cyan-500/50'
                   }`}
                 >
-                  <div className={`text-[10px] font-extrabold uppercase tracking-wider ${isFiring ? 'text-slate-950' : 'text-cyan-400'}`}>
+                  <div className={`text-[10px] font-black uppercase tracking-wider ${isFiring ? 'text-slate-950' : 'text-cyan-400'}`}>
                     Flange A #{i + 1}
                   </div>
-                  <div className="font-mono text-xl font-black mt-0.5">{head}</div>
-                  <div className={`text-xs font-bold mt-0.5 ${isFiring ? 'text-slate-900' : 'text-slate-300'}`}>Ø18 mm</div>
-                  <span
-                    className={`inline-block w-3 h-3 rounded-full mt-2 border border-black/30 ${
-                      isFiring ? 'bg-white animate-ping' : 'bg-slate-600'
-                    }`}
-                  />
+                  <div className="font-mono text-xl font-black mt-1">{head}</div>
+                  <div className={`text-xs font-bold mt-1 ${isFiring ? 'text-slate-900' : 'text-slate-300'}`}>Ø18 mm</div>
+                  <div className="flex justify-center mt-2">
+                    <span
+                      className={`inline-block w-3 h-3 rounded-full border border-black/40 ${
+                        isFiring ? 'bg-white animate-ping' : 'bg-slate-700'
+                      }`}
+                    />
+                  </div>
                 </div>
               );
             })}
@@ -349,22 +356,24 @@ export const LiveProductionView: React.FC = () => {
               return (
                 <div
                   key={head}
-                  className={`p-3 rounded-lg border text-center transition-all ${
+                  className={`p-3.5 rounded-xl border text-center transition-all ${
                     isFiring
-                      ? 'bg-emerald-500 text-slate-950 border-2 border-white shadow-xl scale-105 font-black'
-                      : 'bg-[#0f1622] border-[#243348] text-white hover:border-emerald-500/40'
+                      ? 'bg-gradient-to-b from-emerald-500 to-emerald-600 text-slate-950 border-2 border-white shadow-[0_0_20px_rgba(16,185,129,0.6)] scale-105 font-black'
+                      : 'bg-[#080d15] border-[#1b2738] text-white hover:border-emerald-500/50'
                   }`}
                 >
-                  <div className={`text-[10px] font-extrabold uppercase tracking-wider ${isFiring ? 'text-slate-950' : 'text-emerald-400'}`}>
+                  <div className={`text-[10px] font-black uppercase tracking-wider ${isFiring ? 'text-slate-950' : 'text-emerald-400'}`}>
                     Flange B #{i + 1}
                   </div>
-                  <div className="font-mono text-xl font-black mt-0.5">{head}</div>
-                  <div className={`text-xs font-bold mt-0.5 ${isFiring ? 'text-slate-900' : 'text-slate-300'}`}>Ø18 mm</div>
-                  <span
-                    className={`inline-block w-3 h-3 rounded-full mt-2 border border-black/30 ${
-                      isFiring ? 'bg-white animate-ping' : 'bg-slate-600'
-                    }`}
-                  />
+                  <div className="font-mono text-xl font-black mt-1">{head}</div>
+                  <div className={`text-xs font-bold mt-1 ${isFiring ? 'text-slate-900' : 'text-slate-300'}`}>Ø18 mm</div>
+                  <div className="flex justify-center mt-2">
+                    <span
+                      className={`inline-block w-3 h-3 rounded-full border border-black/40 ${
+                        isFiring ? 'bg-white animate-ping' : 'bg-slate-700'
+                      }`}
+                    />
+                  </div>
                 </div>
               );
             })}
@@ -374,22 +383,24 @@ export const LiveProductionView: React.FC = () => {
               const isFiring = Boolean(headsFiring['Marking']);
               return (
                 <div
-                  className={`p-3 rounded-lg border text-center transition-all ${
+                  className={`p-3.5 rounded-xl border text-center transition-all ${
                     isFiring
-                      ? 'bg-amber-500 text-slate-950 border-2 border-white shadow-xl scale-105 font-black'
-                      : 'bg-[#0f1622] border-[#243348] text-white hover:border-amber-500/40'
+                      ? 'bg-gradient-to-b from-amber-500 to-amber-600 text-slate-950 border-2 border-white shadow-[0_0_20px_rgba(245,158,11,0.6)] scale-105 font-black'
+                      : 'bg-[#080d15] border-[#1b2738] text-white hover:border-amber-500/50'
                   }`}
                 >
-                  <div className={`text-[10px] font-extrabold uppercase tracking-wider ${isFiring ? 'text-slate-950' : 'text-amber-400'}`}>
+                  <div className={`text-[10px] font-black uppercase tracking-wider ${isFiring ? 'text-slate-950' : 'text-amber-400'}`}>
                     Stamping
                   </div>
-                  <div className="font-mono text-xl font-black mt-0.5">MARK</div>
-                  <div className={`text-xs font-bold mt-0.5 ${isFiring ? 'text-slate-900' : 'text-slate-300'}`}>8 Chars</div>
-                  <span
-                    className={`inline-block w-3 h-3 rounded-full mt-2 border border-black/30 ${
-                      isFiring ? 'bg-white animate-ping' : 'bg-slate-600'
-                    }`}
-                  />
+                  <div className="font-mono text-xl font-black mt-1">MARK</div>
+                  <div className={`text-xs font-bold mt-1 ${isFiring ? 'text-slate-900' : 'text-slate-300'}`}>8 Chars</div>
+                  <div className="flex justify-center mt-2">
+                    <span
+                      className={`inline-block w-3 h-3 rounded-full border border-black/40 ${
+                        isFiring ? 'bg-white animate-ping' : 'bg-slate-700'
+                      }`}
+                    />
+                  </div>
                 </div>
               );
             })()}
@@ -399,22 +410,24 @@ export const LiveProductionView: React.FC = () => {
               const isFiring = Boolean(headsFiring['Cutter']);
               return (
                 <div
-                  className={`p-3 rounded-lg border text-center transition-all ${
+                  className={`p-3.5 rounded-xl border text-center transition-all ${
                     isFiring
-                      ? 'bg-rose-500 text-white border-2 border-white shadow-xl scale-105 font-black'
-                      : 'bg-[#0f1622] border-[#243348] text-white hover:border-rose-500/40'
+                      ? 'bg-gradient-to-b from-rose-500 to-rose-600 text-white border-2 border-white shadow-[0_0_20px_rgba(244,63,94,0.6)] scale-105 font-black'
+                      : 'bg-[#080d15] border-[#1b2738] text-white hover:border-rose-500/50'
                   }`}
                 >
-                  <div className={`text-[10px] font-extrabold uppercase tracking-wider ${isFiring ? 'text-white' : 'text-rose-400'}`}>
+                  <div className={`text-[10px] font-black uppercase tracking-wider ${isFiring ? 'text-white' : 'text-rose-400'}`}>
                     Hydraulic Cut
                   </div>
-                  <div className="font-mono text-xl font-black mt-0.5">SHEAR</div>
-                  <div className={`text-xs font-bold mt-0.5 ${isFiring ? 'text-slate-200' : 'text-slate-300'}`}>Single Cut</div>
-                  <span
-                    className={`inline-block w-3 h-3 rounded-full mt-2 border border-black/30 ${
-                      isFiring ? 'bg-white animate-ping' : 'bg-slate-600'
-                    }`}
-                  />
+                  <div className="font-mono text-xl font-black mt-1">SHEAR</div>
+                  <div className={`text-xs font-bold mt-1 ${isFiring ? 'text-slate-200' : 'text-slate-300'}`}>Single Cut</div>
+                  <div className="flex justify-center mt-2">
+                    <span
+                      className={`inline-block w-3 h-3 rounded-full border border-black/40 ${
+                        isFiring ? 'bg-white animate-ping' : 'bg-slate-700'
+                      }`}
+                    />
+                  </div>
                 </div>
               );
             })()}

@@ -204,16 +204,17 @@ export const NestingAlignmentView: React.FC = () => {
       header: 'Total Run / Actions',
       align: 'right',
       render: (o, idx) => (
-        <div className="flex items-center justify-end gap-2">
-          <span className="font-mono font-bold text-slate-800">{((o.lengthMm * o.quantity) / 1000).toFixed(2)} m</span>
+        <div className="flex items-center justify-end gap-2.5">
+          <span className="font-mono font-bold text-sky-400">{((o.lengthMm * o.quantity) / 1000).toFixed(2)} m</span>
           <button
             onClick={(e) => {
               e.stopPropagation();
               handleDeleteBatchItem(idx);
             }}
-            className="btn-ca btn-ca-danger text-xs py-0.5 px-1.5"
+            className="p-1.5 rounded-lg bg-rose-950/70 border border-rose-800 text-rose-300 hover:bg-rose-900 active:scale-95 transition-all"
+            title="Remove item from batch"
           >
-            <Trash2 className="w-3 h-3" />
+            <Trash2 className="w-3.5 h-3.5" />
           </button>
         </div>
       ),
@@ -221,17 +222,19 @@ export const NestingAlignmentView: React.FC = () => {
   ];
 
   return (
-    <div className="p-4 space-y-4 flex-1 overflow-y-auto">
+    <div className="p-4 md:p-6 space-y-4 flex-1 overflow-y-auto bg-[#070b12] text-white">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between pb-2 border-b border-slate-300 gap-3">
+      <div className="bg-[#0e1420] border border-[#1e2a3c] rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-black text-slate-900">Multibar Linear Nesting & Scrap Minimizer (IS 802 Standard)</h2>
-          <p className="text-xs text-slate-600 font-medium mt-0.5">
+          <h2 className="text-xl font-black text-white tracking-wide">
+            Multibar Linear Nesting & Scrap Minimizer (IS 802)
+          </h2>
+          <p className="text-xs text-slate-400 font-medium mt-1">
             Automated piece packing across raw commercial stock bars (6m, 9m, 12m) to eliminate steel remnant waste.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           {/* Add Recipe to Batch */}
           {recipes.length > 0 && (
             <select
@@ -242,9 +245,9 @@ export const NestingAlignmentView: React.FC = () => {
                 }
               }}
               defaultValue=""
-              className="form-control-ca text-xs py-1.5"
+              className="bg-[#06090e] text-white border border-[#2b3a4f] rounded-xl px-4 py-2.5 font-bold focus:outline-none focus:border-cyan-400 cursor-pointer text-xs shadow-inner"
             >
-              <option value="" disabled>+ Add Recipe to Nesting...</option>
+              <option value="" disabled>+ Add Recipe to Nesting Batch...</option>
               {recipes.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.itemCode} ({r.totalLength}mm)
@@ -255,52 +258,57 @@ export const NestingAlignmentView: React.FC = () => {
 
           <button
             onClick={() => setIsConfigOpen(true)}
-            className="btn-ca btn-ca-default text-xs py-1.5"
+            className="cnc-btn cnc-btn-secondary text-xs font-black"
           >
-            <Settings className="w-3.5 h-3.5" /> Nesting Parameters
+            <Settings className="w-4 h-4 text-sky-400" />
+            <span>PARAMETERS</span>
           </button>
+
           <button
             onClick={runNestingOptimization}
             disabled={isOptimizing}
-            className="btn-ca btn-ca-primary text-xs py-1.5"
+            className="cnc-btn cnc-btn-primary text-xs font-black"
           >
-            <Sparkles className="w-3.5 h-3.5" /> {isOptimizing ? 'Optimizing...' : 'Re-Calculate Nesting'}
+            <Sparkles className="w-4 h-4 text-cyan-300" />
+            <span>{isOptimizing ? 'OPTIMIZING...' : 'CALCULATE NESTING'}</span>
           </button>
+
           <button
             onClick={handleSendToAutoProduction}
-            className="btn-ca btn-ca-success text-xs py-1.5"
+            className="cnc-btn cnc-btn-success text-xs font-black shadow-lg shadow-emerald-950/40"
           >
-            <Play className="w-3.5 h-3.5" /> Send to Auto Production
+            <Play className="w-4 h-4 fill-white" />
+            <span>SEND TO AUTO RUN</span>
           </button>
         </div>
       </div>
 
       {/* KPI Optimization Yield Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="p-3.5 rounded-lg bg-blue-50 border border-blue-200">
-          <div className="text-slate-500 text-xs font-bold uppercase tracking-wider">Overall Yield Efficiency</div>
-          <div className="font-mono text-2xl font-black text-blue-700 mt-1">{overallYieldPct}%</div>
-          <div className="text-[11px] text-slate-600">Material utilization efficiency</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="cnc-dro flex flex-col justify-between p-4 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Overall Yield Efficiency</div>
+          <div className="cnc-dro-val text-3xl font-black text-cyan-300 mt-1">{overallYieldPct}%</div>
+          <div className="text-[11px] text-slate-400 font-medium">Material utilization efficiency</div>
         </div>
 
-        <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200">
-          <div className="text-slate-500 text-xs font-bold uppercase tracking-wider">Raw Stock Bars Needed</div>
-          <div className="font-mono text-2xl font-black text-emerald-700 mt-1">{totalRawBars} Bars</div>
-          <div className="text-[11px] text-slate-600">{stockBarLength}mm standard raw stock</div>
+        <div className="cnc-dro flex flex-col justify-between p-4 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Raw Stock Bars Needed</div>
+          <div className="cnc-dro-val text-3xl font-black text-emerald-400 mt-1">{totalRawBars} <span className="text-base text-slate-400 font-bold">Bars</span></div>
+          <div className="text-[11px] text-slate-400 font-medium">{stockBarLength}mm standard stock length</div>
         </div>
 
-        <div className="p-3.5 rounded-lg bg-purple-50 border border-purple-200">
-          <div className="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Cut Pieces</div>
-          <div className="font-mono text-2xl font-black text-purple-700 mt-1">
-            {batchOrders.reduce((acc, o) => acc + o.quantity, 0)} Pieces
+        <div className="cnc-dro flex flex-col justify-between p-4 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Cut Pieces</div>
+          <div className="cnc-dro-val text-3xl font-black text-purple-300 mt-1">
+            {batchOrders.reduce((acc, o) => acc + o.quantity, 0)} <span className="text-base text-slate-400 font-bold">Pcs</span>
           </div>
-          <div className="text-[11px] text-slate-600">Across {batchOrders.length} tower item types</div>
+          <div className="text-[11px] text-slate-400 font-medium">Across {batchOrders.length} tower item types</div>
         </div>
 
-        <div className="p-3.5 rounded-lg bg-amber-50 border border-amber-200">
-          <div className="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Scrap Remnant</div>
-          <div className="font-mono text-2xl font-black text-amber-700 mt-1">{totalScrapMeters} m</div>
-          <div className="text-[11px] text-slate-600">Total cut & tail loss combined</div>
+        <div className="cnc-dro flex flex-col justify-between p-4 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Scrap Remnant</div>
+          <div className="cnc-dro-val text-3xl font-black text-amber-300 mt-1">{totalScrapMeters} <span className="text-base text-slate-400 font-bold">m</span></div>
+          <div className="text-[11px] text-slate-400 font-medium">Shear kerf loss + tail margin</div>
         </div>
       </div>
 
@@ -313,38 +321,41 @@ export const NestingAlignmentView: React.FC = () => {
       />
 
       {/* Visual Multi-Bar Nesting Layout */}
-      <div className="panel">
-        <div className="panel-heading">
-          <span>Optimized Raw Bar Multi-Cut Visual Layout</span>
-          <span className="text-xs text-slate-300">Raw Bar Length: {stockBarLength} mm</span>
+      <div className="cnc-card overflow-hidden">
+        <div className="cnc-card-header">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8]" />
+            <span>Optimized Raw Bar Multi-Cut Visual Layout</span>
+          </span>
+          <span className="text-xs font-mono text-slate-400">Commercial Stock: {stockBarLength} mm</span>
         </div>
 
-        <div className="panel-body space-y-4">
+        <div className="cnc-card-body space-y-4">
           {nestedBars.length === 0 ? (
-            <div className="text-center py-6 text-slate-500 text-xs font-semibold">
+            <div className="text-center py-8 text-slate-400 text-xs font-medium">
               No batch items queued. Select a recipe from the dropdown above to calculate nesting layout.
             </div>
           ) : (
             nestedBars.map((bar) => (
-              <div key={bar.barIndex} className="p-3 bg-slate-50 rounded border border-slate-200 space-y-2 text-xs">
-                <div className="flex items-center justify-between font-bold">
-                  <span className="text-slate-800">
-                    Raw Stock Bar #{bar.barIndex} ({bar.stockLengthMm}mm) • {bar.pieces.length} Nested Parts
+              <div key={bar.barIndex} className="p-3.5 bg-[#090d14] rounded-xl border border-[#1e2a3c] space-y-2 text-xs">
+                <div className="flex items-center justify-between font-black">
+                  <span className="text-slate-200">
+                    Raw Stock Bar #{bar.barIndex} ({bar.stockLengthMm} mm) • {bar.pieces.length} Nested Parts
                   </span>
-                  <span className="text-slate-600">
-                    Scrap Remnant: <b className="text-amber-700">{bar.scrapLengthMm}mm ({bar.scrapPercentage}%)</b>
+                  <span className="text-slate-400">
+                    Scrap Remnant: <b className="text-amber-400 font-black">{bar.scrapLengthMm} mm ({bar.scrapPercentage}%)</b>
                   </span>
                 </div>
 
                 {/* Graphical Bar */}
-                <div className="w-full h-8 bg-slate-800 rounded overflow-hidden flex border border-slate-700 p-0.5">
+                <div className="w-full h-9 bg-[#04070d] rounded-lg overflow-hidden flex border border-[#1e2a3c] p-0.5">
                   {bar.pieces.map((p, pIdx) => {
                     const widthPct = (p.lengthMm / bar.stockLengthMm) * 100;
                     return (
                       <div
                         key={pIdx}
                         style={{ width: `${widthPct}%`, backgroundColor: p.color }}
-                        className="h-full border-r border-slate-900 flex items-center justify-center text-[10px] font-bold text-slate-900 truncate px-1"
+                        className="h-full border-r border-[#04070d] flex items-center justify-center text-[10px] font-black text-slate-950 truncate px-1.5 shadow-inner"
                         title={`${p.itemCode} (${p.lengthMm}mm)`}
                       >
                         {p.itemCode} ({p.lengthMm}mm)
@@ -369,19 +380,19 @@ export const NestingAlignmentView: React.FC = () => {
       {/* Config Modal */}
       {isConfigOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#141d2b] rounded-lg shadow-2xl border border-[#2b3c53] w-full max-w-md overflow-hidden text-xs">
-            <div className="panel-heading bg-[#1a2536] text-white px-4 py-3 flex items-center justify-between border-b border-[#293a50]">
-              <span className="font-extrabold text-sm">Configure Nesting & Machine Margins</span>
-              <button onClick={() => setIsConfigOpen(false)} className="text-slate-400 hover:text-white font-bold">✕</button>
+          <div className="bg-[#0e1420] rounded-2xl shadow-2xl border border-[#2b3c53] w-full max-w-md overflow-hidden text-xs">
+            <div className="bg-[#141b2a] text-white px-5 py-4 flex items-center justify-between border-b border-[#243348]">
+              <span className="font-black text-sm">Configure Nesting & Machine Margins</span>
+              <button onClick={() => setIsConfigOpen(false)} className="text-slate-400 hover:text-white font-black text-base">✕</button>
             </div>
 
-            <div className="p-4 space-y-3">
+            <div className="p-5 space-y-4">
               <div>
-                <label className="font-bold text-slate-300 block">Raw Stock Bar Length (mm)</label>
+                <label className="font-black text-slate-300 block uppercase text-[11px] mb-1">Raw Stock Bar Length (mm)</label>
                 <select
                   value={stockBarLength}
                   onChange={(e) => setStockBarLength(parseInt(e.target.value) || 6000)}
-                  className="form-control-ca mt-1 font-bold w-full"
+                  className="cnc-input font-black w-full"
                 >
                   <option value="6000">6,000 mm (Standard 6 Meter)</option>
                   <option value="9000">9,000 mm (9 Meter Commercial)</option>
@@ -390,33 +401,33 @@ export const NestingAlignmentView: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-slate-300 block">Hydraulic Shear Kerf Loss (mm)</label>
+                <label className="font-black text-slate-300 block uppercase text-[11px] mb-1">Hydraulic Shear Kerf Loss (mm)</label>
                 <input
                   type="number"
                   value={kerfCutAllowance}
                   onChange={(e) => setKerfCutAllowance(parseInt(e.target.value) || 6)}
-                  className="form-control-ca mt-1 w-full"
+                  className="cnc-input w-full"
                 />
-                <span className="text-[10px] text-slate-400">Material blade cutting waste per piece</span>
+                <span className="text-[10px] text-slate-400 mt-1 block">Material blade cutting waste per piece</span>
               </div>
 
               <div>
-                <label className="font-bold text-slate-300 block">Carriage Gripper Dead-Zone Margin (mm)</label>
+                <label className="font-black text-slate-300 block uppercase text-[11px] mb-1">Carriage Gripper Dead-Zone Margin (mm)</label>
                 <input
                   type="number"
                   value={gripperDeadZone}
                   onChange={(e) => setGripperDeadZone(parseInt(e.target.value) || 120)}
-                  className="form-control-ca mt-1 w-full"
+                  className="cnc-input w-full"
                 />
-                <span className="text-[10px] text-slate-400">Clamp safety clearance limit before shear cutoff blade</span>
+                <span className="text-[10px] text-slate-400 mt-1 block">Clamp safety clearance limit before shear cutoff blade</span>
               </div>
 
-              <div className="pt-3 border-t border-[#293a50] flex justify-end">
+              <div className="pt-3 border-t border-[#1e2a3c] flex justify-end">
                 <button
                   onClick={() => setIsConfigOpen(false)}
-                  className="btn-ca btn-ca-primary font-bold px-4"
+                  className="cnc-btn cnc-btn-primary font-black px-6"
                 >
-                  Done
+                  SAVE & CLOSE
                 </button>
               </div>
             </div>

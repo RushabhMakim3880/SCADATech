@@ -15,6 +15,7 @@ import { WsClientMessage, WsServerMessage } from '@innovance-hmi/shared';
 export function buildApp(): FastifyInstance {
   const app = Fastify({
     logger: true,
+    bodyLimit: 50 * 1024 * 1024, // 50MB for CAD/PDF drawings
   });
 
   const plcManager = PlcManager.getInstance();

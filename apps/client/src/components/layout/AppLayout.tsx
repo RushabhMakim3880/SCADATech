@@ -10,19 +10,16 @@ interface AppLayoutProps {
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ activeTab, onTabChange, children }) => {
-  const isDashboard = activeTab === 'DASHBOARD';
-
   return (
-    <div className="h-screen w-screen flex flex-col bg-[#0b0f17] text-slate-100 overflow-hidden select-none font-sans">
+    <div className="h-screen w-screen flex flex-col bg-[#070b12] text-slate-100 overflow-hidden select-none font-sans">
       <TopHeader
         activeTab={activeTab}
         onNavigateHome={() => onTabChange('DASHBOARD')}
         onTabChange={onTabChange}
       />
-      <div className="flex-1 flex overflow-hidden">
-        {/* On Dashboard, give full focus to the square button launcher; show sidebar on all modules */}
-        {!isDashboard && <Sidebar activeTab={activeTab} onTabChange={onTabChange} />}
-        <main className="flex-1 flex flex-col overflow-hidden bg-[#0b0f17] text-slate-100">
+      <div className="flex-1 flex overflow-hidden min-h-0">
+        <Sidebar activeTab={activeTab} onTabChange={onTabChange} />
+        <main className="flex-1 flex flex-col overflow-y-auto bg-[#070b12] text-slate-100 min-h-0">
           {children}
         </main>
       </div>

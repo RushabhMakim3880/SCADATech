@@ -91,97 +91,107 @@ export const ManualControlView: React.FC = () => {
   };
 
   return (
-    <div className="p-4 space-y-4 flex-1 overflow-y-auto">
+    <div className="p-4 md:p-6 space-y-4 flex-1 overflow-y-auto bg-[#070b12] text-white">
       {/* Top Header */}
-      <div className="flex items-center justify-between pb-2 border-b border-slate-300">
+      <div className="bg-[#0e1420] border border-[#1e2a3c] rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-black text-slate-900">Manual Operations Console (OpMaster / manualControl)</h2>
-          <p className="text-xs text-slate-600 font-medium mt-0.5">
+          <h2 className="text-xl font-black text-white tracking-wide">
+            Manual Operations & Tooling Console
+          </h2>
+          <p className="text-xs text-slate-400 font-medium mt-1">
             Manual carriage positioning, hydraulic motor controls, lubrication pumps, pneumatic clamps, and single stroke tooling tests.
           </p>
         </div>
 
-        <div className="digital-dro-box">
-          <span className="digital-dro-label">PRINCHER (X):</span>
-          <span className="digital-dro-val">{feedPositionMm.toFixed(2)} mm</span>
+        <div className="cnc-dro flex items-center gap-3 px-4 py-2 rounded-xl">
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">PRINCHER (X):</span>
+          <span className="cnc-dro-val text-xl font-black">{feedPositionMm.toFixed(2)}</span>
+          <span className="cnc-dro-unit text-xs">mm</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* 1. MOTOR OPERATIONS PANEL (from original manualControl.php) */}
-        <div className="panel">
-          <div className="panel-heading">
-            <span>Motor Operations Console</span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* 1. MOTOR OPERATIONS PANEL */}
+        <div className="cnc-card flex flex-col justify-between">
+          <div className="cnc-card-header">
+            <span className="flex items-center gap-2">
+              <Power className="w-4 h-4 text-emerald-400" />
+              <span>Hydraulic & Lubrication Motors</span>
+            </span>
+            <span className="text-[10px] font-mono text-slate-400">PUMPS & VALVES</span>
           </div>
-          <div className="panel-body space-y-4">
-            <div className="grid grid-cols-3 gap-2 text-center">
+
+          <div className="cnc-card-body space-y-4">
+            <div className="grid grid-cols-3 gap-2.5 text-center">
               {/* Main Hyd Motor */}
               <button
                 onClick={handleToggleHpu}
-                className={`btn-industrial ${
+                className={`p-3 rounded-xl border flex flex-col items-center justify-center min-h-[90px] transition-all active:scale-95 shadow-md ${
                   hydraulicPumpRunning
-                    ? 'bg-emerald-600 text-white border-emerald-700'
-                    : 'bg-slate-700 text-slate-200 border-slate-800'
+                    ? 'bg-gradient-to-b from-emerald-600 to-emerald-700 text-white border-emerald-400 shadow-emerald-950/50'
+                    : 'bg-[#121926] text-slate-300 border-[#222e42] hover:bg-[#1a2436]'
                 }`}
               >
-                <Power className="w-4 h-4 mb-1" />
-                <span>MAIN HYD<br />MOTOR</span>
-                <span className={`led-indicator mt-1.5 ${hydraulicPumpRunning ? 'led-green' : 'led-off'}`} />
+                <Power className={`w-5 h-5 mb-1.5 ${hydraulicPumpRunning ? 'text-white' : 'text-slate-400'}`} />
+                <span className="text-xs font-black leading-tight">MAIN HYD<br />MOTOR</span>
+                <span className={`w-2.5 h-2.5 rounded-full mt-2 ${hydraulicPumpRunning ? 'bg-emerald-300 shadow-[0_0_8px_#34d399]' : 'bg-slate-600'}`} />
               </button>
 
               {/* Head Lub Motor */}
               <button
                 onClick={handleToggleHeadLub}
-                className={`btn-industrial ${
+                className={`p-3 rounded-xl border flex flex-col items-center justify-center min-h-[90px] transition-all active:scale-95 shadow-md ${
                   headLubRunning
-                    ? 'bg-emerald-600 text-white border-emerald-700'
-                    : 'bg-slate-700 text-slate-200 border-slate-800'
+                    ? 'bg-gradient-to-b from-emerald-600 to-emerald-700 text-white border-emerald-400 shadow-emerald-950/50'
+                    : 'bg-[#121926] text-slate-300 border-[#222e42] hover:bg-[#1a2436]'
                 }`}
               >
-                <Droplets className="w-4 h-4 mb-1" />
-                <span>HEAD LUB<br />MOTOR</span>
-                <span className={`led-indicator mt-1.5 ${headLubRunning ? 'led-green' : 'led-off'}`} />
+                <Droplets className={`w-5 h-5 mb-1.5 ${headLubRunning ? 'text-white' : 'text-slate-400'}`} />
+                <span className="text-xs font-black leading-tight">HEAD LUB<br />MOTOR</span>
+                <span className={`w-2.5 h-2.5 rounded-full mt-2 ${headLubRunning ? 'bg-emerald-300 shadow-[0_0_8px_#34d399]' : 'bg-slate-600'}`} />
               </button>
 
               {/* Oil Circ Motor */}
               <button
                 onClick={handleToggleOilCirc}
-                className={`btn-industrial ${
+                className={`p-3 rounded-xl border flex flex-col items-center justify-center min-h-[90px] transition-all active:scale-95 shadow-md ${
                   oilCircRunning
-                    ? 'bg-emerald-600 text-white border-emerald-700'
-                    : 'bg-slate-700 text-slate-200 border-slate-800'
+                    ? 'bg-gradient-to-b from-emerald-600 to-emerald-700 text-white border-emerald-400 shadow-emerald-950/50'
+                    : 'bg-[#121926] text-slate-300 border-[#222e42] hover:bg-[#1a2436]'
                 }`}
               >
-                <Activity className="w-4 h-4 mb-1" />
-                <span>OIL CIRC.<br />MOTOR</span>
-                <span className={`led-indicator mt-1.5 ${oilCircRunning ? 'led-green' : 'led-off'}`} />
+                <Activity className={`w-5 h-5 mb-1.5 ${oilCircRunning ? 'text-white' : 'text-slate-400'}`} />
+                <span className="text-xs font-black leading-tight">OIL CIRC.<br />MOTOR</span>
+                <span className={`w-2.5 h-2.5 rounded-full mt-2 ${oilCircRunning ? 'bg-emerald-300 shadow-[0_0_8px_#34d399]' : 'bg-slate-600'}`} />
               </button>
             </div>
 
-            {/* Princher Go MM Row (Exact from manualControl.php) */}
-            <div className="p-3 bg-slate-50 border border-slate-300 rounded space-y-2">
-              <label className="text-xs font-bold text-slate-700 block">PRINCHER GO TARGET (MM)</label>
+            {/* Princher Go MM Target Row */}
+            <div className="p-3.5 bg-[#090d14] border border-[#1e2a3c] rounded-xl space-y-2">
+              <label className="text-[11px] font-black text-slate-400 tracking-wider uppercase block">
+                PRINCHER GO TARGET (MM)
+              </label>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
                   value={princherGoTarget}
                   onChange={(e) => setPrincherGoTarget(parseFloat(e.target.value) || 0)}
-                  className="form-control-ca font-mono font-bold text-sm w-full"
+                  className="cnc-input font-mono font-black text-base w-full"
                   placeholder="Target MM"
                 />
                 <button
                   type="button"
                   onClick={() => setIsKeypadOpen(true)}
-                  className="btn-ca btn-ca-default p-2"
+                  className="cnc-btn cnc-btn-secondary h-12 w-12 flex items-center justify-center shrink-0 p-0"
                   title="Open Keypad"
                 >
-                  <Calculator className="w-4 h-4" />
+                  <Calculator className="w-5 h-5 text-sky-400" />
                 </button>
                 <button
                   onClick={handlePrincherGo}
-                  className="btn-ca btn-ca-primary whitespace-nowrap py-1.5 px-3"
+                  className="cnc-btn cnc-btn-primary whitespace-nowrap h-12 px-5 text-xs font-black shrink-0"
                 >
-                  PRINCHER GO
+                  GO TO POS
                 </button>
               </div>
             </div>
@@ -189,22 +199,29 @@ export const ManualControlView: React.FC = () => {
         </div>
 
         {/* 2. FEED AXIS (X) JOGGING & ZERO SETTING */}
-        <div className="panel">
-          <div className="panel-heading">
-            <span>Carriage Feed Axis (X) Manual Jog</span>
+        <div className="cnc-card flex flex-col justify-between">
+          <div className="cnc-card-header">
+            <span className="flex items-center gap-2">
+              <ArrowRight className="w-4 h-4 text-sky-400" />
+              <span>Carriage Feed Axis (X) Manual Jog</span>
+            </span>
+            <span className="text-[10px] font-mono text-slate-400">IS620N SERVO</span>
           </div>
-          <div className="panel-body space-y-4">
+
+          <div className="cnc-card-body space-y-4">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-700 block">Incremental Step (mm)</label>
-              <div className="grid grid-cols-5 gap-1 text-xs font-semibold">
+              <label className="text-[11px] font-black text-slate-400 tracking-wider uppercase block">
+                Jog Increment Step (mm)
+              </label>
+              <div className="grid grid-cols-5 gap-1.5 text-xs font-black">
                 {[0.1, 1.0, 10.0, 50.0, 100.0].map((step) => (
                   <button
                     key={step}
                     onClick={() => setStepIncrement(step)}
-                    className={`py-1 rounded border ${
+                    className={`h-10 rounded-xl border transition-all active:scale-95 ${
                       stepIncrement === step
-                        ? 'bg-blue-600 text-white border-blue-600 font-bold'
-                        : 'bg-slate-100 text-slate-700 border-slate-300'
+                        ? 'bg-sky-600 text-white border-sky-400 shadow-md shadow-sky-950/50'
+                        : 'bg-[#121926] text-slate-300 border-[#222e42] hover:bg-[#1a2436]'
                     }`}
                   >
                     {step}
@@ -213,19 +230,21 @@ export const ManualControlView: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 pt-2">
+            <div className="grid grid-cols-2 gap-3 pt-1">
               <button
                 onClick={() => handleStepJog('REV')}
-                className="btn-ca btn-ca-primary justify-center py-2.5"
+                className="cnc-btn cnc-btn-primary justify-center h-12 text-xs font-black"
               >
-                <ArrowLeft className="w-4 h-4" /> Step -{stepIncrement}mm
+                <ArrowLeft className="w-4 h-4" />
+                <span>STEP -{stepIncrement}mm</span>
               </button>
 
               <button
                 onClick={() => handleStepJog('FWD')}
-                className="btn-ca btn-ca-primary justify-center py-2.5"
+                className="cnc-btn cnc-btn-primary justify-center h-12 text-xs font-black"
               >
-                <ArrowRight className="w-4 h-4" /> Step +{stepIncrement}mm
+                <span>STEP +{stepIncrement}mm</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
 
@@ -234,37 +253,47 @@ export const ManualControlView: React.FC = () => {
                 batchUpdateTags({ feedPositionMm: 0 });
                 wsClient.writeTag('Carriage_Zero_Set', true, 'Boolean');
               }}
-              className="btn-ca btn-ca-default w-full justify-center text-xs py-2 mt-2"
+              className="cnc-btn cnc-btn-secondary w-full justify-center text-xs font-black h-11"
             >
-              <RotateCcw className="w-3.5 h-3.5" /> Set Carriage Reference Zero (0.00mm)
+              <RotateCcw className="w-4 h-4 text-amber-400" />
+              <span>SET CARRIAGE REFERENCE ZERO (0.00 mm)</span>
             </button>
           </div>
         </div>
 
         {/* 3. CLAMPS & SINGLE STROKE TEST */}
-        <div className="panel">
-          <div className="panel-heading">
-            <span>Clamping Stations & Single Tool Test</span>
+        <div className="cnc-card flex flex-col justify-between">
+          <div className="cnc-card-header">
+            <span className="flex items-center gap-2">
+              <Lock className="w-4 h-4 text-amber-400" />
+              <span>Clamping & Single Tool Firing</span>
+            </span>
+            <span className="text-[10px] font-mono text-slate-400">STATION TEST</span>
           </div>
-          <div className="panel-body space-y-4">
+
+          <div className="cnc-card-body space-y-4">
             {/* Clamps */}
-            <div className="space-y-1.5 text-xs">
+            <div className="space-y-2 text-xs">
               {[
                 { id: 'infeed' as const, label: 'Infeed Conveyor Clamp', state: infeedClamp },
                 { id: 'carriage' as const, label: 'Carriage Gripper Jaw', state: carriageClamp },
                 { id: 'outfeed' as const, label: 'Outfeed Discharge Clamp', state: outfeedClamp },
               ].map((c) => (
-                <div key={c.id} className="flex items-center justify-between p-2 rounded bg-slate-50 border">
+                <div key={c.id} className="flex items-center justify-between p-2.5 rounded-xl bg-[#090d14] border border-[#1e2a3c]">
                   <div>
-                    <div className="font-semibold text-slate-800">{c.label}</div>
-                    <div className="text-[10px] text-slate-500">{c.state ? 'CLAMPED' : 'OPEN'}</div>
+                    <div className="font-black text-slate-200">{c.label}</div>
+                    <div className="text-[10px] font-mono text-slate-400">{c.state ? 'CLAMPED' : 'UNCLAMPED'}</div>
                   </div>
                   <button
                     onClick={() => handleToggleClamp(c.id)}
-                    className={`btn-ca ${c.state ? 'btn-ca-success' : 'btn-ca-default'} py-1 px-3`}
+                    className={`h-9 px-3.5 rounded-lg font-black text-xs flex items-center gap-1.5 transition-all border ${
+                      c.state
+                        ? 'bg-emerald-600 text-white border-emerald-400 shadow-sm'
+                        : 'bg-[#161f2e] text-slate-300 border-[#2b3a4f] hover:bg-[#1e2a3d]'
+                    }`}
                   >
-                    {c.state ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
-                    {c.state ? 'Clamped' : 'Unclamp'}
+                    {c.state ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
+                    <span>{c.state ? 'CLAMPED' : 'UNCLAMP'}</span>
                   </button>
                 </div>
               ))}
@@ -272,8 +301,10 @@ export const ManualControlView: React.FC = () => {
 
             {/* 6-Head Single Stroke Test Matrix */}
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1.5">Single Tool Test Stroke</label>
-              <div className="grid grid-cols-4 gap-1.5 text-xs">
+              <label className="text-[11px] font-black text-slate-400 tracking-wider uppercase block mb-2">
+                Single Tool Stroke Test
+              </label>
+              <div className="grid grid-cols-4 gap-2 text-xs">
                 {['DA1', 'DA2', 'DA3', 'DB1', 'DB2', 'DB3', 'Marking', 'Cutter'].map((head) => {
                   const isFiring = headsFiring[head];
                   return (
@@ -281,14 +312,14 @@ export const ManualControlView: React.FC = () => {
                       key={head}
                       onClick={() => handleTestHead(head)}
                       disabled={!hydraulicPumpRunning}
-                      className={`p-2 rounded border flex flex-col items-center justify-center font-bold transition-all ${
+                      className={`h-12 rounded-xl border flex flex-col items-center justify-center font-black transition-all active:scale-95 ${
                         isFiring
-                          ? 'bg-red-600 text-white border-red-500 shadow-md scale-105'
-                          : 'bg-[#0f1622] text-white border-[#2b3c53] hover:bg-[#182333] hover:border-cyan-400'
-                      } disabled:opacity-40`}
+                          ? 'bg-rose-600 text-white border-rose-400 shadow-[0_0_12px_#f43f5e] scale-105'
+                          : 'bg-[#121926] text-white border-[#222e42] hover:border-cyan-400'
+                      } disabled:opacity-40 disabled:cursor-not-allowed`}
                     >
                       <span className="text-xs font-mono font-black">{head}</span>
-                      <span className="text-[10px] text-slate-400 mt-0.5">{isFiring ? 'Firing' : 'Stroke'}</span>
+                      <span className="text-[9px] text-slate-400 uppercase">{isFiring ? 'FIRING' : 'TEST'}</span>
                     </button>
                   );
                 })}

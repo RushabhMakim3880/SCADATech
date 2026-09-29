@@ -205,7 +205,9 @@ export const userRoutes: FastifyPluginAsync = async (fastify) => {
         user = await prisma.user.findFirst({
           where: { id: userId, pinCode, isActive: true },
         });
-      } else {
+      }
+      // If not matched by userId, check if PIN belongs to any active user (e.g. typing Admin PIN while Operator profile was active)
+      if (!user) {
         user = await prisma.user.findFirst({
           where: { pinCode, isActive: true },
         });

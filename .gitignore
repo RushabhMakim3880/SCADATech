@@ -139,3 +139,6 @@ dist/
 *.db
 *.db-journal
 dev.db
+TEST_R.pdf
+__pycache__/
+*.pyc
