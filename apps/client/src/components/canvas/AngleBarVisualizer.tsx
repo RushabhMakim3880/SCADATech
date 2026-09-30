@@ -19,6 +19,7 @@ interface AngleBarVisualizerProps {
   highlightStepIndex?: number;
   externalHoverStepIndex?: number | null;
   syncFocusX?: number | null;
+  initialTheme?: 'DARK' | 'PAPER';
   onSelectStep?: (stepIndex: number) => void;
   onHoverStep?: (stepIndex: number | null) => void;
   onViewportSync?: (centerMm: number) => void;
@@ -32,6 +33,7 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
   highlightStepIndex,
   externalHoverStepIndex,
   syncFocusX,
+  initialTheme = 'DARK',
   onSelectStep,
   onHoverStep,
   onViewportSync,
@@ -51,7 +53,7 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
   const [showPitchChain, setShowPitchChain] = useState<boolean>(true);
   const [showTitleBlock, setShowTitleBlock] = useState<boolean>(false);
   const [showHoleLegend, setShowHoleLegend] = useState<boolean>(false);
-  const [theme, setTheme] = useState<'DARK' | 'PAPER'>('DARK');
+  const [theme, setTheme] = useState<'DARK' | 'PAPER'>(initialTheme);
   const isDark = theme === 'DARK';
 
   const [hoveredStep, setHoveredStep] = useState<ItemRecipeStep | null>(null);
@@ -198,210 +200,285 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
         return;
       }
 
-      // 4. Physical Coordinate Space
-      // DRAFTING STANDARD PRESENTATION:
-      // In technical tower drawings, flanges have a generous, clear visual height so all gauge lines
-      // and holes are distinctly visible and not squished into a microscopic thread!
+      // 4. Physical Coordinate Space — TWIN-BEAM PROJECTION (matching TEST_R.pdf)
+      // Top Beam: FLANGE A (with toe at top, heel at bottom)
+      // Bottom Beam: FLANGE B (with heel at top, toe at bottom)
+      // Central Channel: Dedicated space between Flange A Heel and Flange B Heel for annotations
       const centerY = h / 2 + panY;
       const scaleX = zoom;
 
-      // Generous, readable flange height: balanced so dimensions and heel line fit cleanly
-      const flangeVisualHeight = Math.max(50, Math.min(90, (h - 180) / 2));
+      const flangeGap = Math.max(65, Math.min(105, (h - 140) * 0.26));
+      const flangeVisualHeight = Math.max(50, Math.min(85, (h - flangeGap - 180) / 2));
       const scaleY = flangeVisualHeight / widthA;
 
       const startX = panX;
       const barPixelLength = lengthMm * scaleX;
 
-      const topFlangeHeight = flangeVisualHeight;
-      const bottomFlangeHeight = flangeVisualHeight;
+      // Flange A (Top Beam):
+      const topFlangeHeelY = centerY - flangeGap / 2;
+      const topFlangeToeY = topFlangeHeelY - flangeVisualHeight;
 
-      const topFlangeY = centerY - topFlangeHeight;
-      const bottomFlangeY = centerY + bottomFlangeHeight;
+      // Flange B (Bottom Beam):
+      const bottomFlangeHeelY = centerY + flangeGap / 2;
+      const bottomFlangeToeY = bottomFlangeHeelY + flangeVisualHeight;
 
-      // 5. Render Unfolded Steel Angle Bar Body (Flange A Top & Flange B Bottom)
-      const drawFlange = (startY: number, endY: number, sideLabel: string) => {
-        const flangeH = Math.abs(endY - startY);
-        const grad = ctx.createLinearGradient(0, startY, 0, endY);
+      // 5. Render Distinct Steel Angle Bar Projections (Flange A on Top, Flange B on Bottom)
+      const drawFlangeBeam = (toeY: number, heelY: number, sideLabel: string, isTopBeam: boolean) => {
+        const flangeH = Math.abs(heelY - toeY);
+        const minY = Math.min(toeY, heelY);
+
         if (isDark) {
-          grad.addColorStop(0, '#131b26');
-          grad.addColorStop(0.5, '#1b2737');
-          grad.addColorStop(1, '#172230');
+          const grad = ctx.createLinearGradient(0, minY, 0, minY + flangeH);
+          grad.addColorStop(0, '#0f1622');
+          grad.addColorStop(0.5, '#172230');
+          grad.addColorStop(1, '#111926');
+          ctx.fillStyle = grad;
         } else {
-          // Technical Drafting Steel Tone with solid contrast against white canvas
-          grad.addColorStop(0, '#e2e8f0');
-          grad.addColorStop(0.25, '#cbd5e1');
-          grad.addColorStop(0.75, '#cbd5e1');
-          grad.addColorStop(1, '#e2e8f0');
+          // Paper Blueprint Technical White with ultra-subtle drafting steel wash
+          ctx.fillStyle = '#f8fafc';
         }
-        ctx.fillStyle = grad;
-        ctx.fillRect(startX, Math.min(startY, endY), barPixelLength, flangeH);
+        ctx.fillRect(startX, minY, barPixelLength, flangeH);
 
         // Technical angle steel hatching lines
-        ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.02)' : 'rgba(15, 23, 42, 0.08)';
+        ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.025)' : 'rgba(15, 23, 42, 0.04)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        for (let hx = startX; hx < startX + barPixelLength; hx += 35) {
-          ctx.moveTo(hx, startY);
-          ctx.lineTo(hx + flangeH * 0.5, endY);
+        for (let hx = startX; hx < startX + barPixelLength; hx += 40) {
+          ctx.moveTo(hx, minY);
+          ctx.lineTo(hx + flangeH * 0.6, minY + flangeH);
         }
         ctx.stroke();
 
         // Ghosting overlay for processed length during live production
         if (activeFeedPosition > 0) {
           const ghostPixLength = Math.min(barPixelLength, activeFeedPosition * scaleX);
-          ctx.fillStyle = isDark ? 'rgba(0, 0, 0, 0.45)' : 'rgba(71, 85, 105, 0.35)';
-          ctx.fillRect(startX, Math.min(startY, endY), ghostPixLength, flangeH);
+          ctx.fillStyle = isDark ? 'rgba(0, 0, 0, 0.45)' : 'rgba(71, 85, 105, 0.25)';
+          ctx.fillRect(startX, minY, ghostPixLength, flangeH);
         }
 
+        // Flange Outer Perimeter (Solid CAD Drafting Border)
+        ctx.strokeStyle = isDark ? '#38bdf8' : '#0f172a';
+        ctx.lineWidth = isDark ? 1.6 : 2.0;
+        ctx.strokeRect(startX, minY, barPixelLength, flangeH);
+
+        // Dashed Root Thickness Line near Heel
+        const thickY = isTopBeam ? heelY - thickness * scaleY : heelY + thickness * scaleY;
+        ctx.strokeStyle = isDark ? 'rgba(56, 189, 248, 0.25)' : 'rgba(15, 23, 42, 0.3)';
+        ctx.lineWidth = 1.0;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(startX, thickY);
+        ctx.lineTo(startX + barPixelLength, thickY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
         // Flange descriptive label
-        ctx.font = 'bold 10px monospace';
-        ctx.fillStyle = isDark ? '#7dd3fc' : '#0f172a';
-        ctx.fillText(sideLabel, startX + 14, startY < centerY ? startY + 14 : endY - 6);
+        ctx.font = 'bold 9.5px monospace';
+        ctx.fillStyle = isDark ? '#7dd3fc' : '#475569';
+        ctx.fillText(sideLabel, startX + 14, isTopBeam ? toeY + 13 : heelY + 13);
       };
 
-      drawFlange(topFlangeY, centerY, `◄ FLANGE A (TOP: ${widthA}mm) — PUNCH HEADS DA1, DA2, DA3`);
-      drawFlange(centerY, bottomFlangeY, `◄ FLANGE B (SIDE: ${widthB}mm) — PUNCH HEADS DB1, DB2, DB3`);
+      drawFlangeBeam(topFlangeToeY, topFlangeHeelY, `◄ FLANGE A (TOP: ${widthA}mm) — PUNCH HEADS DA1, DA2, DA3`, true);
+      drawFlangeBeam(bottomFlangeToeY, bottomFlangeHeelY, `◄ FLANGE B (SIDE: ${widthB}mm) — PUNCH HEADS DB1, DB2, DB3`, false);
 
-      // Flange outer edges (Toe lines - bold, solid black in Paper mode)
-      ctx.strokeStyle = isDark ? '#38bdf8' : '#0f172a';
-      ctx.lineWidth = isDark ? 1.8 : 2.5;
-      ctx.strokeRect(startX, topFlangeY, barPixelLength, topFlangeHeight + bottomFlangeHeight);
-
-      // Start & End Edge Cross-lines
+      // Start & End Edge Cross-lines across both beams
       ctx.strokeStyle = isDark ? '#60a5fa' : '#0f172a';
       ctx.lineWidth = isDark ? 2.0 : 2.5;
       ctx.beginPath();
-      ctx.moveTo(startX, topFlangeY - 8);
-      ctx.lineTo(startX, bottomFlangeY + 8);
-      ctx.moveTo(startX + barPixelLength, topFlangeY - 8);
-      ctx.lineTo(startX + barPixelLength, bottomFlangeY + 8);
+      // Flange A left & right
+      ctx.moveTo(startX, topFlangeToeY - 6);
+      ctx.lineTo(startX, topFlangeHeelY + 6);
+      ctx.moveTo(startX + barPixelLength, topFlangeToeY - 6);
+      ctx.lineTo(startX + barPixelLength, topFlangeHeelY + 6);
+      // Flange B left & right
+      ctx.moveTo(startX, bottomFlangeHeelY - 6);
+      ctx.lineTo(startX, bottomFlangeToeY + 6);
+      ctx.moveTo(startX + barPixelLength, bottomFlangeHeelY - 6);
+      ctx.lineTo(startX + barPixelLength, bottomFlangeToeY + 6);
       ctx.stroke();
 
       // Start Datum Tag (0.0mm Datum)
       ctx.fillStyle = isDark ? '#38bdf8' : '#0f172a';
       ctx.font = 'bold 9.5px monospace';
-      ctx.fillText('0 (DATUM)', startX - 2, topFlangeY - 14);
+      ctx.fillText('0 (DATUM)', startX - 2, topFlangeToeY - 14);
 
-      // 6. Central Bend Heel Fold Datum Line (CL — · — · —)
-      ctx.strokeStyle = isDark ? '#f59e0b' : '#b91c1c';
-      ctx.lineWidth = isDark ? 1.8 : 2.2;
-      ctx.setLineDash([14, 4, 3, 4]); // Dash-dot centerline standard
+      // 6. Central Channel Centerline & Annotation Reference
+      ctx.strokeStyle = isDark ? 'rgba(245, 158, 11, 0.4)' : 'rgba(15, 23, 42, 0.25)';
+      ctx.lineWidth = 1.0;
+      ctx.setLineDash([14, 4, 3, 4]); // Dash-dot fold reference
       ctx.beginPath();
-      ctx.moveTo(startX - 30, centerY);
-      ctx.lineTo(startX + barPixelLength + 45, centerY);
+      ctx.moveTo(startX - 20, centerY);
+      ctx.lineTo(startX + barPixelLength + 30, centerY);
       ctx.stroke();
       ctx.setLineDash([]);
 
-      ctx.font = 'bold 10px monospace';
-      ctx.fillStyle = isDark ? '#f59e0b' : '#991b1b';
-      ctx.fillText('℄ HEEL BEND LINE (APEX Y = 0.0)', startX + barPixelLength + 50, centerY + 3.5);
+      // 7. Continuous Dashed-Dotted Centerlines for Gauges across Flange A & Flange B
+      const gaugeDistances = [56, 112];
+      ctx.lineWidth = isDark ? 1.1 : 1.3;
+      ctx.setLineDash([12, 3, 2, 3]); // Standard CAD Centerline
 
-      // 7. Gauge Reference Lines across Flanges (56mm, 112mm, 96mm, 94mm, 128mm)
-      const gaugeDistances = [56, 112, 96, 94, 128];
-      ctx.lineWidth = isDark ? 1.2 : 1.4;
-      ctx.setLineDash([6, 4]);
-
+      // Flange A Centerlines
       gaugeDistances.forEach((g) => {
         if (g < widthA) {
-          const gyA = isFlipped ? centerY + g * scaleY : centerY - g * scaleY;
-          ctx.strokeStyle = isDark ? 'rgba(56, 189, 248, 0.35)' : 'rgba(3, 105, 161, 0.75)';
+          const gyA = topFlangeHeelY - g * scaleY;
+          ctx.strokeStyle = isDark ? 'rgba(56, 189, 248, 0.45)' : 'rgba(15, 23, 42, 0.7)';
           ctx.beginPath();
-          ctx.moveTo(startX, gyA);
-          ctx.lineTo(startX + barPixelLength, gyA);
+          ctx.moveTo(startX - 10, gyA);
+          ctx.lineTo(startX + barPixelLength + 10, gyA);
           ctx.stroke();
-
-          // Left-side Gauge Datum tag with crisp background pill in paper mode
-          ctx.font = 'bold 9.5px monospace';
-          if (!isDark) {
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(startX - 54, gyA - 6, 50, 12);
-            ctx.strokeStyle = 'rgba(3, 105, 161, 0.4)';
-            ctx.strokeRect(startX - 54, gyA - 6, 50, 12);
-          }
-          ctx.fillStyle = isDark ? '#38bdf8' : '#0369a1';
-          ctx.fillText(`G: ${g}mm`, startX - 50, gyA + 3);
         }
-        if (g < widthB) {
-          const gyB = isFlipped ? centerY - g * scaleY : centerY + g * scaleY;
-          ctx.strokeStyle = isDark ? 'rgba(16, 185, 129, 0.35)' : 'rgba(5, 150, 105, 0.75)';
-          ctx.beginPath();
-          ctx.moveTo(startX, gyB);
-          ctx.lineTo(startX + barPixelLength, gyB);
-          ctx.stroke();
+      });
 
-          ctx.font = 'bold 9.5px monospace';
-          if (!isDark) {
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(startX - 54, gyB - 6, 50, 12);
-            ctx.strokeStyle = 'rgba(5, 150, 105, 0.4)';
-            ctx.strokeRect(startX - 54, gyB - 6, 50, 12);
-          }
-          ctx.fillStyle = isDark ? '#10b981' : '#059669';
-          ctx.fillText(`G: ${g}mm`, startX - 50, gyB + 3);
+      // Flange B Centerlines
+      gaugeDistances.forEach((g) => {
+        if (g < widthB) {
+          const gyB = bottomFlangeHeelY + g * scaleY;
+          ctx.strokeStyle = isDark ? 'rgba(16, 185, 129, 0.45)' : 'rgba(15, 23, 42, 0.7)';
+          ctx.beginPath();
+          ctx.moveTo(startX - 10, gyB);
+          ctx.lineTo(startX + barPixelLength + 10, gyB);
+          ctx.stroke();
         }
       });
       ctx.setLineDash([]);
 
-      // Right-End Gauge Dimension Block (56mm & 112mm) matching TEST_R.pdf
+      // 7b. Left-Side Gauge 112 Callouts (matching TEST_R.pdf)
+      if (showDimensions && widthA >= 112) {
+        const leftDimX = startX - 22;
+        const g112YA = topFlangeHeelY - 112 * scaleY;
+        const g112YB = bottomFlangeHeelY + 112 * scaleY;
+
+        ctx.strokeStyle = isDark ? '#94a3b8' : '#0f172a';
+        ctx.lineWidth = isDark ? 1.0 : 1.3;
+
+        // Flange A left 112
+        ctx.beginPath();
+        ctx.moveTo(startX - 4, topFlangeHeelY);
+        ctx.lineTo(leftDimX - 4, topFlangeHeelY);
+        ctx.moveTo(startX - 4, g112YA);
+        ctx.lineTo(leftDimX - 4, g112YA);
+        ctx.moveTo(leftDimX, topFlangeHeelY);
+        ctx.lineTo(leftDimX, g112YA);
+        // CAD 45 degree ticks
+        ctx.moveTo(leftDimX - 2.5, topFlangeHeelY + 2.5);
+        ctx.lineTo(leftDimX + 2.5, topFlangeHeelY - 2.5);
+        ctx.moveTo(leftDimX - 2.5, g112YA + 2.5);
+        ctx.lineTo(leftDimX + 2.5, g112YA - 2.5);
+        ctx.stroke();
+
+        ctx.font = 'bold 9.5px monospace';
+        ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
+        ctx.textAlign = 'right';
+        ctx.fillText('112', leftDimX - 4, (topFlangeHeelY + g112YA) / 2 + 3.5);
+
+        // Flange B left 112
+        ctx.beginPath();
+        ctx.moveTo(startX - 4, bottomFlangeHeelY);
+        ctx.lineTo(leftDimX - 4, bottomFlangeHeelY);
+        ctx.moveTo(startX - 4, g112YB);
+        ctx.lineTo(leftDimX - 4, g112YB);
+        ctx.moveTo(leftDimX, bottomFlangeHeelY);
+        ctx.lineTo(leftDimX, g112YB);
+        // CAD 45 degree ticks
+        ctx.moveTo(leftDimX - 2.5, bottomFlangeHeelY + 2.5);
+        ctx.lineTo(leftDimX + 2.5, bottomFlangeHeelY - 2.5);
+        ctx.moveTo(leftDimX - 2.5, g112YB + 2.5);
+        ctx.lineTo(leftDimX + 2.5, g112YB - 2.5);
+        ctx.stroke();
+
+        ctx.fillText('112', leftDimX - 4, (bottomFlangeHeelY + g112YB) / 2 + 3.5);
+        ctx.textAlign = 'left';
+      }
+
+      // 7c. Right-End Dual Gauge Dimension Witnesses (56 & 112) matching TEST_R.pdf
       if (showDimensions && widthA >= 112) {
         const rightDimX = startX + barPixelLength + 16;
-        const g56Y = isFlipped ? centerY + 56 * scaleY : centerY - 56 * scaleY;
-        const g112Y = isFlipped ? centerY + 112 * scaleY : centerY - 112 * scaleY;
+        ctx.strokeStyle = isDark ? '#94a3b8' : '#0f172a';
+        ctx.lineWidth = isDark ? 1.0 : 1.3;
 
-        ctx.strokeStyle = isDark ? '#38bdf8' : '#0369a1';
-        ctx.lineWidth = isDark ? 1.0 : 1.4;
+        // Flange A right 56 & 112
+        const g56YA = topFlangeHeelY - 56 * scaleY;
+        const g112YA = topFlangeHeelY - 112 * scaleY;
 
-        // Extension lines from heel, 56, and 112
         ctx.beginPath();
-        ctx.moveTo(startX + barPixelLength + 4, centerY);
-        ctx.lineTo(rightDimX + 20, centerY);
-        ctx.moveTo(startX + barPixelLength + 4, g56Y);
-        ctx.lineTo(rightDimX + 12, g56Y);
-        ctx.moveTo(startX + barPixelLength + 4, g112Y);
-        ctx.lineTo(rightDimX + 20, g112Y);
+        ctx.moveTo(startX + barPixelLength + 4, topFlangeHeelY);
+        ctx.lineTo(rightDimX + 18, topFlangeHeelY);
+        ctx.moveTo(startX + barPixelLength + 4, g56YA);
+        ctx.lineTo(rightDimX + 10, g56YA);
+        ctx.moveTo(startX + barPixelLength + 4, g112YA);
+        ctx.lineTo(rightDimX + 18, g112YA);
 
-        // Vertical dimension line for 56
-        ctx.moveTo(rightDimX, centerY);
-        ctx.lineTo(rightDimX, g56Y);
-        // Vertical dimension line for 112
-        ctx.moveTo(rightDimX + 14, centerY);
-        ctx.lineTo(rightDimX + 14, g112Y);
+        ctx.moveTo(rightDimX, topFlangeHeelY);
+        ctx.lineTo(rightDimX, g56YA);
+        ctx.moveTo(rightDimX + 12, topFlangeHeelY);
+        ctx.lineTo(rightDimX + 12, g112YA);
 
-        // 45 deg CAD Ticks
-        ctx.moveTo(rightDimX - 2.5, centerY + 2.5);
-        ctx.lineTo(rightDimX + 2.5, centerY - 2.5);
-        ctx.moveTo(rightDimX - 2.5, g56Y + 2.5);
-        ctx.lineTo(rightDimX + 2.5, g56Y - 2.5);
-        ctx.moveTo(rightDimX + 11.5, centerY + 2.5);
-        ctx.lineTo(rightDimX + 16.5, centerY - 2.5);
-        ctx.moveTo(rightDimX + 11.5, g112Y + 2.5);
-        ctx.lineTo(rightDimX + 16.5, g112Y - 2.5);
+        // Ticks
+        ctx.moveTo(rightDimX - 2, topFlangeHeelY + 2);
+        ctx.lineTo(rightDimX + 2, topFlangeHeelY - 2);
+        ctx.moveTo(rightDimX - 2, g56YA + 2);
+        ctx.lineTo(rightDimX + 2, g56YA - 2);
+        ctx.moveTo(rightDimX + 10, topFlangeHeelY + 2);
+        ctx.lineTo(rightDimX + 14, topFlangeHeelY - 2);
+        ctx.moveTo(rightDimX + 10, g112YA + 2);
+        ctx.lineTo(rightDimX + 14, g112YA - 2);
         ctx.stroke();
 
         ctx.font = 'bold 9px monospace';
-        ctx.fillStyle = isDark ? '#7dd3fc' : '#0284c7';
-        ctx.fillText('56', rightDimX + 2, (centerY + g56Y) / 2 + 3);
-        ctx.fillText('112', rightDimX + 16, (centerY + g112Y) / 2 + 3);
+        ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
+        ctx.fillText('56', rightDimX + 2, (topFlangeHeelY + g56YA) / 2 + 3);
+        ctx.fillText('112', rightDimX + 14, (topFlangeHeelY + g112YA) / 2 + 3);
+
+        // Flange B right 56 & 112
+        const g56YB = bottomFlangeHeelY + 56 * scaleY;
+        const g112YB = bottomFlangeHeelY + 112 * scaleY;
+
+        ctx.beginPath();
+        ctx.moveTo(startX + barPixelLength + 4, bottomFlangeHeelY);
+        ctx.lineTo(rightDimX + 18, bottomFlangeHeelY);
+        ctx.moveTo(startX + barPixelLength + 4, g56YB);
+        ctx.lineTo(rightDimX + 10, g56YB);
+        ctx.moveTo(startX + barPixelLength + 4, g112YB);
+        ctx.lineTo(rightDimX + 18, g112YB);
+
+        ctx.moveTo(rightDimX, bottomFlangeHeelY);
+        ctx.lineTo(rightDimX, g56YB);
+        ctx.moveTo(rightDimX + 12, bottomFlangeHeelY);
+        ctx.lineTo(rightDimX + 12, g112YB);
+
+        // Ticks
+        ctx.moveTo(rightDimX - 2, bottomFlangeHeelY + 2);
+        ctx.lineTo(rightDimX + 2, bottomFlangeHeelY - 2);
+        ctx.moveTo(rightDimX - 2, g56YB + 2);
+        ctx.lineTo(rightDimX + 2, g56YB - 2);
+        ctx.moveTo(rightDimX + 10, bottomFlangeHeelY + 2);
+        ctx.lineTo(rightDimX + 14, bottomFlangeHeelY - 2);
+        ctx.moveTo(rightDimX + 10, g112YB + 2);
+        ctx.lineTo(rightDimX + 14, g112YB - 2);
+        ctx.stroke();
+
+        ctx.fillText('56', rightDimX + 2, (bottomFlangeHeelY + g56YB) / 2 + 3);
+        ctx.fillText('112', rightDimX + 14, (bottomFlangeHeelY + g112YB) / 2 + 3);
       }
 
       // 8. Physical Length Scale Ticks Along Top & Bottom
       const tickSpacingMm = lengthMm > 4000 ? 500 : 250;
-      ctx.strokeStyle = isDark ? '#334155' : '#0f172a';
-      ctx.fillStyle = isDark ? '#94a3b8' : '#0f172a';
-      ctx.font = 'bold 10px monospace';
-      ctx.lineWidth = isDark ? 1 : 1.5;
+      ctx.strokeStyle = isDark ? '#334155' : '#94a3b8';
+      ctx.fillStyle = isDark ? '#94a3b8' : '#475569';
+      ctx.font = 'bold 9px monospace';
+      ctx.lineWidth = isDark ? 1 : 1.2;
 
       for (let posMm = 0; posMm <= lengthMm; posMm += tickSpacingMm) {
         const tx = startX + posMm * scaleX;
         ctx.beginPath();
-        ctx.moveTo(tx, topFlangeY - 8);
-        ctx.lineTo(tx, topFlangeY);
-        ctx.moveTo(tx, bottomFlangeY);
-        ctx.lineTo(tx, bottomFlangeY + 8);
+        ctx.moveTo(tx, topFlangeToeY - 6);
+        ctx.lineTo(tx, topFlangeToeY);
+        ctx.moveTo(tx, bottomFlangeToeY);
+        ctx.lineTo(tx, bottomFlangeToeY + 6);
         ctx.stroke();
 
         ctx.textAlign = 'center';
-        ctx.fillText(`${posMm}`, tx, topFlangeY - 12);
+        ctx.fillText(`${posMm}`, tx, topFlangeToeY - 10);
       }
       ctx.textAlign = 'left';
 
@@ -421,9 +498,9 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
 
         let opY = centerY;
         if (step.side === 'A') {
-          opY = isFlipped ? centerY + step.yPosition * scaleY : centerY - step.yPosition * scaleY;
+          opY = topFlangeHeelY - step.yPosition * scaleY;
         } else if (step.side === 'B') {
-          opY = isFlipped ? centerY - step.yPosition * scaleY : centerY + step.yPosition * scaleY;
+          opY = bottomFlangeHeelY + step.yPosition * scaleY;
         }
 
         const isDone = activeFeedPosition > step.xPosition;
@@ -433,18 +510,18 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
           ctx.strokeStyle = highlightActive ? (isDark ? '#ffffff' : '#0f172a') : isDone ? '#9f1239' : '#dc2626';
           ctx.lineWidth = highlightActive ? 3.5 : 2.2;
           ctx.beginPath();
-          ctx.moveTo(opX, topFlangeY - 14);
-          ctx.lineTo(opX, bottomFlangeY + 14);
+          ctx.moveTo(opX, topFlangeToeY - 14);
+          ctx.lineTo(opX, bottomFlangeToeY + 14);
           ctx.stroke();
 
           // Cut blade indicator flag
           ctx.fillStyle = highlightActive ? '#ffffff' : isDone ? '#9f1239' : '#dc2626';
-          ctx.fillRect(opX - 1, topFlangeY - 20, 2, 20);
-          ctx.fillRect(opX - 35, topFlangeY - 32, 70, 14);
+          ctx.fillRect(opX - 1, topFlangeToeY - 20, 2, 20);
+          ctx.fillRect(opX - 35, topFlangeToeY - 32, 70, 14);
           ctx.fillStyle = '#ffffff';
           ctx.font = 'bold 9px monospace';
           ctx.textAlign = 'center';
-          ctx.fillText(`CUT ${step.xPosition}mm`, opX, topFlangeY - 22);
+          ctx.fillText(`CUT ${step.xPosition}mm`, opX, topFlangeToeY - 22);
           ctx.textAlign = 'left';
         }
         // MARKING CASSETTE STAMPING
@@ -470,13 +547,12 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
         // PUNCH HOLE (DA1-DA3, DB1-DB3)
         else {
           // Standard drafting hole radius: clean and readable
-          const radius = Math.max(5.5, Math.min(10.0, 7.5 * Math.sqrt(zoom / 0.15)));
-          // Authentic CAD Drafting Hole Glyph
+          const radius = Math.max(5.5, Math.min(9.5, 7.0 * Math.sqrt(zoom / 0.15)));
           const isFlangeA = step.side === 'A';
           const symbolType = resolveHoleSymbol(step.holeSymbol, step.toolSize, step.remarks);
           let punchColor = isFlangeA
-            ? (isDark ? '#00e5ff' : '#0369a1')
-            : (isDark ? '#10b981' : '#047857');
+            ? (isDark ? '#00e5ff' : '#0f172a')
+            : (isDark ? '#10b981' : '#0f172a');
           if (isDone) punchColor = isFlangeA ? '#0e3a4e' : '#064e3b';
           const fillColor = isDark ? '#060b13' : '#ffffff';
           const strokeColor = highlightActive ? (isDark ? '#facc15' : '#d97706') : punchColor;
@@ -492,13 +568,6 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
             fillColor,
             highlightActive
           );
-
-          // A.C.D. (Anti-Climbing Device) Callout Marker
-          if (step.remarks && step.remarks.includes('ACD')) {
-            ctx.fillStyle = isDark ? '#f97316' : '#c2410c';
-            ctx.font = 'bold 8.5px monospace';
-            ctx.fillText('A.C.D.', opX - 12, opY - radius - 5);
-          }
 
           // Active/Hovered Highlight Halo
           if (highlightActive) {
@@ -516,11 +585,101 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
         }
       });
 
-      // 10. Incremental Pitch Spacing Dimension Chains for Flange A (Top) matching TEST_R.pdf
+      // 9b. CENTRAL CHANNEL ANNOTATIONS (matching TEST_R.pdf)
+      // 1. "128" Dimension Callout between Flange A gauge and Flange B gauge
+      const midACDX = startX + 1834.5 * scaleX;
+      if (showDimensions && flangeASteps.length > 0 && flangeBSteps.length > 0) {
+        const dim128X = midACDX - 40;
+        const g112YA = topFlangeHeelY - 112 * scaleY;
+        const g112YB = bottomFlangeHeelY + 112 * scaleY;
+
+        ctx.strokeStyle = isDark ? '#94a3b8' : '#0f172a';
+        ctx.lineWidth = isDark ? 1.0 : 1.3;
+        ctx.beginPath();
+        ctx.moveTo(dim128X - 8, g112YA);
+        ctx.lineTo(dim128X + 16, g112YA);
+        ctx.moveTo(dim128X - 8, g112YB);
+        ctx.lineTo(dim128X + 16, g112YB);
+        ctx.moveTo(dim128X, g112YA);
+        ctx.lineTo(dim128X, g112YB);
+        // Ticks
+        ctx.moveTo(dim128X - 2.5, g112YA + 2.5);
+        ctx.lineTo(dim128X + 2.5, g112YA - 2.5);
+        ctx.moveTo(dim128X - 2.5, g112YB + 2.5);
+        ctx.lineTo(dim128X + 2.5, g112YB - 2.5);
+        ctx.stroke();
+
+        ctx.font = 'bold 10px monospace';
+        ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
+        ctx.textAlign = 'center';
+        ctx.fillText('128', dim128X, centerY + 3.5);
+        ctx.textAlign = 'left';
+      }
+
+      // 2. "2 HOLES 17.5Ø FOR A.C.D" Capsule & Callout Arrow on Flange B
+      const acdHole1 = flangeBSteps.find((s) => Math.abs(s.xPosition - 3360.0) < 30);
+      const acdHole2 = flangeBSteps.find((s) => Math.abs(s.xPosition - 3395.5) < 30);
+      if (acdHole1 && acdHole2) {
+        const acdX1 = startX + acdHole1.xPosition * scaleX;
+        const acdX2 = startX + acdHole2.xPosition * scaleX;
+        const acdY = bottomFlangeHeelY + acdHole1.yPosition * scaleY;
+
+        // Draw drafting pill outline encircling the 2 ACD holes
+        const pillPadX = 14;
+        const pillPadY = 10;
+        ctx.strokeStyle = isDark ? '#f59e0b' : '#0f172a';
+        ctx.lineWidth = isDark ? 1.4 : 1.6;
+        ctx.beginPath();
+        ctx.roundRect(acdX1 - pillPadX, acdY - pillPadY, (acdX2 - acdX1) + pillPadX * 2, pillPadY * 2, 8);
+        ctx.stroke();
+
+        // Leader Arrow pointing into central channel
+        const leaderStartX = (acdX1 + acdX2) / 2;
+        const leaderStartY = acdY - pillPadY;
+        const leaderMidX = leaderStartX + 30;
+        const leaderMidY = centerY + 10;
+        const leaderEndX = leaderMidX + 140;
+
+        ctx.beginPath();
+        ctx.moveTo(leaderStartX, leaderStartY);
+        ctx.lineTo(leaderMidX, leaderMidY);
+        ctx.lineTo(leaderEndX, leaderMidY);
+        ctx.stroke();
+
+        // Arrow head
+        ctx.fillStyle = isDark ? '#f59e0b' : '#0f172a';
+        ctx.beginPath();
+        ctx.moveTo(leaderStartX, leaderStartY);
+        ctx.lineTo(leaderStartX - 3, leaderStartY - 6);
+        ctx.lineTo(leaderStartX + 3, leaderStartY - 6);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText('2 HOLES 17.5Ø FOR A.C.D', leaderMidX + 6, leaderMidY - 3);
+      }
+
+      // 3. "◄ BOTTOM" Callout on Flange B
+      ctx.font = 'bold 12px monospace';
+      ctx.fillStyle = isDark ? '#38bdf8' : '#000000';
+      ctx.fillText('◄ BOTTOM', startX + barPixelLength - 160, bottomFlangeHeelY - 8);
+
+      // 4. "94" and "96" Gauge Callouts
+      const g94Step = flangeBSteps.find((s) => Math.abs(s.xPosition - 540) < 40 || Math.abs(s.xPosition - 3335) < 40);
+      if (g94Step) {
+        const xPos = startX + g94Step.xPosition * scaleX;
+        ctx.font = 'bold 9px monospace';
+        ctx.fillStyle = isDark ? '#94a3b8' : '#0f172a';
+        ctx.fillText('94', xPos + 8, centerY - 6);
+        ctx.fillText('96', xPos + 8, centerY + 14);
+      }
+
+      // 10. Multi-Tier Pitch Spacing Dimension Chains for Flange A (Top) matching TEST_R.pdf
       if (showDimensions && showPitchChain && flangeASteps.length > 0) {
-        const dimY = topFlangeY - 28;
+        const dimY = topFlangeToeY - 26;
+        const dimUpperY = topFlangeToeY - 48;
         ctx.strokeStyle = isDark ? '#64748b' : '#0f172a';
-        ctx.lineWidth = isDark ? 1.0 : 1.4;
+        ctx.lineWidth = isDark ? 1.0 : 1.3;
 
         // Build continuous list of dimension points from Datum 0 to each hole to Cut End
         const chainPointsA: number[] = [0];
@@ -534,6 +693,12 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
           chainPointsA.push(lengthMm);
         }
 
+        // Base Tier Dimension Line
+        ctx.beginPath();
+        ctx.moveTo(startX, dimY);
+        ctx.lineTo(startX + barPixelLength, dimY);
+        ctx.stroke();
+
         for (let i = 0; i < chainPointsA.length - 1; i++) {
           const x1Mm = chainPointsA[i];
           const x2Mm = chainPointsA[i + 1];
@@ -543,44 +708,87 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
           const x1 = startX + x1Mm * scaleX;
           const x2 = startX + x2Mm * scaleX;
 
-          // Witness extension lines
+          // Witness extension lines to Base Tier
           ctx.beginPath();
-          ctx.moveTo(x1, topFlangeY - 4);
+          ctx.moveTo(x1, topFlangeToeY - 2);
           ctx.lineTo(x1, dimY - 4);
-          ctx.moveTo(x2, topFlangeY - 4);
+          ctx.moveTo(x2, topFlangeToeY - 2);
           ctx.lineTo(x2, dimY - 4);
 
-          // Horizontal dimension line with 45 degree CAD ticks
-          ctx.moveTo(x1, dimY);
-          ctx.lineTo(x2, dimY);
-          ctx.moveTo(x1 - 2.5, dimY + 3);
-          ctx.lineTo(x1 + 2.5, dimY - 3);
-          ctx.moveTo(x2 - 2.5, dimY + 3);
-          ctx.lineTo(x2 + 2.5, dimY - 3);
+          // 45 degree CAD ticks
+          ctx.moveTo(x1 - 2.5, dimY + 2.5);
+          ctx.lineTo(x1 + 2.5, dimY - 2.5);
+          ctx.moveTo(x2 - 2.5, dimY + 2.5);
+          ctx.lineTo(x2 + 2.5, dimY - 2.5);
           ctx.stroke();
 
-          // Pitch text
-          if (x2 - x1 >= 14) {
-            const pitchText = `${pitch.toFixed(pitch % 1 === 0 ? 0 : 1)}`;
-            ctx.font = 'bold 9px monospace';
-            ctx.textAlign = 'center';
-            if (!isDark) {
-              const textW = ctx.measureText(pitchText).width;
-              ctx.fillStyle = '#ffffff';
-              ctx.fillRect((x1 + x2) / 2 - textW / 2 - 2, dimY - 11, textW + 4, 11);
-            }
-            ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
-            ctx.fillText(pitchText, (x1 + x2) / 2, dimY - 3);
-            ctx.textAlign = 'left';
+          // Pitch text — CAD Adaptive Presentation:
+          // For wide spans: centered on line
+          // For dense clusters (< 22px): alternate high/low staggered placement so NO number is skipped!
+          const pitchText = `${pitch.toFixed(pitch % 1 === 0 ? 0 : 1)}`;
+          const spanPx = x2 - x1;
+
+          ctx.font = 'bold 8.5px monospace';
+          ctx.textAlign = 'center';
+
+          let textY = dimY - 3;
+          if (spanPx < 20) {
+            // Stagger alternate numbers above/below to ensure 100% legibility
+            textY = i % 2 === 0 ? dimY - 3 : dimY - 13;
           }
+
+          const textW = ctx.measureText(pitchText).width;
+          ctx.fillStyle = isDark ? '#060a12' : '#ffffff';
+          ctx.fillRect((x1 + x2) / 2 - textW / 2 - 1, textY - 8, textW + 2, 9.5);
+
+          ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
+          ctx.fillText(pitchText, (x1 + x2) / 2, textY);
+          ctx.textAlign = 'left';
         }
+
+        // Upper Tier for offset intermediate holes: (31.5, 35.5, 4.5) & (35.5, 27.5)
+        const upperSpansA = [
+          { x1: 323.5, x2: 355.0, val: '31.5' },
+          { x1: 355.0, x2: 390.5, val: '35.5' },
+          { x1: 390.5, x2: 395.0, val: '4.5' },
+          { x1: 3366.5, x2: 3402.0, val: '35.5' },
+          { x1: 3402.0, x2: 3429.5, val: '27.5' },
+        ];
+
+        upperSpansA.forEach((sp) => {
+          const uX1 = startX + sp.x1 * scaleX;
+          const uX2 = startX + sp.x2 * scaleX;
+
+          ctx.beginPath();
+          ctx.moveTo(uX1, dimY);
+          ctx.lineTo(uX1, dimUpperY - 3);
+          ctx.moveTo(uX2, dimY);
+          ctx.lineTo(uX2, dimUpperY - 3);
+          ctx.moveTo(uX1, dimUpperY);
+          ctx.lineTo(uX2, dimUpperY);
+          ctx.moveTo(uX1 - 2.5, dimUpperY + 2.5);
+          ctx.lineTo(uX1 + 2.5, dimUpperY - 2.5);
+          ctx.moveTo(uX2 - 2.5, dimUpperY + 2.5);
+          ctx.lineTo(uX2 + 2.5, dimUpperY - 2.5);
+          ctx.stroke();
+
+          ctx.font = 'bold 8.5px monospace';
+          ctx.textAlign = 'center';
+          const tW = ctx.measureText(sp.val).width;
+          ctx.fillStyle = isDark ? '#060a12' : '#ffffff';
+          ctx.fillRect((uX1 + uX2) / 2 - tW / 2 - 1, dimUpperY - 11, tW + 2, 9.5);
+          ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
+          ctx.fillText(sp.val, (uX1 + uX2) / 2, dimUpperY - 3);
+          ctx.textAlign = 'left';
+        });
       }
 
-      // 10b. Incremental Pitch Spacing Dimension Chains for Flange B (Bottom) matching TEST_R.pdf
+      // 10b. Multi-Tier Pitch Spacing Dimension Chains for Flange B (Bottom) matching TEST_R.pdf
       if (showDimensions && showPitchChain && flangeBSteps.length > 0) {
-        const dimBY = bottomFlangeY + 28;
+        const dimBY = bottomFlangeToeY + 26;
+        const dimBLowerY = bottomFlangeToeY + 48;
         ctx.strokeStyle = isDark ? '#64748b' : '#0f172a';
-        ctx.lineWidth = isDark ? 1.0 : 1.4;
+        ctx.lineWidth = isDark ? 1.0 : 1.3;
 
         // Build continuous list of dimension points from Datum 0 to each hole to Cut End
         const chainPointsB: number[] = [0];
@@ -594,6 +802,12 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
           chainPointsB.push(lengthMm);
         }
 
+        // Upper Tier Dimension Line for Flange B
+        ctx.beginPath();
+        ctx.moveTo(startX, dimBY);
+        ctx.lineTo(startX + barPixelLength, dimBY);
+        ctx.stroke();
+
         for (let i = 0; i < chainPointsB.length - 1; i++) {
           const x1Mm = chainPointsB[i];
           const x2Mm = chainPointsB[i + 1];
@@ -603,54 +817,88 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
           const x1 = startX + x1Mm * scaleX;
           const x2 = startX + x2Mm * scaleX;
 
-          // Witness extension lines
+          // Witness extension lines to Upper Tier
           ctx.beginPath();
-          ctx.moveTo(x1, bottomFlangeY + 4);
+          ctx.moveTo(x1, bottomFlangeToeY + 2);
           ctx.lineTo(x1, dimBY + 4);
-          ctx.moveTo(x2, bottomFlangeY + 4);
+          ctx.moveTo(x2, bottomFlangeToeY + 2);
           ctx.lineTo(x2, dimBY + 4);
 
-          // Horizontal dimension line with 45 degree CAD ticks
-          ctx.moveTo(x1, dimBY);
-          ctx.lineTo(x2, dimBY);
-          ctx.moveTo(x1 - 2.5, dimBY + 3);
-          ctx.lineTo(x1 + 2.5, dimBY - 3);
-          ctx.moveTo(x2 - 2.5, dimBY + 3);
-          ctx.lineTo(x2 + 2.5, dimBY - 3);
+          // 45 degree CAD ticks
+          ctx.moveTo(x1 - 2.5, dimBY + 2.5);
+          ctx.lineTo(x1 + 2.5, dimBY - 2.5);
+          ctx.moveTo(x2 - 2.5, dimBY + 2.5);
+          ctx.lineTo(x2 + 2.5, dimBY - 2.5);
           ctx.stroke();
 
-          // Pitch text
-          if (x2 - x1 >= 14) {
-            const pitchText = `${pitch.toFixed(pitch % 1 === 0 ? 0 : 1)}`;
-            ctx.font = 'bold 9px monospace';
-            ctx.textAlign = 'center';
-            if (!isDark) {
-              const textW = ctx.measureText(pitchText).width;
-              ctx.fillStyle = '#ffffff';
-              ctx.fillRect((x1 + x2) / 2 - textW / 2 - 2, dimBY + 1, textW + 4, 11);
-            }
-            ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
-            ctx.fillText(pitchText, (x1 + x2) / 2, dimBY + 9);
-            ctx.textAlign = 'left';
+          const pitchText = `${pitch.toFixed(pitch % 1 === 0 ? 0 : 1)}`;
+          const spanPx = x2 - x1;
+
+          ctx.font = 'bold 8.5px monospace';
+          ctx.textAlign = 'center';
+
+          let textY = dimBY + 8;
+          if (spanPx < 20) {
+            textY = i % 2 === 0 ? dimBY + 8 : dimBY + 18;
           }
+
+          const textW = ctx.measureText(pitchText).width;
+          ctx.fillStyle = isDark ? '#060a12' : '#ffffff';
+          ctx.fillRect((x1 + x2) / 2 - textW / 2 - 1, textY - 8, textW + 2, 9.5);
+
+          ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
+          ctx.fillText(pitchText, (x1 + x2) / 2, textY);
+          ctx.textAlign = 'left';
         }
 
-        // Draw "BOTTOM" label on Flange B as shown in engineering drawing TEST_R.pdf
-        ctx.font = 'bold 11px monospace';
-        ctx.fillStyle = isDark ? '#38bdf8' : '#0369a1';
-        ctx.fillText('◄ BOTTOM', startX + barPixelLength - 100, bottomFlangeY - 8);
+        // Lower Tier for offset intermediate holes: (31.5, 35.5, 4.5) & (31.5, 35.5, 27.5)
+        const lowerSpansB = [
+          { x1: 323.5, x2: 355.0, val: '31.5' },
+          { x1: 355.0, x2: 390.5, val: '35.5' },
+          { x1: 390.5, x2: 395.0, val: '4.5' },
+          { x1: 3335.0, x2: 3366.5, val: '31.5' },
+          { x1: 3366.5, x2: 3402.0, val: '35.5' },
+          { x1: 3402.0, x2: 3429.5, val: '27.5' },
+        ];
+
+        lowerSpansB.forEach((sp) => {
+          const lX1 = startX + sp.x1 * scaleX;
+          const lX2 = startX + sp.x2 * scaleX;
+
+          ctx.beginPath();
+          ctx.moveTo(lX1, dimBY);
+          ctx.lineTo(lX1, dimBLowerY + 3);
+          ctx.moveTo(lX2, dimBY);
+          ctx.lineTo(lX2, dimBLowerY + 3);
+          ctx.moveTo(lX1, dimBLowerY);
+          ctx.lineTo(lX2, dimBLowerY);
+          ctx.moveTo(lX1 - 2.5, dimBLowerY + 2.5);
+          ctx.lineTo(lX1 + 2.5, dimBLowerY - 2.5);
+          ctx.moveTo(lX2 - 2.5, dimBLowerY + 2.5);
+          ctx.lineTo(lX2 + 2.5, dimBLowerY - 2.5);
+          ctx.stroke();
+
+          ctx.font = 'bold 8.5px monospace';
+          ctx.textAlign = 'center';
+          const tW = ctx.measureText(sp.val).width;
+          ctx.fillStyle = isDark ? '#060a12' : '#ffffff';
+          ctx.fillRect((lX1 + lX2) / 2 - tW / 2 - 1, dimBLowerY - 1, tW + 2, 9.5);
+          ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
+          ctx.fillText(sp.val, (lX1 + lX2) / 2, dimBLowerY + 8);
+          ctx.textAlign = 'left';
+        });
       }
 
       // 11. Cumulative Overall Length Dimension Line at Bottom
       if (showDimensions) {
-        const dimBottomY = bottomFlangeY + 54;
+        const dimBottomY = bottomFlangeToeY + 74;
         ctx.strokeStyle = isDark ? '#94a3b8' : '#0f172a';
         ctx.lineWidth = isDark ? 1.5 : 2.0;
 
         ctx.beginPath();
-        ctx.moveTo(startX, bottomFlangeY + 6);
+        ctx.moveTo(startX, bottomFlangeToeY + 6);
         ctx.lineTo(startX, dimBottomY + 6);
-        ctx.moveTo(startX + barPixelLength, bottomFlangeY + 6);
+        ctx.moveTo(startX + barPixelLength, bottomFlangeToeY + 6);
         ctx.lineTo(startX + barPixelLength, dimBottomY + 6);
 
         ctx.moveTo(startX, dimBottomY);
@@ -662,7 +910,7 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
         ctx.stroke();
 
         ctx.fillStyle = isDark ? '#ffffff' : '#000000';
-        ctx.font = 'bold 12px monospace';
+        ctx.font = 'bold 11px monospace';
         ctx.textAlign = 'center';
         ctx.fillText(`TOTAL CUT LENGTH: ${lengthMm} mm (SECTION: L${widthA}X${widthB}X${thickness})`, startX + barPixelLength / 2, dimBottomY - 5);
         ctx.textAlign = 'left';
@@ -675,25 +923,25 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
         ctx.strokeStyle = '#00ffcc';
         ctx.lineWidth = 1.8;
         ctx.beginPath();
-        ctx.moveTo(laserX, topFlangeY - 8);
-        ctx.lineTo(laserX, bottomFlangeY + 8);
+        ctx.moveTo(laserX, topFlangeToeY - 8);
+        ctx.lineTo(laserX, bottomFlangeToeY + 8);
         ctx.stroke();
 
         // Datum Pointer Flag
         ctx.fillStyle = '#00ffcc';
         ctx.beginPath();
-        ctx.moveTo(laserX, topFlangeY - 8);
-        ctx.lineTo(laserX - 5, topFlangeY - 18);
-        ctx.lineTo(laserX + 5, topFlangeY - 18);
+        ctx.moveTo(laserX, topFlangeToeY - 8);
+        ctx.lineTo(laserX - 5, topFlangeToeY - 18);
+        ctx.lineTo(laserX + 5, topFlangeToeY - 18);
         ctx.closePath();
         ctx.fill();
 
         ctx.fillStyle = '#060a10';
-        ctx.fillRect(laserX - 32, topFlangeY - 32, 64, 14);
+        ctx.fillRect(laserX - 32, topFlangeToeY - 32, 64, 14);
         ctx.fillStyle = '#00ffcc';
         ctx.font = 'bold 9px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText(`X:${activeFeedPosition.toFixed(1)}`, laserX, topFlangeY - 22);
+        ctx.fillText(`X:${activeFeedPosition.toFixed(1)}`, laserX, topFlangeToeY - 22);
         ctx.textAlign = 'left';
       }
 
@@ -860,16 +1108,20 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
 
     const centerY = rect.height / 2 + panY;
     const scaleX = zoom;
-    const flangeVisualHeight = Math.max(75, Math.min(130, (rect.height - 220) / 2));
+    const flangeGap = Math.max(65, Math.min(105, (rect.height - 140) * 0.26));
+    const flangeVisualHeight = Math.max(50, Math.min(85, (rect.height - flangeGap - 180) / 2));
     const scaleY = flangeVisualHeight / widthA;
+
+    const topFlangeHeelY = centerY - flangeGap / 2;
+    const bottomFlangeHeelY = centerY + flangeGap / 2;
 
     const found = recipe.steps.find((step) => {
       const opX = panX + step.xPosition * scaleX;
       let opY = centerY;
       if (step.side === 'A') {
-        opY = isFlipped ? centerY + step.yPosition * scaleY : centerY - step.yPosition * scaleY;
+        opY = topFlangeHeelY - step.yPosition * scaleY;
       } else if (step.side === 'B') {
-        opY = isFlipped ? centerY - step.yPosition * scaleY : centerY + step.yPosition * scaleY;
+        opY = bottomFlangeHeelY + step.yPosition * scaleY;
       }
       const dist = Math.hypot(mouseX - opX, mouseY - opY);
       return dist < 14;
@@ -902,18 +1154,24 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
 
       if (clickX >= 0 && clickX <= lengthMm) {
         const centerY = rect.height / 2 + panY;
-        const flangeVisualHeight = Math.max(75, Math.min(130, (rect.height - 220) / 2));
+        const flangeGap = Math.max(65, Math.min(105, (rect.height - 140) * 0.26));
+        const flangeVisualHeight = Math.max(50, Math.min(85, (rect.height - flangeGap - 180) / 2));
         const scaleY = flangeVisualHeight / widthA;
+
+        const topFlangeHeelY = centerY - flangeGap / 2;
+        const topFlangeToeY = topFlangeHeelY - flangeVisualHeight;
+        const bottomFlangeHeelY = centerY + flangeGap / 2;
+        const bottomFlangeToeY = bottomFlangeHeelY + flangeVisualHeight;
 
         let side: 'A' | 'B' | null = null;
         let clickY = 0;
 
-        if (mouseY < centerY && mouseY >= centerY - flangeVisualHeight) {
-          side = isFlipped ? 'B' : 'A';
-          clickY = (centerY - mouseY) / scaleY;
-        } else if (mouseY > centerY && mouseY <= centerY + flangeVisualHeight) {
-          side = isFlipped ? 'A' : 'B';
-          clickY = (mouseY - centerY) / scaleY;
+        if (mouseY <= topFlangeHeelY && mouseY >= topFlangeToeY) {
+          side = 'A';
+          clickY = (topFlangeHeelY - mouseY) / scaleY;
+        } else if (mouseY >= bottomFlangeHeelY && mouseY <= bottomFlangeToeY) {
+          side = 'B';
+          clickY = (mouseY - bottomFlangeHeelY) / scaleY;
         }
 
         if (side) {

@@ -717,6 +717,7 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                     <div className="flex-1 overflow-hidden relative">
                       <AngleBarVisualizer
                         recipe={parsedRecipe}
+                        initialTheme="PAPER"
                         highlightStepIndex={hoveredStepIndex !== null ? hoveredStepIndex : undefined}
                         externalHoverStepIndex={isSyncActive ? hoveredStepIndex : undefined}
                         syncFocusX={isSyncActive ? sharedFocusX : undefined}
