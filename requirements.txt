@@ -1,0 +1,34 @@
+# ==============================================================================
+# HPT Innovance 6-Head CNC Angle Punching & Shearing Line
+# Python Requirements for AI CAD Drawing Extractor & Vision Engine
+# ==============================================================================
+# Supported Platforms: Windows 10/11 x64, Linux x64
+# Python Version: >= 3.10, < 3.13
+# ==============================================================================
+
+# --- PDF Rendering & Structural Drawing Extraction ---
+pymupdf>=1.24.0,<1.29.0              # PyMuPDF (fitz) - High-resolution PDF rendering, DPI rasterization & vector stream extraction
+
+# --- High-Speed Deep Learning OCR (Offline & Real-Time) ---
+rapidocr-onnxruntime>=1.3.8         # RapidOCR with ONNX Runtime - High-speed offline text & numeral recognition on CAD drawings
+onnxruntime>=1.17.0,<2.0.0          # ONNX Runtime - Cross-platform deep learning inference accelerator
+
+# --- Computer Vision, Image Processing & Orientation Detection ---
+opencv-python>=4.8.0,<6.0.0         # OpenCV - Image binarization, edge detection, Hough circles, contour analysis & deskewing
+numpy>=1.24.0,<3.0.0                # NumPy - Fast multidimensional array math & geometry coordinate calculations
+pillow>=10.0.0                      # Pillow (PIL) - Raster image format encoding, decoding & base64 transforms
+
+# --- AutoCAD DXF / DWG Vector CAD Parsing ---
+ezdxf>=1.1.0,<2.0.0                 # ezdxf - Full AutoCAD DXF geometry parser (CIRCLE, LINE, LWPOLYLINE, TEXT, MTEXT entities)
+
+# --- Computational Geometry & Polygon Clipping ---
+shapely>=2.0.0                      # Shapely - 2D geometric operations, spatial predicates & polygon intersection
+pyclipper>=1.3.0                    # Pyclipper - Clipper library wrapper for polygon offsetting, clipping & boolean CAD operations
+
+# --- Technical Reporting & Export Utilities ---
+reportlab>=4.0.0                    # ReportLab - PDF generation for test inspection sheets and calibration logs
+
+# --- Data Validation & Core Utilities ---
+pydantic>=2.5.0                     # Pydantic - Data validation and schema parsing
+typing-extensions>=4.8.0            # Typing Extensions - Backported Python typing features
+requests>=2.31.0                    # Requests - HTTP utility client for remote firmware or recipe transfers
