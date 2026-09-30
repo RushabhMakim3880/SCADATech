@@ -224,9 +224,9 @@ export const UserManagementView: React.FC = () => {
   ];
 
   return (
-    <div className="flex-1 flex overflow-hidden bg-[#0b0f17] text-slate-200 select-none">
+    <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden bg-[#0b0f17] text-slate-200 select-none">
       {/* LEFT: User Directory List */}
-      <div className="w-80 bg-[#111723] border-r border-[#1e293b] flex flex-col">
+      <div className="w-full lg:w-80 shrink-0 bg-[#111723] border-b lg:border-b-0 lg:border-r border-[#1e293b] flex flex-col max-h-[260px] lg:max-h-none">
         {/* Header & Add User */}
         <div className="p-4 border-b border-[#1e293b] bg-[#162030] flex items-center justify-between">
           <div className="flex items-center gap-2">

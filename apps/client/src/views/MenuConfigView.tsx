@@ -210,9 +210,9 @@ export const MenuConfigView: React.FC = () => {
       )}
 
       {/* Main Split Body */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
         {/* LEFT: Menu Items List & Ordering */}
-        <div className="w-96 bg-[#101622] border-r border-[#1e293b] flex flex-col">
+        <div className="w-full lg:w-80 xl:w-96 shrink-0 bg-[#101622] border-b lg:border-b-0 lg:border-r border-[#1e293b] flex flex-col max-h-[280px] lg:max-h-none">
           <div className="p-3 border-b border-[#1e293b] bg-[#141c2b] text-[11px] font-black text-slate-400 uppercase tracking-wider flex items-center justify-between">
             <span>SCADA BUTTON SEQUENCE ({localItems.length})</span>
             <span>REORDER</span>

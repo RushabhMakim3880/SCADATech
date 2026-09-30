@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut } from 'electron';
+import { app, BrowserWindow, globalShortcut, screen } from 'electron';
 import path from 'path';
 import { fork, ChildProcess } from 'child_process';
 
@@ -25,11 +25,14 @@ function startBackendServer() {
 }
 
 function createWindow() {
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width, height } = primaryDisplay.workAreaSize;
+
   mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
-    minWidth: 1024,
-    minHeight: 768,
+    width: Math.min(1920, width),
+    height: Math.min(1080, height),
+    minWidth: 800,
+    minHeight: 500,
     kiosk: false, // Set to true for locked kiosk terminal deployment
     fullscreen: false,
     autoHideMenuBar: true,
@@ -40,6 +43,9 @@ function createWindow() {
       contextIsolation: true,
     },
   });
+
+  // Automatically maximize to fill any screen size (laptop, HDMI external monitor, 4K display)
+  mainWindow.maximize();
 
   const clientDist = path.join(__dirname, '../../client/dist/index.html');
   mainWindow.loadFile(clientDist).catch(() => {
@@ -65,6 +71,13 @@ app.whenReady().then(() => {
     if (mainWindow) {
       const isFullScreen = mainWindow.isFullScreen();
       mainWindow.setFullScreen(!isFullScreen);
+    }
+  });
+
+  // Adapt window when external HDMI monitor or display resolution changes
+  screen.on('display-metrics-changed', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.maximize();
     }
   });
 

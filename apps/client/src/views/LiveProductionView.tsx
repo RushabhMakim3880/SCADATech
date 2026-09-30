@@ -160,16 +160,16 @@ export const LiveProductionView: React.FC = () => {
   const currentOp = selectedRecipe?.steps[currentStepIdx] || null;
 
   return (
-    <div className="p-4 md:p-6 space-y-4 flex-1 overflow-y-auto bg-[#070b12] text-white">
+    <div className="p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4 flex-1 overflow-y-auto bg-[#070b12] text-white">
       {/* Top Production Control Header */}
-      <div className="bg-[#0e1420] border border-[#1e2a3c] rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-[#0e1420] border border-[#1e2a3c] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 shadow-xl flex flex-wrap items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl font-black text-white tracking-wide">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <h2 className="text-base sm:text-lg md:text-xl font-black text-white tracking-wide">
               Manage Live CNC Production Line
             </h2>
             <span
-              className={`px-3 py-1 text-xs rounded-full font-extrabold tracking-wider border shadow-sm flex items-center gap-1.5 ${
+              className={`px-2.5 sm:px-3 py-1 text-xs rounded-full font-extrabold tracking-wider border shadow-sm flex items-center gap-1.5 ${
                 isConnected
                   ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500 shadow-emerald-950/50'
                   : 'bg-rose-950/80 text-rose-300 border-rose-500 shadow-rose-950/50 animate-pulse'
@@ -179,28 +179,28 @@ export const LiveProductionView: React.FC = () => {
               {isConnected ? 'PLC ONLINE (20Hz)' : 'PLC OFFLINE'}
             </span>
           </div>
-          <p className="text-xs text-slate-400 font-medium mt-1">
+          <p className="text-[11px] sm:text-xs text-slate-400 font-medium mt-1">
             Real-time feed axis servo positioning, 6-head punch sequencing, character stamping, and hydraulic shearing telemetry.
           </p>
         </div>
 
-        {/* Master Cycle Controls (Tactile 48px+ Touch Buttons) */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        {/* Master Cycle Controls */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
           {!isRunning ? (
             <button
               onClick={handleStartAuto}
               className="cnc-btn cnc-btn-success text-xs font-black shadow-lg shadow-emerald-950/40"
             >
-              <Play className="w-4 h-4 fill-white" />
-              <span>START AUTO CYCLE</span>
+              <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-white shrink-0" />
+              <span className="whitespace-nowrap">START AUTO CYCLE</span>
             </button>
           ) : (
             <button
               onClick={handlePauseAuto}
               className="cnc-btn cnc-btn-danger text-xs font-black shadow-lg shadow-rose-950/40 animate-pulse"
             >
-              <Pause className="w-4 h-4 fill-white" />
-              <span>PAUSE AUTO CYCLE</span>
+              <Pause className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-white shrink-0" />
+              <span className="whitespace-nowrap">PAUSE AUTO CYCLE</span>
             </button>
           )}
 
@@ -208,74 +208,74 @@ export const LiveProductionView: React.FC = () => {
             onClick={handleStepForward}
             className="cnc-btn cnc-btn-primary text-xs font-black"
           >
-            <SkipForward className="w-4 h-4" />
-            <span>STEP NEXT</span>
+            <SkipForward className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <span className="whitespace-nowrap">STEP NEXT</span>
           </button>
 
           <button
             onClick={handleResetCycle}
             className="cnc-btn cnc-btn-secondary text-xs font-black"
           >
-            <RotateCcw className="w-4 h-4" />
-            <span>RESET CYCLE</span>
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <span className="whitespace-nowrap">RESET CYCLE</span>
           </button>
         </div>
       </div>
 
       {/* Live High-Contrast Digital Readout (DRO) Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="cnc-dro flex flex-col justify-between p-3.5 rounded-xl border border-[#1e2a3c]">
-          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Feed Position (X)</div>
-          <div className="cnc-dro-val text-2xl font-black text-cyan-300 mt-1">{feedPositionMm.toFixed(2)} mm</div>
-          <div className="text-[11px] text-slate-400 font-medium">Target: {currentOp ? currentOp.xPosition.toFixed(2) : '0.00'} mm</div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+        <div className="cnc-dro flex flex-col justify-between p-3 sm:p-3.5 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">Feed Position (X)</div>
+          <div className="cnc-dro-val text-xl sm:text-2xl font-black text-cyan-300 mt-1 truncate">{feedPositionMm.toFixed(2)} mm</div>
+          <div className="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">Target: {currentOp ? currentOp.xPosition.toFixed(2) : '0.00'} mm</div>
         </div>
 
-        <div className="cnc-dro flex flex-col justify-between p-3.5 rounded-xl border border-[#1e2a3c]">
-          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Feed Speed</div>
-          <div className="cnc-dro-val text-2xl font-black text-emerald-400 mt-1">{feedSpeedMPerMin.toFixed(1)} m/min</div>
-          <div className="text-[11px] text-slate-400 font-medium">IS620N Servo Velocity</div>
+        <div className="cnc-dro flex flex-col justify-between p-3 sm:p-3.5 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">Feed Speed</div>
+          <div className="cnc-dro-val text-xl sm:text-2xl font-black text-emerald-400 mt-1 truncate">{feedSpeedMPerMin.toFixed(1)} m/min</div>
+          <div className="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">IS620N Servo Velocity</div>
         </div>
 
-        <div className="cnc-dro flex flex-col justify-between p-3.5 rounded-xl border border-[#1e2a3c]">
-          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hydraulic Pressure</div>
-          <div className="cnc-dro-val text-2xl font-black text-amber-300 mt-1">{hydraulicPressureBar.toFixed(1)} Bar</div>
-          <div className="text-[11px] text-slate-400 font-medium">Target: 145.0 Bar</div>
+        <div className="cnc-dro flex flex-col justify-between p-3 sm:p-3.5 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">Hydraulic Pressure</div>
+          <div className="cnc-dro-val text-xl sm:text-2xl font-black text-amber-300 mt-1 truncate">{hydraulicPressureBar.toFixed(1)} Bar</div>
+          <div className="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">Target: 145.0 Bar</div>
         </div>
 
-        <div className="cnc-dro flex flex-col justify-between p-3.5 rounded-xl border border-[#1e2a3c]">
-          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Step</div>
-          <div className="cnc-dro-val text-2xl font-black text-purple-300 mt-1">
+        <div className="cnc-dro flex flex-col justify-between p-3 sm:p-3.5 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">Active Step</div>
+          <div className="cnc-dro-val text-xl sm:text-2xl font-black text-purple-300 mt-1 truncate">
             #{selectedRecipe?.steps.length ? currentStepIdx + 1 : 0} / {selectedRecipe?.steps.length || 0}
           </div>
-          <div className="text-[11px] text-slate-400 font-medium">{currentOp?.operationType || 'IDLE'}</div>
+          <div className="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">{currentOp?.operationType || 'IDLE'}</div>
         </div>
 
-        <div className="cnc-dro flex flex-col justify-between p-3.5 rounded-xl border border-[#1e2a3c]">
-          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Produced Pcs</div>
-          <div className="cnc-dro-val text-2xl font-black text-green-300 mt-1">{producedPcs} / {targetPcs}</div>
-          <div className="text-[11px] text-slate-400 font-medium">Shift Target: {targetPcs} pcs</div>
+        <div className="cnc-dro flex flex-col justify-between p-3 sm:p-3.5 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">Produced Pcs</div>
+          <div className="cnc-dro-val text-xl sm:text-2xl font-black text-green-300 mt-1 truncate">{producedPcs} / {targetPcs}</div>
+          <div className="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">Shift Target: {targetPcs} pcs</div>
         </div>
 
-        <div className="cnc-dro flex flex-col justify-between p-3.5 rounded-xl border border-[#1e2a3c]">
-          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Gripper Clamp</div>
-          <div className={`cnc-dro-val text-xl font-black mt-1 ${carriageClamp ? 'text-emerald-400' : 'text-slate-400'}`}>
+        <div className="cnc-dro flex flex-col justify-between p-3 sm:p-3.5 rounded-xl border border-[#1e2a3c]">
+          <div className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">Gripper Clamp</div>
+          <div className={`cnc-dro-val text-lg sm:text-xl font-black mt-1 truncate ${carriageClamp ? 'text-emerald-400' : 'text-slate-400'}`}>
             {carriageClamp ? 'CLAMPED' : 'UNCLAMPED'}
           </div>
-          <div className="text-[11px] text-slate-400 font-medium">Cylinder Valve Y10</div>
+          <div className="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">Cylinder Valve Y10</div>
         </div>
       </div>
 
-      {/* Active Recipe Selector Bar (High-Visibility Professional Slate) */}
-      <div className="bg-[#0e1420] p-3 rounded-2xl border border-[#1e2a3c] shadow-lg flex flex-wrap items-center justify-between text-xs gap-3">
-        <div className="flex items-center gap-3">
-          <span className="font-black text-white text-xs uppercase tracking-wider pl-1">Loaded Recipe:</span>
+      {/* Active Recipe Selector Bar */}
+      <div className="bg-[#0e1420] p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-[#1e2a3c] shadow-lg flex flex-wrap items-center justify-between text-xs gap-2.5 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <span className="font-black text-white text-xs uppercase tracking-wider pl-1 whitespace-nowrap">Loaded Recipe:</span>
           <select
             value={activeRecipeId}
             onChange={(e) => {
               setActiveRecipeId(e.target.value);
               setCurrentStepIdx(0);
             }}
-            className="bg-[#06090e] text-white border border-[#2b3a4f] rounded-xl px-4 py-2.5 font-bold focus:outline-none focus:border-cyan-400 cursor-pointer min-w-[320px] shadow-inner"
+            className="bg-[#06090e] text-white border border-[#2b3a4f] rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 font-bold focus:outline-none focus:border-cyan-400 cursor-pointer min-w-[240px] sm:min-w-[320px] max-w-full shadow-inner"
           >
             {recipes.map((r) => (
               <option key={r.id} value={r.id} className="bg-[#0b1018] text-white py-1">
@@ -286,14 +286,14 @@ export const LiveProductionView: React.FC = () => {
         </div>
 
         {selectedRecipe && (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="bg-[#06090e] px-3.5 py-2 rounded-xl border border-[#1e293b] text-slate-300 font-medium">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <span className="bg-[#06090e] px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-[#1e293b] text-slate-300 font-medium text-[11px] sm:text-xs">
               Profile: <b className="text-cyan-300 font-black">L{selectedRecipe.angleWidthA}×{selectedRecipe.angleWidthB}×{selectedRecipe.thickness} mm</b>
             </span>
-            <span className="bg-[#06090e] px-3.5 py-2 rounded-xl border border-[#1e293b] text-slate-300 font-medium">
+            <span className="bg-[#06090e] px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-[#1e293b] text-slate-300 font-medium text-[11px] sm:text-xs">
               Length: <b className="text-emerald-300 font-black">{selectedRecipe.totalLength} mm</b>
             </span>
-            <span className="bg-[#06090e] px-3.5 py-2 rounded-xl border border-[#1e293b] text-slate-300 font-medium">
+            <span className="bg-[#06090e] px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-[#1e293b] text-slate-300 font-medium text-[11px] sm:text-xs">
               Total Steps: <b className="text-amber-300 font-black">{selectedRecipe.steps.length} Ops</b>
             </span>
           </div>
@@ -301,7 +301,7 @@ export const LiveProductionView: React.FC = () => {
       </div>
 
       {/* Unified 2D/3D Interactive Visualizer */}
-      <div className="h-[520px] rounded-2xl overflow-hidden border border-[#1e2a3c] shadow-2xl bg-[#090d14]">
+      <div className="h-[340px] sm:h-[420px] md:h-[480px] lg:h-[520px] rounded-xl sm:rounded-2xl overflow-hidden border border-[#1e2a3c] shadow-2xl bg-[#090d14]">
         <AngleBarViewer
           recipe={selectedRecipe}
           activeFeedPosition={feedPositionMm}

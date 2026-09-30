@@ -29,6 +29,22 @@
     background-color: #121a26;
     color: #f8fafc;
   }
+
+  /* Custom High-Tech Industrial Dark Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #070b12;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1c283a;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #0284c7;
+  }
 }
 
 /* ==========================================================================
@@ -37,18 +53,18 @@
 .app-header {
   background: #141d2b;
   border-bottom: 2px solid #233246;
-  height: 60px;
+  min-height: 56px;
 }
 
 .app-sidebar {
   background: #0f1622;
-  width: 260px;
   border-right: 2px solid #202d3e;
 }
 
 .app-content {
   background: #0b1019;
-  min-height: calc(100vh - 60px);
+  min-height: 0;
+  flex: 1;
 }
 
 /* ==========================================================================
