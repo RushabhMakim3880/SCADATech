@@ -30,8 +30,7 @@ export const App: React.FC = () => {
 
     // 2. Connect to WebSocket gateway via wsClient
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.port === '3000' ? 'localhost:5000' : window.location.host;
-    const wsUrl = `${protocol}//${host}/ws`;
+    const wsUrl = `${protocol}//${window.location.host}/ws`;
 
     wsClient.connect(wsUrl, {
       onOpen: () => {

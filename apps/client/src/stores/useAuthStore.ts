@@ -25,6 +25,18 @@ interface AuthState {
   isOperator: () => boolean;
 }
 
+const safeParseResponse = async (res: Response) => {
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    try {
+      return JSON.parse(text);
+    } catch {
+      return { success: false, error: text || `HTTP ${res.status}: ${res.statusText}` };
+    }
+  }
+  return res.json().catch(() => ({ success: false, error: 'Malformed JSON payload' }));
+};
+
 export const useAuthStore = create<AuthState>((set, get) => ({
   currentUser: null,
   users: [],
@@ -44,7 +56,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       // Fresh launch: By default when system launches it must launch as Operator only
       const res = await fetch('/api/auth/current');
-      const data = await res.json();
+      const data = await safeParseResponse(res);
       if (data.success && data.data) {
         set({ currentUser: data.data });
         sessionStorage.setItem('hpt_hmi_user', JSON.stringify(data.data));
@@ -74,7 +86,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true });
     try {
       const res = await fetch('/api/users');
-      const data = await res.json();
+      const data = await safeParseResponse(res);
       if (data.success && Array.isArray(data.data)) {
         set({ users: data.data });
       }
@@ -92,7 +104,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pinCode, userId }),
       });
-      const data = await res.json();
+      const data = await safeParseResponse(res);
       if (data.success && data.data) {
         set({
           currentUser: data.data,
@@ -120,7 +132,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pinCode: code }),
       });
-      const data = await res.json();
+      const data = await safeParseResponse(res);
       if (data.success && data.data && data.data.role === 'SUPER_ADMIN') {
         set({
           currentUser: data.data,

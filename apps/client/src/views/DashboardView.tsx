@@ -141,13 +141,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
       perm: 'menu:users',
     },
     {
-      id: (isSuperAdmin() ? 'MENU_CONFIG' : 'OEE_ANALYTICS') as ActiveTab,
-      label: isSuperAdmin() ? 'OEM CONFIGURATION' : 'PRODUCTION REPORTS',
-      subtitle: isSuperAdmin() ? 'OEM Button Layout & Developer Rights' : 'Daily inspection, shift & batch run reports',
-      icon: isSuperAdmin() ? Settings2 : FileCode2,
-      readout: isSuperAdmin() ? 'OEM DEV' : 'REPORTS',
+      id: 'MENU_CONFIG' as ActiveTab,
+      label: isSuperAdmin() ? 'OEM CONFIGURATION' : 'OEM DEVELOPER CONFIG',
+      subtitle: isSuperAdmin() ? 'OEM Button Layout & Developer Rights' : 'Developer & Factory Menu Configuration',
+      icon: Settings2,
+      readout: 'OEM DEV',
       statusType: 'normal' as const,
-      perm: isSuperAdmin() ? 'menu:config' : 'menu:oee',
+      perm: 'menu:config',
     },
   ];
 
