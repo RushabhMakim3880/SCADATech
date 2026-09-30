@@ -10,6 +10,9 @@ import {
   ZoomIn,
   ZoomOut,
   Maximize2,
+  Minimize2,
+  Fullscreen,
+  Shrink,
   Columns,
   Layers,
   Sparkles,
@@ -60,11 +63,33 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
 
   // View Layout State & Triple Synchronization State
   const [viewMode, setViewMode] = useState<CadViewMode>('SPLIT_2D');
+  const [lastSplitMode, setLastSplitMode] = useState<CadViewMode>('SPLIT_2D');
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const modalContainerRef = useRef<HTMLDivElement | null>(null);
+
   const [isSyncActive, setIsSyncActive] = useState<boolean>(true);
   const [sharedFocusX, setSharedFocusX] = useState<number | null>(null);
   const [hoveredStepIndex, setHoveredStepIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'STEPS' | 'METADATA' | 'RULES'>('STEPS');
   const [isDrawerCollapsed, setIsDrawerCollapsed] = useState<boolean>(false);
+
+  // Listen to browser fullscreen changes
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, []);
+
+  const toggleBrowserFullscreen = (targetEl?: HTMLElement | null) => {
+    if (!document.fullscreenElement) {
+      const el = targetEl || modalContainerRef.current || document.documentElement;
+      el.requestFullscreen?.().catch(() => {});
+    } else {
+      document.exitFullscreen?.().catch(() => {});
+    }
+  };
 
   // Drawing Viewport Pan, Zoom & Rotation
   const [imgZoom, setImgZoom] = useState<number>(1.0);
@@ -270,8 +295,13 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
     : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-2 sm:p-4 backdrop-blur-md select-none overflow-hidden">
-      <div className="bg-[#0c1017] border-2 border-[#1f2b3d] rounded-2xl shadow-2xl w-full h-[96vh] flex flex-col overflow-hidden text-slate-200">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/90 ${isFullscreen ? 'p-0' : 'p-2 sm:p-4'} backdrop-blur-md select-none overflow-hidden`}>
+      <div
+        ref={modalContainerRef}
+        className={`bg-[#0c1017] border-2 border-[#1f2b3d] ${
+          isFullscreen ? 'rounded-none w-full h-full border-0' : 'rounded-2xl w-full h-[96vh]'
+        } shadow-2xl flex flex-col overflow-hidden text-slate-200`}
+      >
         {/* Top Header */}
         <div className="bg-[#111724] border-b border-[#1c2738] px-5 py-3 flex flex-wrap items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3">
@@ -302,10 +332,14 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
             {/* View Mode Switcher */}
             {parsedRecipe && (
               <div className="flex items-center bg-[#090d14] rounded-lg border border-[#1b2536] p-0.5 sm:p-1 gap-0.5 sm:gap-1 overflow-x-auto max-w-full">
+                {/* Multi-Panel Comparison Modes */}
                 <button
                   type="button"
-                  onClick={() => setViewMode('SPLIT_2D')}
-                  className={`px-2 sm:px-3 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
+                  onClick={() => {
+                    setViewMode('SPLIT_2D');
+                    setLastSplitMode('SPLIT_2D');
+                  }}
+                  className={`px-2 sm:px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
                     viewMode === 'SPLIT_2D'
                       ? 'bg-sky-600 text-white shadow'
                       : 'text-slate-400 hover:text-white'
@@ -318,8 +352,11 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                 </button>
                 <button
                   type="button"
-                  onClick={() => setViewMode('SPLIT_3D')}
-                  className={`px-2 sm:px-3 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
+                  onClick={() => {
+                    setViewMode('SPLIT_3D');
+                    setLastSplitMode('SPLIT_3D');
+                  }}
+                  className={`px-2 sm:px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
                     viewMode === 'SPLIT_3D'
                       ? 'bg-sky-600 text-white shadow'
                       : 'text-slate-400 hover:text-white'
@@ -332,8 +369,11 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                 </button>
                 <button
                   type="button"
-                  onClick={() => setViewMode('TRI_SPLIT')}
-                  className={`px-2 sm:px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
+                  onClick={() => {
+                    setViewMode('TRI_SPLIT');
+                    setLastSplitMode('TRI_SPLIT');
+                  }}
+                  className={`px-2 sm:px-2 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
                     viewMode === 'TRI_SPLIT'
                       ? 'bg-sky-600 text-white shadow'
                       : 'text-slate-400 hover:text-white'
@@ -345,8 +385,11 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                 </button>
                 <button
                   type="button"
-                  onClick={() => setViewMode('SPLIT_2D_3D')}
-                  className={`px-2 sm:px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
+                  onClick={() => {
+                    setViewMode('SPLIT_2D_3D');
+                    setLastSplitMode('SPLIT_2D_3D');
+                  }}
+                  className={`px-2 sm:px-2 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
                     viewMode === 'SPLIT_2D_3D'
                       ? 'bg-sky-600 text-white shadow'
                       : 'text-slate-400 hover:text-white'
@@ -356,19 +399,56 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                   <Layers className="w-3.5 h-3.5" />
                   <span>2D + 3D</span>
                 </button>
+
+                <div className="h-4 w-px bg-[#1e2a3c] mx-0.5 hidden sm:block" />
+
+                {/* Single View Full Screen Options */}
                 <button
                   type="button"
-                  onClick={() => setViewMode('DRAWING_ONLY')}
+                  onClick={() => {
+                    setViewMode(viewMode === 'DRAWING_ONLY' ? lastSplitMode : 'DRAWING_ONLY');
+                  }}
                   className={`px-2 sm:px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
                     viewMode === 'DRAWING_ONLY'
-                      ? 'bg-sky-600 text-white shadow'
+                      ? 'bg-amber-600 text-white shadow ring-1 ring-amber-400'
                       : 'text-slate-400 hover:text-white'
                   }`}
-                  title="Original customer drawing full screen"
+                  title="Only Drawing View (Original Scanned Blueprint 100% Full View)"
                 >
                   <FileText className="w-3.5 h-3.5" />
-                  <span className="hidden xl:inline">Drawing Only</span>
-                  <span className="xl:hidden">Drawing</span>
+                  <span>Only Drawing</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setViewMode(viewMode === 'BLUEPRINT_ONLY' ? lastSplitMode : 'BLUEPRINT_ONLY');
+                  }}
+                  className={`px-2 sm:px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
+                    viewMode === 'BLUEPRINT_ONLY'
+                      ? 'bg-cyan-600 text-white shadow ring-1 ring-cyan-400'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Only 2D View (System 2D CAD Blueprint 100% Full View)"
+                >
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>Only 2D</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setViewMode(viewMode === 'MODEL_ONLY' ? lastSplitMode : 'MODEL_ONLY');
+                  }}
+                  className={`px-2 sm:px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
+                    viewMode === 'MODEL_ONLY'
+                      ? 'bg-emerald-600 text-white shadow ring-1 ring-emerald-400'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Only 3D View (Three.js 3D Angle Model 100% Full View)"
+                >
+                  <Box className="w-3.5 h-3.5" />
+                  <span>Only 3D</span>
                 </button>
               </div>
             )}
@@ -384,6 +464,16 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
               <FileCode className="w-4 h-4 text-sky-400 shrink-0" />
               <span className="hidden sm:inline">Load Sample (TEST_R.pdf)</span>
               <span className="sm:hidden">TEST_R.pdf</span>
+            </button>
+
+            {/* Screen Fullscreen Toggle Button */}
+            <button
+              type="button"
+              onClick={() => toggleBrowserFullscreen()}
+              className="w-9 h-9 rounded-lg bg-[#151c27] hover:bg-[#1f293a] border border-[#222d3d] text-slate-400 hover:text-sky-300 flex items-center justify-center transition-colors"
+              title={isFullscreen ? 'Exit Full Screen (ESC)' : 'Full Screen Kiosk View'}
+            >
+              {isFullscreen ? <Shrink className="w-4 h-4 text-amber-400" /> : <Fullscreen className="w-4 h-4" />}
             </button>
 
             {/* Close Button */}
@@ -626,6 +716,42 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                         >
                           <Maximize2 className="w-3 h-3" />
                         </button>
+
+                        <div className="h-4 w-px bg-[#222d3d] mx-0.5" />
+
+                        {/* Maximize / Restore Button for Drawing View */}
+                        <button
+                          type="button"
+                          onClick={() => setViewMode(viewMode === 'DRAWING_ONLY' ? lastSplitMode : 'DRAWING_ONLY')}
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-colors flex items-center gap-1 ${
+                            viewMode === 'DRAWING_ONLY'
+                              ? 'bg-amber-600 border-amber-400 text-white shadow ring-1 ring-amber-400'
+                              : 'bg-[#151c27] hover:bg-[#1e2838] border-[#222d3d] text-slate-300'
+                          }`}
+                          title={viewMode === 'DRAWING_ONLY' ? 'Restore Split View' : 'Only Drawing View (Full Viewport)'}
+                        >
+                          {viewMode === 'DRAWING_ONLY' ? (
+                            <>
+                              <Minimize2 className="w-3 h-3 text-white" />
+                              <span className="hidden sm:inline">Restore</span>
+                            </>
+                          ) : (
+                            <>
+                              <Maximize2 className="w-3 h-3 text-amber-400" />
+                              <span className="hidden sm:inline">Only Drawing</span>
+                            </>
+                          )}
+                        </button>
+
+                        {/* Browser Fullscreen Button */}
+                        <button
+                          type="button"
+                          onClick={() => toggleBrowserFullscreen()}
+                          className="w-6 h-6 rounded bg-[#151c27] hover:bg-[#1e2838] border border-[#222d3d] text-slate-300 flex items-center justify-center transition-colors"
+                          title={isFullscreen ? 'Exit Screen Fullscreen' : 'Enter Screen Fullscreen'}
+                        >
+                          {isFullscreen ? <Shrink className="w-3 h-3 text-amber-400" /> : <Fullscreen className="w-3 h-3" />}
+                        </button>
                       </div>
                     </div>
 
@@ -677,8 +803,8 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 text-[10px] font-mono">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="hidden sm:flex items-center gap-2 text-[10px] font-mono">
                           <span className="text-cyan-400 flex items-center gap-1">
                             <span className="w-2 h-2 rounded-full bg-cyan-400 inline-block" />
                             Flange A
@@ -689,27 +815,58 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                           </span>
                         </div>
 
-                        {/* Quick switch between 2D and 3D in Split view */}
-                        {viewMode === 'SPLIT_2D' && (
-                          <div className="flex items-center bg-[#090d14] rounded p-0.5 border border-[#1e2a3c]">
-                            <button
-                              type="button"
-                              onClick={() => setViewMode('SPLIT_2D')}
-                              className="px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 bg-cyan-600 text-white shadow"
-                            >
-                              <Layers className="w-3 h-3" />
-                              2D
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setViewMode('SPLIT_3D')}
-                              className="px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 text-slate-400 hover:text-white"
-                            >
-                              <Box className="w-3 h-3" />
-                              3D
-                            </button>
-                          </div>
-                        )}
+                        {/* Quick switch between 2D and 3D */}
+                        <div className="flex items-center bg-[#090d14] rounded p-0.5 border border-[#1e2a3c]">
+                          <button
+                            type="button"
+                            className="px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 bg-cyan-600 text-white shadow"
+                          >
+                            <Layers className="w-3 h-3" />
+                            2D
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setViewMode(viewMode === 'BLUEPRINT_ONLY' ? 'MODEL_ONLY' : 'SPLIT_3D')}
+                            className="px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 text-slate-400 hover:text-white"
+                          >
+                            <Box className="w-3 h-3" />
+                            3D
+                          </button>
+                        </div>
+
+                        {/* Maximize / Restore Button for 2D View */}
+                        <button
+                          type="button"
+                          onClick={() => setViewMode(viewMode === 'BLUEPRINT_ONLY' ? lastSplitMode : 'BLUEPRINT_ONLY')}
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-colors flex items-center gap-1 ${
+                            viewMode === 'BLUEPRINT_ONLY'
+                              ? 'bg-cyan-600 border-cyan-400 text-white shadow ring-1 ring-cyan-400'
+                              : 'bg-[#151c27] hover:bg-[#1e2838] border-[#222d3d] text-slate-300'
+                          }`}
+                          title={viewMode === 'BLUEPRINT_ONLY' ? 'Restore Split View' : 'Only 2D View (Full Viewport)'}
+                        >
+                          {viewMode === 'BLUEPRINT_ONLY' ? (
+                            <>
+                              <Minimize2 className="w-3 h-3 text-white" />
+                              <span className="hidden sm:inline">Restore</span>
+                            </>
+                          ) : (
+                            <>
+                              <Maximize2 className="w-3 h-3 text-cyan-400" />
+                              <span className="hidden sm:inline">Only 2D</span>
+                            </>
+                          )}
+                        </button>
+
+                        {/* Browser Fullscreen Button */}
+                        <button
+                          type="button"
+                          onClick={() => toggleBrowserFullscreen()}
+                          className="w-6 h-6 rounded bg-[#151c27] hover:bg-[#1e2838] border border-[#222d3d] text-slate-300 flex items-center justify-center transition-colors"
+                          title={isFullscreen ? 'Exit Screen Fullscreen' : 'Enter Screen Fullscreen'}
+                        >
+                          {isFullscreen ? <Shrink className="w-3 h-3 text-cyan-400" /> : <Fullscreen className="w-3 h-3" />}
+                        </button>
                       </div>
                     </div>
 
@@ -753,32 +910,63 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3">
                         <div className="text-[10px] font-mono text-slate-400">
                           {metadata?.section || 'L150X150X20'}
                         </div>
 
-                        {/* Quick switch between 2D and 3D in Split view */}
-                        {viewMode === 'SPLIT_3D' && (
-                          <div className="flex items-center bg-[#090d14] rounded p-0.5 border border-[#1e2a3c]">
-                            <button
-                              type="button"
-                              onClick={() => setViewMode('SPLIT_2D')}
-                              className="px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 text-slate-400 hover:text-white"
-                            >
-                              <Layers className="w-3 h-3" />
-                              2D
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setViewMode('SPLIT_3D')}
-                              className="px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 bg-sky-600 text-white shadow"
-                            >
-                              <Box className="w-3 h-3" />
-                              3D
-                            </button>
-                          </div>
-                        )}
+                        {/* Quick switch between 2D and 3D */}
+                        <div className="flex items-center bg-[#090d14] rounded p-0.5 border border-[#1e2a3c]">
+                          <button
+                            type="button"
+                            onClick={() => setViewMode(viewMode === 'MODEL_ONLY' ? 'BLUEPRINT_ONLY' : 'SPLIT_2D')}
+                            className="px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 text-slate-400 hover:text-white"
+                          >
+                            <Layers className="w-3 h-3" />
+                            2D
+                          </button>
+                          <button
+                            type="button"
+                            className="px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 bg-sky-600 text-white shadow"
+                          >
+                            <Box className="w-3 h-3" />
+                            3D
+                          </button>
+                        </div>
+
+                        {/* Maximize / Restore Button for 3D View */}
+                        <button
+                          type="button"
+                          onClick={() => setViewMode(viewMode === 'MODEL_ONLY' ? lastSplitMode : 'MODEL_ONLY')}
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-colors flex items-center gap-1 ${
+                            viewMode === 'MODEL_ONLY'
+                              ? 'bg-emerald-600 border-emerald-400 text-white shadow ring-1 ring-emerald-400'
+                              : 'bg-[#151c27] hover:bg-[#1e2838] border-[#222d3d] text-slate-300'
+                          }`}
+                          title={viewMode === 'MODEL_ONLY' ? 'Restore Split View' : 'Only 3D View (Full Viewport)'}
+                        >
+                          {viewMode === 'MODEL_ONLY' ? (
+                            <>
+                              <Minimize2 className="w-3 h-3 text-white" />
+                              <span className="hidden sm:inline">Restore</span>
+                            </>
+                          ) : (
+                            <>
+                              <Maximize2 className="w-3 h-3 text-emerald-400" />
+                              <span className="hidden sm:inline">Only 3D</span>
+                            </>
+                          )}
+                        </button>
+
+                        {/* Browser Fullscreen Button */}
+                        <button
+                          type="button"
+                          onClick={() => toggleBrowserFullscreen()}
+                          className="w-6 h-6 rounded bg-[#151c27] hover:bg-[#1e2838] border border-[#222d3d] text-slate-300 flex items-center justify-center transition-colors"
+                          title={isFullscreen ? 'Exit Screen Fullscreen' : 'Enter Screen Fullscreen'}
+                        >
+                          {isFullscreen ? <Shrink className="w-3 h-3 text-emerald-400" /> : <Fullscreen className="w-3 h-3" />}
+                        </button>
                       </div>
                     </div>
 
