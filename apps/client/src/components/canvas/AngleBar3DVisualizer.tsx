@@ -1,7 +1,25 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { ItemRecipe } from '@innovance-hmi/shared';
-import { RotateCcw, Box, Compass, Eye, ShieldCheck } from 'lucide-react';
+import {
+  RotateCcw,
+  Box,
+  Compass,
+  Eye,
+  ShieldCheck,
+  ArrowUp,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  Move,
+  RotateCw,
+  Navigation,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
 
 interface AngleBar3DVisualizerProps {
   recipe?: ItemRecipe | null;
@@ -74,6 +92,10 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
   const targetLookAtRef = useRef(new THREE.Vector3(lengthMm / 2, widthA / 2, -widthB / 2));
 
   const [activePreset, setActivePreset] = useState<'ISO' | 'TOP' | 'SIDE' | 'PROFILE'>('ISO');
+  const [navMode, setNavMode] = useState<'PAN' | 'ORBIT'>('PAN');
+  const [moveSpeed, setMoveSpeed] = useState<number>(1);
+  const [isControlsCollapsed, setIsControlsCollapsed] = useState<boolean>(false);
+  const holdIntervalRef = useRef<number | null>(null);
 
   const updateCameraPosition = useCallback(() => {
     const camera = cameraRef.current;
@@ -126,6 +148,104 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
 
     updateCameraPosition();
   };
+
+  const handleDirectionalMove = useCallback((dir: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT') => {
+    const camera = cameraRef.current;
+    if (!camera) return;
+
+    if (navMode === 'PAN') {
+      const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+      const up = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+      const step = Math.max(30, cameraRotationRef.current.radius * 0.05) * moveSpeed;
+
+      if (dir === 'LEFT') targetLookAtRef.current.addScaledVector(right, -step);
+      if (dir === 'RIGHT') targetLookAtRef.current.addScaledVector(right, step);
+      if (dir === 'UP') targetLookAtRef.current.addScaledVector(up, step);
+      if (dir === 'DOWN') targetLookAtRef.current.addScaledVector(up, -step);
+    } else {
+      const rotStep = 0.08 * moveSpeed;
+      if (dir === 'LEFT') cameraRotationRef.current.theta -= rotStep;
+      if (dir === 'RIGHT') cameraRotationRef.current.theta += rotStep;
+      if (dir === 'UP') cameraRotationRef.current.phi = Math.max(0.05, cameraRotationRef.current.phi - rotStep);
+      if (dir === 'DOWN') cameraRotationRef.current.phi = Math.min(Math.PI - 0.05, cameraRotationRef.current.phi + rotStep);
+    }
+
+    updateCameraPosition();
+    if (onViewportSync) {
+      onViewportSync(Math.max(0, Math.min(lengthMm, targetLookAtRef.current.x)));
+    }
+  }, [navMode, moveSpeed, updateCameraPosition, onViewportSync, lengthMm]);
+
+  const handleZoom = useCallback((direction: 'IN' | 'OUT') => {
+    const factor = direction === 'IN' ? 0.82 : 1.22;
+    cameraRotationRef.current.radius = Math.max(200, Math.min(25000, cameraRotationRef.current.radius * factor));
+    updateCameraPosition();
+  }, [updateCameraPosition]);
+
+  const handleRecenter = useCallback(() => {
+    targetLookAtRef.current.set(lengthMm / 2, widthA / 2, -widthB / 2);
+    cameraRotationRef.current.radius = Math.max(900, lengthMm * 0.75);
+    updateCameraPosition();
+    if (onViewportSync) onViewportSync(lengthMm / 2);
+  }, [lengthMm, widthA, widthB, updateCameraPosition, onViewportSync]);
+
+  const handleJump = useCallback((fraction: number) => {
+    targetLookAtRef.current.x = lengthMm * fraction;
+    updateCameraPosition();
+    if (onViewportSync) onViewportSync(lengthMm * fraction);
+  }, [lengthMm, updateCameraPosition, onViewportSync]);
+
+  const startContinuousAction = (action: () => void) => {
+    action();
+    if (holdIntervalRef.current) clearInterval(holdIntervalRef.current);
+    holdIntervalRef.current = window.setInterval(action, 65);
+  };
+
+  const stopContinuousAction = () => {
+    if (holdIntervalRef.current) {
+      clearInterval(holdIntervalRef.current);
+      holdIntervalRef.current = null;
+    }
+  };
+
+  // Keyboard navigation support
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
+        return;
+      }
+
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        handleDirectionalMove('LEFT');
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        handleDirectionalMove('RIGHT');
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        handleDirectionalMove('UP');
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        handleDirectionalMove('DOWN');
+      } else if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        handleZoom('IN');
+      } else if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        handleZoom('OUT');
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        handleJump(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        handleJump(1.0);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleDirectionalMove, handleZoom, handleJump]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -594,6 +714,192 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
             Steel Grade: IS 2062 E250 / E350
           </div>
         </div>
+      </div>
+
+      {/* Floating Precision 3D Directional Controller D-Pad */}
+      <div className="absolute bottom-3 right-3 z-20 flex flex-col items-end gap-1.5 pointer-events-auto select-none">
+        {/* Toggle Collapse Button for Compact Displays */}
+        <button
+          type="button"
+          onClick={() => setIsControlsCollapsed(!isControlsCollapsed)}
+          className="p-1 px-2.5 rounded-lg bg-[#0c131f]/90 hover:bg-[#162337] border border-cyan-500/40 text-cyan-300 text-[11px] font-mono font-bold flex items-center gap-1.5 shadow-xl backdrop-blur-md transition-all active:scale-95"
+          title="Toggle 3D Directional Controls"
+        >
+          <Navigation className="w-3.5 h-3.5 text-cyan-400" />
+          <span>3D Nav Pad</span>
+          {isControlsCollapsed ? <ChevronUp className="w-3.5 h-3.5 text-slate-400" /> : <ChevronDown className="w-3.5 h-3.5 text-slate-400" />}
+        </button>
+
+        {!isControlsCollapsed && (
+          <div className="bg-[#0b121e]/95 border border-[#22354c] p-3 rounded-2xl shadow-2xl backdrop-blur-md flex flex-col items-center gap-2.5 w-48">
+            {/* Mode Switch: Pan vs Orbit & Speed */}
+            <div className="flex items-center justify-between w-full border-b border-[#1b2a3d] pb-2">
+              <div className="flex items-center bg-[#070b12] rounded p-0.5 border border-[#1a293d]">
+                <button
+                  type="button"
+                  onClick={() => setNavMode('PAN')}
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 transition-all ${
+                    navMode === 'PAN' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Pan / Move camera in 2D view space"
+                >
+                  <Move className="w-3 h-3" /> Pan
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNavMode('ORBIT')}
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 transition-all ${
+                    navMode === 'ORBIT' ? 'bg-amber-600 text-white shadow' : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Orbit / Rotate camera angle around target"
+                >
+                  <RotateCw className="w-3 h-3" /> Orbit
+                </button>
+              </div>
+
+              {/* Speed multiplier toggle */}
+              <button
+                type="button"
+                onClick={() => setMoveSpeed((s) => (s === 1 ? 2.5 : 1))}
+                className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold border transition-colors ${
+                  moveSpeed > 1
+                    ? 'bg-amber-950/80 border-amber-500 text-amber-300'
+                    : 'bg-[#121c2a] border-[#223348] text-slate-400'
+                }`}
+                title="Toggle Movement Speed (1x / 2.5x)"
+              >
+                {moveSpeed}x
+              </button>
+            </div>
+
+            {/* Tactile Directional Diamond D-Pad */}
+            <div className="relative w-28 h-28 flex items-center justify-center">
+              {/* Up Button */}
+              <button
+                type="button"
+                onMouseDown={() => startContinuousAction(() => handleDirectionalMove('UP'))}
+                onMouseUp={stopContinuousAction}
+                onMouseLeave={stopContinuousAction}
+                onTouchStart={() => startContinuousAction(() => handleDirectionalMove('UP'))}
+                onTouchEnd={stopContinuousAction}
+                className="absolute top-0 w-8 h-8 rounded-lg bg-[#142030] hover:bg-cyan-900/60 active:bg-cyan-600 text-slate-200 hover:text-cyan-200 border border-[#273d5a] flex items-center justify-center shadow-md transition-all active:scale-95 cursor-pointer"
+                title={navMode === 'PAN' ? 'Move Camera Up (Pan)' : 'Tilt Camera Up'}
+              >
+                <ArrowUp className="w-4 h-4" />
+              </button>
+
+              {/* Left Button */}
+              <button
+                type="button"
+                onMouseDown={() => startContinuousAction(() => handleDirectionalMove('LEFT'))}
+                onMouseUp={stopContinuousAction}
+                onMouseLeave={stopContinuousAction}
+                onTouchStart={() => startContinuousAction(() => handleDirectionalMove('LEFT'))}
+                onTouchEnd={stopContinuousAction}
+                className="absolute left-0 w-8 h-8 rounded-lg bg-[#142030] hover:bg-cyan-900/60 active:bg-cyan-600 text-slate-200 hover:text-cyan-200 border border-[#273d5a] flex items-center justify-center shadow-md transition-all active:scale-95 cursor-pointer"
+                title={navMode === 'PAN' ? 'Move Camera Left (Towards 0mm Datum)' : 'Orbit Camera Left'}
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+
+              {/* Center Recenter Button */}
+              <button
+                type="button"
+                onClick={handleRecenter}
+                className="w-7 h-7 rounded-full bg-[#18263a] hover:bg-cyan-600 text-cyan-300 hover:text-white border border-[#2d4566] flex items-center justify-center shadow-inner transition-all active:scale-90 cursor-pointer"
+                title="Re-center view on Angle Bar Center"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Right Button */}
+              <button
+                type="button"
+                onMouseDown={() => startContinuousAction(() => handleDirectionalMove('RIGHT'))}
+                onMouseUp={stopContinuousAction}
+                onMouseLeave={stopContinuousAction}
+                onTouchStart={() => startContinuousAction(() => handleDirectionalMove('RIGHT'))}
+                onTouchEnd={stopContinuousAction}
+                className="absolute right-0 w-8 h-8 rounded-lg bg-[#142030] hover:bg-cyan-900/60 active:bg-cyan-600 text-slate-200 hover:text-cyan-200 border border-[#273d5a] flex items-center justify-center shadow-md transition-all active:scale-95 cursor-pointer"
+                title={navMode === 'PAN' ? 'Move Camera Right (Towards Cut End)' : 'Orbit Camera Right'}
+              >
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              {/* Down Button */}
+              <button
+                type="button"
+                onMouseDown={() => startContinuousAction(() => handleDirectionalMove('DOWN'))}
+                onMouseUp={stopContinuousAction}
+                onMouseLeave={stopContinuousAction}
+                onTouchStart={() => startContinuousAction(() => handleDirectionalMove('DOWN'))}
+                onTouchEnd={stopContinuousAction}
+                className="absolute bottom-0 w-8 h-8 rounded-lg bg-[#142030] hover:bg-cyan-900/60 active:bg-cyan-600 text-slate-200 hover:text-cyan-200 border border-[#273d5a] flex items-center justify-center shadow-md transition-all active:scale-95 cursor-pointer"
+                title={navMode === 'PAN' ? 'Move Camera Down (Pan)' : 'Tilt Camera Down'}
+              >
+                <ArrowDown className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Zoom & Fast Length Jump Controls */}
+            <div className="flex items-center justify-between w-full border-t border-[#1b2a3d] pt-2 gap-1.5">
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onMouseDown={() => startContinuousAction(() => handleZoom('IN'))}
+                  onMouseUp={stopContinuousAction}
+                  onMouseLeave={stopContinuousAction}
+                  onTouchStart={() => startContinuousAction(() => handleZoom('IN'))}
+                  onTouchEnd={stopContinuousAction}
+                  className="w-7 h-7 rounded-lg bg-[#142030] hover:bg-[#1e2f46] active:bg-cyan-600 text-slate-300 hover:text-white border border-[#273d5a] flex items-center justify-center cursor-pointer shadow-sm"
+                  title="Zoom In (+)"
+                >
+                  <ZoomIn className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onMouseDown={() => startContinuousAction(() => handleZoom('OUT'))}
+                  onMouseUp={stopContinuousAction}
+                  onMouseLeave={stopContinuousAction}
+                  onTouchStart={() => startContinuousAction(() => handleZoom('OUT'))}
+                  onTouchEnd={stopContinuousAction}
+                  className="w-7 h-7 rounded-lg bg-[#142030] hover:bg-[#1e2f46] active:bg-cyan-600 text-slate-300 hover:text-white border border-[#273d5a] flex items-center justify-center cursor-pointer shadow-sm"
+                  title="Zoom Out (-)"
+                >
+                  <ZoomOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* Fast Along-Length Jumps */}
+              <div className="flex items-center gap-1 font-mono text-[9px]">
+                <button
+                  type="button"
+                  onClick={() => handleJump(0)}
+                  className="px-1.5 py-1 rounded bg-[#142030] hover:bg-[#1e2f46] text-cyan-300 hover:text-white border border-[#23354d] cursor-pointer"
+                  title="Jump to 0mm Datum (Front)"
+                >
+                  0m
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleJump(0.5)}
+                  className="px-1.5 py-1 rounded bg-[#142030] hover:bg-[#1e2f46] text-cyan-300 hover:text-white border border-[#23354d] cursor-pointer"
+                  title="Jump to Center (3008mm)"
+                >
+                  Mid
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleJump(1.0)}
+                  className="px-1.5 py-1 rounded bg-[#142030] hover:bg-[#1e2f46] text-cyan-300 hover:text-white border border-[#23354d] cursor-pointer"
+                  title="Jump to Cut-Off End (6016mm)"
+                >
+                  End
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
