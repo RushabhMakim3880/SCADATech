@@ -111,13 +111,13 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
       cameraRotationRef.current = { theta: 0.85, phi: 0.65, radius };
       targetLookAtRef.current.set(lengthMm / 2, widthA / 2, -widthB / 2);
     } else if (preset === 'TOP') {
-      // Direct Top View of Flange A
-      cameraRotationRef.current = { theta: Math.PI / 2, phi: 0.05, radius: Math.max(800, lengthMm * 0.65) };
-      targetLookAtRef.current.set(lengthMm / 2, 0, 0);
-    } else if (preset === 'SIDE') {
-      // Direct Side View of Flange B
-      cameraRotationRef.current = { theta: 0, phi: Math.PI / 2, radius: Math.max(800, lengthMm * 0.65) };
+      // Direct Face-On View of Flange A (Vertical Flange)
+      cameraRotationRef.current = { theta: 0, phi: Math.PI / 2, radius: Math.max(700, lengthMm * 0.65) };
       targetLookAtRef.current.set(lengthMm / 2, widthA / 2, 0);
+    } else if (preset === 'SIDE') {
+      // Direct Face-On View of Flange B (Horizontal Flange from bottom)
+      cameraRotationRef.current = { theta: Math.PI / 2, phi: 0.05, radius: Math.max(700, lengthMm * 0.65) };
+      targetLookAtRef.current.set(lengthMm / 2, 0, -widthB / 2);
     } else if (preset === 'PROFILE') {
       // End L-Profile Cross Section View
       cameraRotationRef.current = { theta: Math.PI, phi: Math.PI / 2, radius: Math.max(500, widthA * 4) };
@@ -297,16 +297,16 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
           if (isSideA) {
             boreGeom.rotateX(Math.PI / 2);
             holeGroup.position.set(step.xPosition, step.yPosition, -thickness / 2);
-            frontRim.position.set(0, 0, -thickness / 2 - 0.05);
-            backRim.position.set(0, 0, thickness / 2 + 0.05);
-            crossMesh.position.set(0, 0, -thickness / 2 - 0.1);
+            frontRim.position.set(0, 0, thickness / 2 + 0.1);
+            backRim.position.set(0, 0, -thickness / 2 - 0.1);
+            crossMesh.position.set(0, 0, thickness / 2 + 0.2);
           } else {
             holeGroup.position.set(step.xPosition, thickness / 2, -step.yPosition);
             rimGeom.rotateX(Math.PI / 2);
-            frontRim.position.set(0, thickness / 2 + 0.05, 0);
-            backRim.position.set(0, -thickness / 2 - 0.05, 0);
+            frontRim.position.set(0, -thickness / 2 - 0.1, 0);
+            backRim.position.set(0, thickness / 2 + 0.1, 0);
             crossGeom.rotateX(Math.PI / 2);
-            crossMesh.position.set(0, thickness / 2 + 0.1, 0);
+            crossMesh.position.set(0, -thickness / 2 - 0.2, 0);
           }
 
           holeGroup.add(frontRim);
@@ -499,43 +499,43 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
   return (
     <div ref={containerRef} className="relative w-full h-full flex flex-col bg-[#060a12] select-none rounded-lg overflow-hidden border border-slate-700">
       {/* 3D Viewport Toolbar */}
-      <div className="bg-[#0e141f] px-3 py-1.5 border-b border-[#1c2738] flex items-center justify-between z-10 shrink-0">
-        <div className="flex items-center gap-1.5">
+      <div className="bg-[#0e141f] px-2 sm:px-3 py-1.5 border-b border-[#1c2738] flex flex-wrap items-center justify-between gap-2 z-10 shrink-0">
+        <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
           <button
             type="button"
             onClick={() => setCameraPreset('ISO')}
-            className={`btn-ca text-xs py-1 px-2.5 flex items-center gap-1 font-bold ${
+            className={`btn-ca text-xs py-1 px-2 sm:px-2.5 flex items-center gap-1 font-bold ${
               activePreset === 'ISO' ? 'btn-ca-primary' : 'btn-ca-dark'
             }`}
           >
-            <Box className="w-3.5 h-3.5" /> 3D Isometric
+            <Box className="w-3.5 h-3.5" /> <span className="hidden sm:inline">3D </span><span>Iso</span>
           </button>
           <button
             type="button"
             onClick={() => setCameraPreset('TOP')}
-            className={`btn-ca text-xs py-1 px-2.5 flex items-center gap-1 font-bold ${
+            className={`btn-ca text-xs py-1 px-2 sm:px-2.5 flex items-center gap-1 font-bold ${
               activePreset === 'TOP' ? 'btn-ca-primary' : 'btn-ca-dark'
             }`}
           >
-            <Compass className="w-3.5 h-3.5" /> Top (Flange A)
+            <Compass className="w-3.5 h-3.5" /> <span>Flange A</span>
           </button>
           <button
             type="button"
             onClick={() => setCameraPreset('SIDE')}
-            className={`btn-ca text-xs py-1 px-2.5 flex items-center gap-1 font-bold ${
+            className={`btn-ca text-xs py-1 px-2 sm:px-2.5 flex items-center gap-1 font-bold ${
               activePreset === 'SIDE' ? 'btn-ca-primary' : 'btn-ca-dark'
             }`}
           >
-            <Compass className="w-3.5 h-3.5" /> Side (Flange B)
+            <Compass className="w-3.5 h-3.5" /> <span>Flange B</span>
           </button>
           <button
             type="button"
             onClick={() => setCameraPreset('PROFILE')}
-            className={`btn-ca text-xs py-1 px-2.5 flex items-center gap-1 font-bold ${
+            className={`btn-ca text-xs py-1 px-2 sm:px-2.5 flex items-center gap-1 font-bold ${
               activePreset === 'PROFILE' ? 'btn-ca-primary' : 'btn-ca-dark'
             }`}
           >
-            <Eye className="w-3.5 h-3.5" /> L-Section
+            <Eye className="w-3.5 h-3.5" /> <span>Profile</span>
           </button>
           <button
             type="button"
@@ -548,7 +548,7 @@ export const AngleBar3DVisualizer: React.FC<AngleBar3DVisualizerProps> = ({
         </div>
 
         {/* Real Engineering Data HUD */}
-        <div className="flex items-center gap-3 text-[11px] font-mono font-bold text-slate-300">
+        <div className="hidden sm:flex items-center gap-2 sm:gap-3 text-[11px] font-mono font-bold text-slate-300">
           <span>Section: <strong className="text-sky-300">L{widthA}X{widthB}X{thickness}</strong></span>
           <span className="text-slate-600">|</span>
           <span>Unit: <strong className="text-emerald-400">{weightPerMeter} kg/m</strong></span>

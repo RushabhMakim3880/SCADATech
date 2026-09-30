@@ -31,6 +31,10 @@
   }
 
   /* Custom High-Tech Industrial Dark Scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #1c283a #070b12;
+  }
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;

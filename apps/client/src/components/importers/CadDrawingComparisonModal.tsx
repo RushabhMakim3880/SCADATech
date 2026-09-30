@@ -21,7 +21,9 @@ import {
   Link2,
   Link2Off,
   Navigation,
-  LayoutGrid
+  LayoutGrid,
+  ChevronUp,
+  ChevronDown,
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 
@@ -62,6 +64,7 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
   const [sharedFocusX, setSharedFocusX] = useState<number | null>(null);
   const [hoveredStepIndex, setHoveredStepIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'STEPS' | 'METADATA' | 'RULES'>('STEPS');
+  const [isDrawerCollapsed, setIsDrawerCollapsed] = useState<boolean>(false);
 
   // Drawing Viewport Pan, Zoom & Rotation
   const [imgZoom, setImgZoom] = useState<number>(1.0);
@@ -298,11 +301,11 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
           <div className="flex flex-wrap items-center gap-2">
             {/* View Mode Switcher */}
             {parsedRecipe && (
-              <div className="flex items-center bg-[#090d14] rounded-lg border border-[#1b2536] p-1 gap-1">
+              <div className="flex items-center bg-[#090d14] rounded-lg border border-[#1b2536] p-0.5 sm:p-1 gap-0.5 sm:gap-1 overflow-x-auto max-w-full">
                 <button
                   type="button"
                   onClick={() => setViewMode('SPLIT_2D')}
-                  className={`px-3 py-1 rounded text-xs font-bold flex items-center gap-1.5 transition-colors ${
+                  className={`px-2 sm:px-3 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
                     viewMode === 'SPLIT_2D'
                       ? 'bg-sky-600 text-white shadow'
                       : 'text-slate-400 hover:text-white'
@@ -310,12 +313,13 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                   title="Side-by-Side: Customer Drawing (50%) + System 2D Blueprint (50%)"
                 >
                   <Columns className="w-3.5 h-3.5" />
-                  <span>Drawing + 2D (50/50)</span>
+                  <span className="hidden xl:inline">Drawing + 2D (50/50)</span>
+                  <span className="xl:hidden">2D Split</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setViewMode('SPLIT_3D')}
-                  className={`px-3 py-1 rounded text-xs font-bold flex items-center gap-1.5 transition-colors ${
+                  className={`px-2 sm:px-3 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
                     viewMode === 'SPLIT_3D'
                       ? 'bg-sky-600 text-white shadow'
                       : 'text-slate-400 hover:text-white'
@@ -323,12 +327,13 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                   title="Side-by-Side: Customer Drawing (50%) + System 3D Model (50%)"
                 >
                   <Box className="w-3.5 h-3.5" />
-                  <span>Drawing + 3D</span>
+                  <span className="hidden xl:inline">Drawing + 3D</span>
+                  <span className="xl:hidden">3D Split</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setViewMode('TRI_SPLIT')}
-                  className={`px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1.5 transition-colors ${
+                  className={`px-2 sm:px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
                     viewMode === 'TRI_SPLIT'
                       ? 'bg-sky-600 text-white shadow'
                       : 'text-slate-400 hover:text-white'
@@ -341,7 +346,7 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                 <button
                   type="button"
                   onClick={() => setViewMode('SPLIT_2D_3D')}
-                  className={`px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1.5 transition-colors ${
+                  className={`px-2 sm:px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
                     viewMode === 'SPLIT_2D_3D'
                       ? 'bg-sky-600 text-white shadow'
                       : 'text-slate-400 hover:text-white'
@@ -354,7 +359,7 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                 <button
                   type="button"
                   onClick={() => setViewMode('DRAWING_ONLY')}
-                  className={`px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1.5 transition-colors ${
+                  className={`px-2 sm:px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
                     viewMode === 'DRAWING_ONLY'
                       ? 'bg-sky-600 text-white shadow'
                       : 'text-slate-400 hover:text-white'
@@ -362,7 +367,8 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                   title="Original customer drawing full screen"
                 >
                   <FileText className="w-3.5 h-3.5" />
-                  <span>Drawing Only</span>
+                  <span className="hidden xl:inline">Drawing Only</span>
+                  <span className="xl:hidden">Drawing</span>
                 </button>
               </div>
             )}
@@ -372,11 +378,12 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
               type="button"
               onClick={handleLoadSample}
               disabled={isProcessing}
-              className="px-3 py-1.5 rounded-lg bg-[#182335] hover:bg-[#202f47] border border-[#273952] text-sky-300 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+              className="px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#182335] hover:bg-[#202f47] border border-[#273952] text-sky-300 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm whitespace-nowrap"
               title="Instantly test extraction using the sample GETCO transmission drawing"
             >
-              <FileCode className="w-4 h-4 text-sky-400" />
-              <span>Load Sample (TEST_R.pdf)</span>
+              <FileCode className="w-4 h-4 text-sky-400 shrink-0" />
+              <span className="hidden sm:inline">Load Sample (TEST_R.pdf)</span>
+              <span className="sm:hidden">TEST_R.pdf</span>
             </button>
 
             {/* Close Button */}
@@ -800,68 +807,93 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
               </div>
 
               {/* Bottom Inspection & Operations Drawer */}
-              <div className="h-56 bg-[#0b0f16] border-t-2 border-[#1c2738] flex flex-col shrink-0">
+              <div className={`${isDrawerCollapsed ? 'h-11' : 'h-48 sm:h-56'} bg-[#0b0f16] border-t-2 border-[#1c2738] flex flex-col shrink-0 transition-all duration-200`}>
                 {/* Drawer Tab Switcher */}
-                <div className="bg-[#0e141f] px-5 py-2 border-b border-[#182333] flex items-center justify-between shrink-0">
-                  <div className="flex items-center gap-2">
+                <div className="bg-[#0e141f] px-3 sm:px-5 py-1.5 sm:py-2 border-b border-[#182333] flex flex-wrap items-center justify-between gap-2 shrink-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto max-w-full">
                     <button
                       type="button"
-                      onClick={() => setActiveTab('STEPS')}
-                      className={`px-3 py-1 rounded text-xs font-bold flex items-center gap-1.5 transition-colors ${
-                        activeTab === 'STEPS'
+                      onClick={() => {
+                        setActiveTab('STEPS');
+                        if (isDrawerCollapsed) setIsDrawerCollapsed(false);
+                      }}
+                      className={`px-2.5 sm:px-3 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
+                        activeTab === 'STEPS' && !isDrawerCollapsed
                           ? 'bg-sky-600 text-white'
                           : 'text-slate-400 hover:text-white'
                       }`}
                     >
                       <TableIcon className="w-3.5 h-3.5" />
-                      <span>Hole Schedule & Operations ({parsedRecipe.steps.length})</span>
+                      <span className="hidden sm:inline">Hole Schedule ({parsedRecipe.steps.length})</span>
+                      <span className="sm:hidden">Holes ({parsedRecipe.steps.length})</span>
                     </button>
                     <button
                       type="button"
-                      onClick={() => setActiveTab('RULES')}
-                      className={`px-3 py-1 rounded text-xs font-bold flex items-center gap-1.5 transition-colors ${
-                        activeTab === 'RULES'
+                      onClick={() => {
+                        setActiveTab('RULES');
+                        if (isDrawerCollapsed) setIsDrawerCollapsed(false);
+                      }}
+                      className={`px-2.5 sm:px-3 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
+                        activeTab === 'RULES' && !isDrawerCollapsed
                           ? 'bg-sky-600 text-white'
                           : 'text-slate-400 hover:text-white'
                       }`}
                     >
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>IS 802 Rule Checker</span>
+                      <span>IS 802 Rules</span>
                     </button>
                     <button
                       type="button"
-                      onClick={() => setActiveTab('METADATA')}
-                      className={`px-3 py-1 rounded text-xs font-bold flex items-center gap-1.5 transition-colors ${
-                        activeTab === 'METADATA'
+                      onClick={() => {
+                        setActiveTab('METADATA');
+                        if (isDrawerCollapsed) setIsDrawerCollapsed(false);
+                      }}
+                      className={`px-2.5 sm:px-3 py-1 rounded text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap ${
+                        activeTab === 'METADATA' && !isDrawerCollapsed
                           ? 'bg-sky-600 text-white'
                           : 'text-slate-400 hover:text-white'
                       }`}
                     >
                       <FileText className="w-3.5 h-3.5" />
-                      <span>Title Block & Item Specs</span>
+                      <span className="hidden sm:inline">Title Block & Specs</span>
+                      <span className="sm:hidden">Specs</span>
                     </button>
                   </div>
 
-                  {/* Summary Badges */}
-                  <div className="flex items-center gap-3 text-xs font-mono">
-                    <span className="text-slate-300">
-                      Length: <strong className="text-white font-black">{parsedRecipe.totalLength} mm</strong>
-                    </span>
-                    <span className="text-slate-500">|</span>
-                    <span className="text-slate-300">
-                      Section: <strong className="text-sky-300 font-black">{metadata?.section || `L${parsedRecipe.angleWidthA}X${parsedRecipe.angleWidthB}X${parsedRecipe.thickness}`}</strong>
-                    </span>
-                    <span className="text-slate-500">|</span>
-                    <span className="text-emerald-400 font-bold flex items-center gap-1">
-                      <CheckCircle className="w-3.5 h-3.5" /> IS 802 Verified
-                    </span>
+                  {/* Summary Badges & Collapse Toggle */}
+                  <div className="flex items-center gap-2 text-xs font-mono">
+                    <div className="hidden md:flex items-center gap-3">
+                      <span className="text-slate-300">
+                        Length: <strong className="text-white font-black">{parsedRecipe.totalLength} mm</strong>
+                      </span>
+                      <span className="text-slate-500">|</span>
+                      <span className="text-slate-300">
+                        Section: <strong className="text-sky-300 font-black">{metadata?.section || `L${parsedRecipe.angleWidthA}X${parsedRecipe.angleWidthB}X${parsedRecipe.thickness}`}</strong>
+                      </span>
+                      <span className="text-slate-500">|</span>
+                      <span className="text-emerald-400 font-bold flex items-center gap-1">
+                        <CheckCircle className="w-3.5 h-3.5" /> IS 802 OK
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsDrawerCollapsed(!isDrawerCollapsed)}
+                      className="p-1 px-2.5 rounded bg-[#16202e] hover:bg-[#202e42] text-slate-300 hover:text-white text-xs font-mono flex items-center gap-1 border border-[#23334a] shadow-sm ml-auto"
+                      title={isDrawerCollapsed ? 'Expand Details Drawer' : 'Collapse Drawer for Full-Height Canvas'}
+                    >
+                      {isDrawerCollapsed ? <ChevronUp className="w-3.5 h-3.5 text-cyan-400" /> : <ChevronDown className="w-3.5 h-3.5 text-slate-400" />}
+                      <span className="hidden sm:inline">{isDrawerCollapsed ? 'Expand Table' : 'Collapse'}</span>
+                    </button>
                   </div>
                 </div>
 
                 {/* Drawer Content */}
-                <div className="flex-1 overflow-y-auto p-3 text-xs">
+                {!isDrawerCollapsed && (
+                  <div className="flex-1 overflow-y-auto p-3 text-xs">
                   {activeTab === 'STEPS' && (
-                    <table className="w-full text-left font-mono border-collapse">
+                    <div className="overflow-x-auto w-full">
+                      <table className="w-full min-w-[700px] text-left font-mono border-collapse">
                       <thead>
                         <tr className="border-b border-[#1f2d40] text-[11px] text-slate-400 bg-[#0e141f]">
                           <th className="py-1 px-3">#</th>
@@ -933,6 +965,7 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                         })}
                       </tbody>
                     </table>
+                    </div>
                   )}
 
                   {activeTab === 'RULES' && (
@@ -978,14 +1011,15 @@ export const CadDrawingComparisonModal: React.FC<CadDrawingComparisonModalProps>
                     </div>
                   )}
                 </div>
+              )}
               </div>
             </div>
           )}
         </div>
 
         {/* Footer Actions */}
-        <div className="bg-[#111724] border-t border-[#1c2738] px-5 py-3 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
+        <div className="bg-[#111724] border-t border-[#1c2738] px-4 sm:px-5 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-400 font-mono">
             {parsedRecipe ? (
               <>
                 <span className="flex items-center gap-1.5 text-emerald-400 font-bold">

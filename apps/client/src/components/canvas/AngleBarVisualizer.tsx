@@ -336,11 +336,53 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
             ctx.strokeStyle = 'rgba(5, 150, 105, 0.4)';
             ctx.strokeRect(startX - 54, gyB - 6, 50, 12);
           }
-          ctx.fillStyle = isDark ? '#10b981' : '#047857';
+          ctx.fillStyle = isDark ? '#10b981' : '#059669';
           ctx.fillText(`G: ${g}mm`, startX - 50, gyB + 3);
         }
       });
       ctx.setLineDash([]);
+
+      // Right-End Gauge Dimension Block (56mm & 112mm) matching TEST_R.pdf
+      if (showDimensions && widthA >= 112) {
+        const rightDimX = startX + barPixelLength + 16;
+        const g56Y = isFlipped ? centerY + 56 * scaleY : centerY - 56 * scaleY;
+        const g112Y = isFlipped ? centerY + 112 * scaleY : centerY - 112 * scaleY;
+
+        ctx.strokeStyle = isDark ? '#38bdf8' : '#0369a1';
+        ctx.lineWidth = isDark ? 1.0 : 1.4;
+
+        // Extension lines from heel, 56, and 112
+        ctx.beginPath();
+        ctx.moveTo(startX + barPixelLength + 4, centerY);
+        ctx.lineTo(rightDimX + 20, centerY);
+        ctx.moveTo(startX + barPixelLength + 4, g56Y);
+        ctx.lineTo(rightDimX + 12, g56Y);
+        ctx.moveTo(startX + barPixelLength + 4, g112Y);
+        ctx.lineTo(rightDimX + 20, g112Y);
+
+        // Vertical dimension line for 56
+        ctx.moveTo(rightDimX, centerY);
+        ctx.lineTo(rightDimX, g56Y);
+        // Vertical dimension line for 112
+        ctx.moveTo(rightDimX + 14, centerY);
+        ctx.lineTo(rightDimX + 14, g112Y);
+
+        // 45 deg CAD Ticks
+        ctx.moveTo(rightDimX - 2.5, centerY + 2.5);
+        ctx.lineTo(rightDimX + 2.5, centerY - 2.5);
+        ctx.moveTo(rightDimX - 2.5, g56Y + 2.5);
+        ctx.lineTo(rightDimX + 2.5, g56Y - 2.5);
+        ctx.moveTo(rightDimX + 11.5, centerY + 2.5);
+        ctx.lineTo(rightDimX + 16.5, centerY - 2.5);
+        ctx.moveTo(rightDimX + 11.5, g112Y + 2.5);
+        ctx.lineTo(rightDimX + 16.5, g112Y - 2.5);
+        ctx.stroke();
+
+        ctx.font = 'bold 9px monospace';
+        ctx.fillStyle = isDark ? '#7dd3fc' : '#0284c7';
+        ctx.fillText('56', rightDimX + 2, (centerY + g56Y) / 2 + 3);
+        ctx.fillText('112', rightDimX + 16, (centerY + g112Y) / 2 + 3);
+      }
 
       // 8. Physical Length Scale Ticks Along Top & Bottom
       const tickSpacingMm = lengthMm > 4000 ? 500 : 250;
@@ -474,99 +516,129 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
         }
       });
 
-      // 10. Incremental Pitch Spacing Dimension Chains for Flange A (Top)
-      if (showDimensions && showPitchChain && flangeASteps.length > 1) {
-        const dimY = topFlangeY - 32;
+      // 10. Incremental Pitch Spacing Dimension Chains for Flange A (Top) matching TEST_R.pdf
+      if (showDimensions && showPitchChain && flangeASteps.length > 0) {
+        const dimY = topFlangeY - 28;
         ctx.strokeStyle = isDark ? '#64748b' : '#0f172a';
-        ctx.lineWidth = isDark ? 1.0 : 1.5;
+        ctx.lineWidth = isDark ? 1.0 : 1.4;
 
-        for (let i = 0; i < flangeASteps.length - 1; i++) {
-          const curr = flangeASteps[i];
-          const next = flangeASteps[i + 1];
-          const pitch = next.xPosition - curr.xPosition;
+        // Build continuous list of dimension points from Datum 0 to each hole to Cut End
+        const chainPointsA: number[] = [0];
+        flangeASteps.forEach((s) => {
+          if (!chainPointsA.includes(s.xPosition)) {
+            chainPointsA.push(s.xPosition);
+          }
+        });
+        chainPointsA.sort((a, b) => a - b);
+        if (!chainPointsA.includes(lengthMm)) {
+          chainPointsA.push(lengthMm);
+        }
 
-          if (pitch <= 500) {
-            const x1 = startX + curr.xPosition * scaleX;
-            const x2 = startX + next.xPosition * scaleX;
+        for (let i = 0; i < chainPointsA.length - 1; i++) {
+          const x1Mm = chainPointsA[i];
+          const x2Mm = chainPointsA[i + 1];
+          const pitch = x2Mm - x1Mm;
+          if (pitch <= 0) continue;
 
-            // Extension witness lines
-            ctx.beginPath();
-            ctx.moveTo(x1, topFlangeY - 4);
-            ctx.lineTo(x1, dimY - 4);
-            ctx.moveTo(x2, topFlangeY - 4);
-            ctx.lineTo(x2, dimY - 4);
+          const x1 = startX + x1Mm * scaleX;
+          const x2 = startX + x2Mm * scaleX;
 
-            // Horizontal dimension line with 45 degree CAD ticks
-            ctx.moveTo(x1, dimY);
-            ctx.lineTo(x2, dimY);
-            ctx.moveTo(x1 - 2, dimY + 3);
-            ctx.lineTo(x1 + 2, dimY - 3);
-            ctx.moveTo(x2 - 2, dimY + 3);
-            ctx.lineTo(x2 + 2, dimY - 3);
-            ctx.stroke();
+          // Witness extension lines
+          ctx.beginPath();
+          ctx.moveTo(x1, topFlangeY - 4);
+          ctx.lineTo(x1, dimY - 4);
+          ctx.moveTo(x2, topFlangeY - 4);
+          ctx.lineTo(x2, dimY - 4);
 
-            // Dimension pitch value
-            if (x2 - x1 > 16) {
-              const pitchText = `${pitch.toFixed(pitch % 1 === 0 ? 0 : 1)}`;
-              ctx.font = 'bold 9.5px monospace';
-              ctx.textAlign = 'center';
-              if (!isDark) {
-                const textW = ctx.measureText(pitchText).width;
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect((x1 + x2) / 2 - textW / 2 - 2, dimY - 11, textW + 4, 11);
-              }
-              ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
-              ctx.fillText(pitchText, (x1 + x2) / 2, dimY - 3);
-              ctx.textAlign = 'left';
+          // Horizontal dimension line with 45 degree CAD ticks
+          ctx.moveTo(x1, dimY);
+          ctx.lineTo(x2, dimY);
+          ctx.moveTo(x1 - 2.5, dimY + 3);
+          ctx.lineTo(x1 + 2.5, dimY - 3);
+          ctx.moveTo(x2 - 2.5, dimY + 3);
+          ctx.lineTo(x2 + 2.5, dimY - 3);
+          ctx.stroke();
+
+          // Pitch text
+          if (x2 - x1 >= 14) {
+            const pitchText = `${pitch.toFixed(pitch % 1 === 0 ? 0 : 1)}`;
+            ctx.font = 'bold 9px monospace';
+            ctx.textAlign = 'center';
+            if (!isDark) {
+              const textW = ctx.measureText(pitchText).width;
+              ctx.fillStyle = '#ffffff';
+              ctx.fillRect((x1 + x2) / 2 - textW / 2 - 2, dimY - 11, textW + 4, 11);
             }
+            ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
+            ctx.fillText(pitchText, (x1 + x2) / 2, dimY - 3);
+            ctx.textAlign = 'left';
           }
         }
       }
 
-      // 10b. Incremental Pitch Spacing Dimension Chains for Flange B (Bottom)
-      if (showDimensions && showPitchChain && flangeBSteps.length > 1) {
-        const dimBY = bottomFlangeY + 30;
+      // 10b. Incremental Pitch Spacing Dimension Chains for Flange B (Bottom) matching TEST_R.pdf
+      if (showDimensions && showPitchChain && flangeBSteps.length > 0) {
+        const dimBY = bottomFlangeY + 28;
         ctx.strokeStyle = isDark ? '#64748b' : '#0f172a';
-        ctx.lineWidth = isDark ? 1.0 : 1.5;
+        ctx.lineWidth = isDark ? 1.0 : 1.4;
 
-        for (let i = 0; i < flangeBSteps.length - 1; i++) {
-          const curr = flangeBSteps[i];
-          const next = flangeBSteps[i + 1];
-          const pitch = next.xPosition - curr.xPosition;
+        // Build continuous list of dimension points from Datum 0 to each hole to Cut End
+        const chainPointsB: number[] = [0];
+        flangeBSteps.forEach((s) => {
+          if (!chainPointsB.includes(s.xPosition)) {
+            chainPointsB.push(s.xPosition);
+          }
+        });
+        chainPointsB.sort((a, b) => a - b);
+        if (!chainPointsB.includes(lengthMm)) {
+          chainPointsB.push(lengthMm);
+        }
 
-          if (pitch <= 500) {
-            const x1 = startX + curr.xPosition * scaleX;
-            const x2 = startX + next.xPosition * scaleX;
+        for (let i = 0; i < chainPointsB.length - 1; i++) {
+          const x1Mm = chainPointsB[i];
+          const x2Mm = chainPointsB[i + 1];
+          const pitch = x2Mm - x1Mm;
+          if (pitch <= 0) continue;
 
-            ctx.beginPath();
-            ctx.moveTo(x1, bottomFlangeY + 4);
-            ctx.lineTo(x1, dimBY + 4);
-            ctx.moveTo(x2, bottomFlangeY + 4);
-            ctx.lineTo(x2, dimBY + 4);
+          const x1 = startX + x1Mm * scaleX;
+          const x2 = startX + x2Mm * scaleX;
 
-            ctx.moveTo(x1, dimBY);
-            ctx.lineTo(x2, dimBY);
-            ctx.moveTo(x1 - 2, dimBY + 3);
-            ctx.lineTo(x1 + 2, dimBY - 3);
-            ctx.moveTo(x2 - 2, dimBY + 3);
-            ctx.lineTo(x2 + 2, dimBY - 3);
-            ctx.stroke();
+          // Witness extension lines
+          ctx.beginPath();
+          ctx.moveTo(x1, bottomFlangeY + 4);
+          ctx.lineTo(x1, dimBY + 4);
+          ctx.moveTo(x2, bottomFlangeY + 4);
+          ctx.lineTo(x2, dimBY + 4);
 
-            if (x2 - x1 > 16) {
-              const pitchText = `${pitch.toFixed(pitch % 1 === 0 ? 0 : 1)}`;
-              ctx.font = 'bold 9.5px monospace';
-              ctx.textAlign = 'center';
-              if (!isDark) {
-                const textW = ctx.measureText(pitchText).width;
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect((x1 + x2) / 2 - textW / 2 - 2, dimBY + 1, textW + 4, 11);
-              }
-              ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
-              ctx.fillText(pitchText, (x1 + x2) / 2, dimBY + 9);
-              ctx.textAlign = 'left';
+          // Horizontal dimension line with 45 degree CAD ticks
+          ctx.moveTo(x1, dimBY);
+          ctx.lineTo(x2, dimBY);
+          ctx.moveTo(x1 - 2.5, dimBY + 3);
+          ctx.lineTo(x1 + 2.5, dimBY - 3);
+          ctx.moveTo(x2 - 2.5, dimBY + 3);
+          ctx.lineTo(x2 + 2.5, dimBY - 3);
+          ctx.stroke();
+
+          // Pitch text
+          if (x2 - x1 >= 14) {
+            const pitchText = `${pitch.toFixed(pitch % 1 === 0 ? 0 : 1)}`;
+            ctx.font = 'bold 9px monospace';
+            ctx.textAlign = 'center';
+            if (!isDark) {
+              const textW = ctx.measureText(pitchText).width;
+              ctx.fillStyle = '#ffffff';
+              ctx.fillRect((x1 + x2) / 2 - textW / 2 - 2, dimBY + 1, textW + 4, 11);
             }
+            ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
+            ctx.fillText(pitchText, (x1 + x2) / 2, dimBY + 9);
+            ctx.textAlign = 'left';
           }
         }
+
+        // Draw "BOTTOM" label on Flange B as shown in engineering drawing TEST_R.pdf
+        ctx.font = 'bold 11px monospace';
+        ctx.fillStyle = isDark ? '#38bdf8' : '#0369a1';
+        ctx.fillText('◄ BOTTOM', startX + barPixelLength - 100, bottomFlangeY - 8);
       }
 
       // 11. Cumulative Overall Length Dimension Line at Bottom

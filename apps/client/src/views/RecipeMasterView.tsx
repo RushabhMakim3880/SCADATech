@@ -27,6 +27,8 @@ import {
   Sparkles,
   Link,
   Milestone,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 import { HmiAlert } from '../utils/alerts.js';
 
@@ -51,6 +53,7 @@ export const RecipeMasterView: React.FC = () => {
   const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
   const [isJobCardModalOpen, setIsJobCardModalOpen] = useState(false);
   const [entryMode, setEntryMode] = useState<'ABSOLUTE' | 'INCREMENTAL'>('INCREMENTAL');
+  const [isVisualizerExpanded, setIsVisualizerExpanded] = useState<boolean>(false);
 
   // Virtual Keypad State
   const [keypadConfig, setKeypadConfig] = useState<{
@@ -652,13 +655,33 @@ export const RecipeMasterView: React.FC = () => {
 
               {/* Unified 2D/3D CAD Visualizer Blueprint */}
               <div className="pt-4 border-t border-slate-800">
-                <div className="flex items-center justify-between mb-2">
-                  <label className="font-black text-xs text-slate-200 tracking-wide uppercase flex items-center gap-2">
-                    <span className="w-2 h-2 rounded bg-sky-400" /> Interactive Blueprint Inspection (2D & 3D Synced)
-                  </label>
-                  <span className="text-xs text-slate-400 font-medium">Click on flange surface to add a hole at that position</span>
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-2">
+                    <label className="font-black text-xs text-slate-200 tracking-wide uppercase flex items-center gap-2">
+                      <span className="w-2 h-2 rounded bg-sky-400" /> Interactive Blueprint Inspection (2D & 3D Synced)
+                    </label>
+                    <span className="text-[11px] text-slate-400 hidden sm:inline">• Click on flange surface to add hole</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsVisualizerExpanded(!isVisualizerExpanded)}
+                    className="p-1 px-2.5 rounded bg-[#151f2e] hover:bg-[#1d2a3d] border border-sky-600/40 text-sky-300 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm"
+                  >
+                    {isVisualizerExpanded ? (
+                      <>
+                        <Minimize2 className="w-3.5 h-3.5" />
+                        <span>Compact View</span>
+                      </>
+                    ) : (
+                      <>
+                        <Maximize2 className="w-3.5 h-3.5" />
+                        <span>Expand Blueprint</span>
+                      </>
+                    )}
+                  </button>
                 </div>
-                <div className="h-[520px] rounded-lg overflow-hidden border border-slate-700 shadow-xl">
+                <div className={`${isVisualizerExpanded ? 'h-[75vh]' : 'h-[280px] sm:h-[350px] md:h-[420px] lg:h-[480px]'} rounded-xl overflow-hidden border border-slate-700 shadow-xl transition-all duration-300`}>
                   <AngleBarViewer
                     recipe={selectedRecipe}
                     highlightStepIndex={highlightedStep}
@@ -767,8 +790,8 @@ export const RecipeMasterView: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="overflow-x-auto rounded-lg border border-slate-700/80 shadow-md">
-                  <table className="table-custom border-collapse w-full">
+                <div className="overflow-x-auto rounded-lg border border-slate-700/80 shadow-md w-full">
+                  <table className="table-custom border-collapse w-full min-w-[960px]">
                     <thead>
                       <tr className="bg-[#0f1726] border-b-2 border-slate-700 text-slate-300 text-xs">
                         <th style={{ width: '60px' }} className="py-3 px-3 text-center">Step</th>

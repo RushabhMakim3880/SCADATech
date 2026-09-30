@@ -80,46 +80,46 @@ export const AngleBarViewer: React.FC<AngleBarViewerProps> = (props) => {
         </div>
 
         {/* View Mode Switcher */}
-        <div className="flex bg-slate-800 rounded overflow-hidden border border-slate-700">
+        <div className="flex bg-slate-800 rounded overflow-hidden border border-slate-700 shrink-0">
           <button
             onClick={() => setViewMode('2D')}
-            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold transition-colors ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 text-xs font-semibold transition-colors ${
               viewMode === '2D' ? 'bg-[#38bdf8] text-slate-900' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Monitor className="w-3.5 h-3.5" /> 2D Blueprint
+            <Monitor className="w-3.5 h-3.5" /> <span>2D<span className="hidden sm:inline"> Blueprint</span></span>
           </button>
           <button
             onClick={() => setViewMode('3D')}
-            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold transition-colors ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 text-xs font-semibold transition-colors ${
               viewMode === '3D' ? 'bg-[#38bdf8] text-slate-900' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Box className="w-3.5 h-3.5" /> 3D Model
+            <Box className="w-3.5 h-3.5" /> <span>3D<span className="hidden sm:inline"> Model</span></span>
           </button>
           <button
             onClick={() => setViewMode('SPLIT')}
-            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold transition-colors ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 text-xs font-semibold transition-colors ${
               viewMode === 'SPLIT' ? 'bg-[#38bdf8] text-slate-900' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Columns className="w-3.5 h-3.5" /> Split 2D & 3D (Synced)
+            <Columns className="w-3.5 h-3.5" /> <span>Split<span className="hidden sm:inline"> (Synced)</span></span>
           </button>
         </div>
       </div>
 
       {/* Synchronized Length Scrubber Bar in Split View */}
       {viewMode === 'SPLIT' && (
-        <div className="bg-[#0e141e] px-4 py-1.5 border-b border-slate-800 flex items-center justify-between text-[11px] font-mono gap-4 shrink-0">
+        <div className="bg-[#0e141e] px-3 sm:px-4 py-1.5 border-b border-slate-800 flex flex-wrap items-center justify-between text-[11px] font-mono gap-2 shrink-0">
           <div className="flex items-center gap-2 text-slate-400">
             <Navigation className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="font-sans font-bold text-slate-300">Synchronized Focus:</span>
+            <span className="font-sans font-bold text-slate-300">Sync:</span>
             <span className="text-cyan-300 font-bold">{currentFocusMm} mm</span>
             <span className="text-slate-600">/</span>
             <span>{lengthMm} mm</span>
           </div>
 
-          <div className="flex-1 max-w-md flex items-center gap-2">
+          <div className="flex-1 min-w-[140px] max-w-md flex items-center gap-2">
             <input
               type="range"
               min={0}
@@ -139,21 +139,21 @@ export const AngleBarViewer: React.FC<AngleBarViewerProps> = (props) => {
               onClick={() => setSharedFocusX(0)}
               className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px]"
             >
-              Start (0mm)
+              0mm
             </button>
             <button
               type="button"
               onClick={() => setSharedFocusX(lengthMm / 2)}
               className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px]"
             >
-              Center
+              Mid
             </button>
             <button
               type="button"
               onClick={() => setSharedFocusX(lengthMm)}
               className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px]"
             >
-              End ({lengthMm}mm)
+              {lengthMm}mm
             </button>
           </div>
         </div>
@@ -182,8 +182,8 @@ export const AngleBarViewer: React.FC<AngleBarViewerProps> = (props) => {
         )}
         
         {viewMode === 'SPLIT' && (
-          <div className="flex w-full h-full">
-            <div className="w-1/2 h-full border-r border-slate-700">
+          <div className="flex flex-col md:flex-row w-full h-full">
+            <div className="w-full md:w-1/2 h-1/2 md:h-full border-b md:border-b-0 md:border-r border-slate-700">
               <AngleBarVisualizer
                 {...props}
                 externalHoverStepIndex={isSyncEnabled ? sharedHoverStepIndex : undefined}
@@ -193,7 +193,7 @@ export const AngleBarViewer: React.FC<AngleBarViewerProps> = (props) => {
                 onViewportSync={handleViewportSync}
               />
             </div>
-            <div className="w-1/2 h-full">
+            <div className="w-full md:w-1/2 h-1/2 md:h-full">
               <AngleBar3DVisualizer
                 {...props}
                 externalHoverStepIndex={isSyncEnabled ? sharedHoverStepIndex : undefined}
