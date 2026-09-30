@@ -313,12 +313,13 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
       ctx.setLineDash([]);
 
       // 7. Continuous Dashed-Dotted Centerlines for Gauges across Flange A & Flange B
-      const gaugeDistances = [56, 112];
+      const gaugeDistancesA = [56, 94, 112];
+      const gaugeDistancesB = [56, 94, 112];
       ctx.lineWidth = isDark ? 1.1 : 1.3;
       ctx.setLineDash([12, 3, 2, 3]); // Standard CAD Centerline
 
       // Flange A Centerlines
-      gaugeDistances.forEach((g) => {
+      gaugeDistancesA.forEach((g) => {
         if (g < widthA) {
           const gyA = topFlangeHeelY - g * scaleY;
           ctx.strokeStyle = isDark ? 'rgba(56, 189, 248, 0.45)' : 'rgba(15, 23, 42, 0.7)';
@@ -330,7 +331,7 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
       });
 
       // Flange B Centerlines
-      gaugeDistances.forEach((g) => {
+      gaugeDistancesB.forEach((g) => {
         if (g < widthB) {
           const gyB = bottomFlangeHeelY + g * scaleY;
           ctx.strokeStyle = isDark ? 'rgba(16, 185, 129, 0.45)' : 'rgba(15, 23, 42, 0.7)';
@@ -616,63 +617,112 @@ export const AngleBarVisualizer: React.FC<AngleBarVisualizerProps> = ({
         ctx.textAlign = 'left';
       }
 
-      // 2. "2 HOLES 17.5Ø FOR A.C.D" Capsule & Callout Arrow on Flange B
-      const acdHole1 = flangeBSteps.find((s) => Math.abs(s.xPosition - 3360.0) < 30);
-      const acdHole2 = flangeBSteps.find((s) => Math.abs(s.xPosition - 3395.5) < 30);
-      if (acdHole1 && acdHole2) {
-        const acdX1 = startX + acdHole1.xPosition * scaleX;
-        const acdX2 = startX + acdHole2.xPosition * scaleX;
-        const acdY = bottomFlangeHeelY + acdHole1.yPosition * scaleY;
+      // 2. "2 HOLES 17.5Ø FOR A.C.D" Vertical Capsule & Callout Arrow on Flange B
+      // Matches TEST_R.pdf: 2 holes vertically aligned across the flange (Gauges 56mm & 112mm) at X=4330.0mm
+      const acdSteps = flangeBSteps.filter(
+        (s) => s.remarks?.includes('A.C.D') || s.holeSymbol === 'STEP_HOLE_17_5' || Math.abs(s.xPosition - 4330.0) < 35
+      );
 
-        // Draw drafting pill outline encircling the 2 ACD holes
-        const pillPadX = 14;
-        const pillPadY = 10;
+      if (acdSteps.length >= 2) {
+        const acdX = startX + acdSteps[0].xPosition * scaleX;
+        const yMin = Math.min(...acdSteps.map((s) => s.yPosition));
+        const yMax = Math.max(...acdSteps.map((s) => s.yPosition));
+        const acdY1 = bottomFlangeHeelY + yMin * scaleY;
+        const acdY2 = bottomFlangeHeelY + yMax * scaleY;
+
+        // Draw drafting vertical stadium/pill outline encircling the 2 vertically stacked ACD holes
+        const pillPadX = 8;
+        const pillTopY = acdY1 - 8;
+        const pillBotY = acdY2 + 8;
+        const pillW = pillPadX * 2;
+        const pillH = pillBotY - pillTopY;
+
+        ctx.save();
+        ctx.setLineDash([4, 3]);
         ctx.strokeStyle = isDark ? '#f59e0b' : '#0f172a';
         ctx.lineWidth = isDark ? 1.4 : 1.6;
         ctx.beginPath();
-        ctx.roundRect(acdX1 - pillPadX, acdY - pillPadY, (acdX2 - acdX1) + pillPadX * 2, pillPadY * 2, 8);
+        ctx.roundRect(acdX - pillPadX, pillTopY, pillW, pillH, pillPadX);
         ctx.stroke();
+        ctx.restore();
 
-        // Leader Arrow pointing into central channel
-        const leaderStartX = (acdX1 + acdX2) / 2;
-        const leaderStartY = acdY - pillPadY;
-        const leaderMidX = leaderStartX + 30;
+        // CAD Leader line: originates from top of vertical capsule, slopes up-left, then horizontal landing under text
+        const leaderStartX = acdX - 2;
+        const leaderStartY = pillTopY;
+        const leaderMidX = acdX - 30;
         const leaderMidY = centerY + 10;
-        const leaderEndX = leaderMidX + 140;
+        const leaderEndX = leaderMidX - 160;
 
+        ctx.strokeStyle = isDark ? '#f59e0b' : '#0f172a';
+        ctx.lineWidth = isDark ? 1.2 : 1.5;
         ctx.beginPath();
         ctx.moveTo(leaderStartX, leaderStartY);
         ctx.lineTo(leaderMidX, leaderMidY);
         ctx.lineTo(leaderEndX, leaderMidY);
         ctx.stroke();
 
-        // Arrow head
+        // Leader Arrowhead pointing at capsule top
         ctx.fillStyle = isDark ? '#f59e0b' : '#0f172a';
         ctx.beginPath();
         ctx.moveTo(leaderStartX, leaderStartY);
-        ctx.lineTo(leaderStartX - 3, leaderStartY - 6);
-        ctx.lineTo(leaderStartX + 3, leaderStartY - 6);
+        ctx.lineTo(leaderStartX - 6, leaderStartY - 3);
+        ctx.lineTo(leaderStartX - 3, leaderStartY - 7);
         ctx.closePath();
         ctx.fill();
 
-        ctx.font = 'bold 10px monospace';
-        ctx.fillText('2 HOLES 17.5Ø FOR A.C.D', leaderMidX + 6, leaderMidY - 3);
+        // Callout text sitting directly on horizontal landing line (as in TEST_R.pdf)
+        ctx.font = 'bold 9.5px monospace';
+        ctx.fillStyle = isDark ? '#f59e0b' : '#0f172a';
+        ctx.textAlign = 'right';
+        ctx.fillText('2 HOLES 17.5Ø FOR A.C.D', leaderMidX - 6, leaderMidY - 3);
+        ctx.textAlign = 'left';
+
+        // 2b. Dimension "94" between heel and middle gauge line beside ACD
+        const dim94X = acdX + 26;
+        const g94Y = bottomFlangeHeelY + 94 * scaleY;
+        ctx.strokeStyle = isDark ? '#94a3b8' : '#0f172a';
+        ctx.lineWidth = isDark ? 1.0 : 1.2;
+        ctx.beginPath();
+        ctx.moveTo(dim94X - 5, bottomFlangeHeelY);
+        ctx.lineTo(dim94X + 5, bottomFlangeHeelY);
+        ctx.moveTo(dim94X - 5, g94Y);
+        ctx.lineTo(dim94X + 15, g94Y);
+        ctx.moveTo(dim94X, bottomFlangeHeelY);
+        ctx.lineTo(dim94X, g94Y);
+        // CAD 45-deg ticks / arrow
+        ctx.moveTo(dim94X - 2.5, bottomFlangeHeelY + 2.5);
+        ctx.lineTo(dim94X + 2.5, bottomFlangeHeelY - 2.5);
+        ctx.moveTo(dim94X - 2.5, g94Y + 2.5);
+        ctx.lineTo(dim94X + 2.5, g94Y - 2.5);
+        ctx.stroke();
+
+        ctx.font = 'bold 9px monospace';
+        ctx.fillStyle = isDark ? '#e2e8f0' : '#000000';
+        ctx.fillText('94', dim94X + 3, (bottomFlangeHeelY + g94Y) / 2 + 3);
+
+        // 2c. Dimension "96" after post-ACD hole (X=4405)
+        const dim96X = startX + 4405.0 * scaleX + 26;
+        const g96Y = bottomFlangeHeelY + 96 * scaleY;
+        ctx.beginPath();
+        ctx.moveTo(dim96X - 5, bottomFlangeHeelY);
+        ctx.lineTo(dim96X + 5, bottomFlangeHeelY);
+        ctx.moveTo(dim96X - 5, g96Y);
+        ctx.lineTo(dim96X + 15, g96Y);
+        ctx.moveTo(dim96X, bottomFlangeHeelY);
+        ctx.lineTo(dim96X, g96Y);
+        ctx.moveTo(dim96X - 2.5, bottomFlangeHeelY + 2.5);
+        ctx.lineTo(dim96X + 2.5, bottomFlangeHeelY - 2.5);
+        ctx.moveTo(dim96X - 2.5, g96Y + 2.5);
+        ctx.lineTo(dim96X + 2.5, g96Y - 2.5);
+        ctx.stroke();
+
+        ctx.fillText('96', dim96X + 3, (bottomFlangeHeelY + g96Y) / 2 + 3);
       }
 
       // 3. "◄ BOTTOM" Callout on Flange B
       ctx.font = 'bold 12px monospace';
       ctx.fillStyle = isDark ? '#38bdf8' : '#000000';
       ctx.fillText('◄ BOTTOM', startX + barPixelLength - 160, bottomFlangeHeelY - 8);
-
-      // 4. "94" and "96" Gauge Callouts
-      const g94Step = flangeBSteps.find((s) => Math.abs(s.xPosition - 540) < 40 || Math.abs(s.xPosition - 3335) < 40);
-      if (g94Step) {
-        const xPos = startX + g94Step.xPosition * scaleX;
-        ctx.font = 'bold 9px monospace';
-        ctx.fillStyle = isDark ? '#94a3b8' : '#0f172a';
-        ctx.fillText('94', xPos + 8, centerY - 6);
-        ctx.fillText('96', xPos + 8, centerY + 14);
-      }
 
       // 10. Multi-Tier Pitch Spacing Dimension Chains for Flange A (Top) matching TEST_R.pdf
       if (showDimensions && showPitchChain && flangeASteps.length > 0) {

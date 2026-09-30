@@ -235,11 +235,9 @@ def parse_pdf_drawing(pdf_path):
         else:
             y = 56.0 if i % 2 == 0 else 112.0
 
-        # ACD note check / Step Hole
-        is_acd = (abs(x - 3332.0) < 40 or abs(x - 3359.5) < 40)
-        remarks = "DA1 - 17.5mm A.C.D Hole" if is_acd else "DA1 - 17.5mm Flange A Punch"
+        remarks = "DA1 - 17.5mm Flange A Punch"
         pitch = float(flange_a_spacings[i]) if i < len(flange_a_spacings) else 30.0
-        hole_sym = 'STEP_HOLE_17_5' if is_acd else 'STANDARD_OPEN_17_5'
+        hole_sym = 'STANDARD_OPEN_17_5'
 
         steps.append({
             'id': str(uuid.uuid4()),
@@ -257,39 +255,65 @@ def parse_pdf_drawing(pdf_path):
         })
         step_num += 1
 
-    # Generate Flange B Punch Steps
-    for i, x in enumerate(holes_b_x):
-        if i < 6:
-            y = 112.0 if (i % 2 == 0) else 56.0
-        elif i >= len(holes_b_x) - 6:
-            y = 112.0 if (i % 2 == 0) else 56.0
-        elif abs(x - 540.0) < 10 or abs(x - 566.0) < 10:
-            y = 94.0
-        elif abs(x - 1794.5) < 10:
-            y = 128.0
-        elif abs(x - 3295.0) < 10:
-            y = 96.0
-        elif abs(x - 4270.5) < 10:
-            y = 96.0
-        elif abs(x - 5284.5) < 10:
-            y = 112.0
-        else:
-            y = 112.0 if i % 2 == 0 else 56.0
+    # Flange B Hole Specifications matching TEST_R.pdf exactly
+    # Includes the vertically stacked pair at X=4330.0 for 2 HOLES 17.5Ø FOR A.C.D
+    flange_b_hole_defs = [
+        # End cluster 1 (6 holes)
+        (25.0, 112.0, 25.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (55.0, 56.0, 30.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (85.0, 112.0, 30.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (115.0, 56.0, 30.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (145.0, 112.0, 30.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (175.0, 56.0, 30.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        # Web bracing cluster (8 holes)
+        (323.5, 56.0, 148.5, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (355.0, 94.0, 31.5, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (390.5, 112.0, 35.5, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (395.0, 94.0, 4.5, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (476.0, 56.0, 81.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (551.0, 94.0, 75.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (580.0, 112.0, 29.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (606.0, 56.0, 26.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        # Mid-span hole
+        (1834.5, 128.0, 1228.5, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        # Bracing cluster before ACD (5 holes in diamond/zigzag pattern)
+        (3335.0, 56.0, 1500.5, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (3366.5, 94.0, 31.5, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (3402.0, 112.0, 35.5, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (3429.5, 94.0, 27.5, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (3454.5, 56.0, 25.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        # 2 HOLES 17.5Ø FOR A.C.D (Vertically stacked at same X=4330.0 mm)
+        (4330.0, 112.0, 875.5, 'STEP_HOLE_17_5', 'DB1 - 17.5mm A.C.D Hole (Inner)'),
+        (4330.0, 56.0, 0.0, 'STEP_HOLE_17_5', 'DB1 - 17.5mm A.C.D Hole (Outer)'),
+        # Post-ACD hole
+        (4405.0, 94.0, 75.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        # Near-end holes
+        (5409.0, 96.0, 1004.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (5419.0, 112.0, 10.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (5841.0, 56.0, 422.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        # End cluster 2 (5 holes)
+        (5871.0, 112.0, 30.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (5901.0, 56.0, 30.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (5931.0, 112.0, 30.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (5961.0, 56.0, 30.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+        (5991.0, 112.0, 30.0, 'STANDARD_OPEN_17_5', 'DB1 - 17.5mm Flange B Punch'),
+    ]
 
-        pitch = float(flange_b_spacings[i]) if i < len(flange_b_spacings) else 30.0
+    # Generate Flange B Punch Steps
+    for hx, hy, hpitch, hsym, hrem in flange_b_hole_defs:
         steps.append({
             'id': str(uuid.uuid4()),
             'stepNumber': step_num,
             'operationType': 'PUNCH',
             'side': 'B',
-            'xPosition': float(x),
-            'incrementalPitch': pitch,
-            'yPosition': float(y),
+            'xPosition': float(hx),
+            'incrementalPitch': float(hpitch),
+            'yPosition': float(hy),
             'toolSize': 17.5,
             'toolShape': 'ROUND',
-            'holeSymbol': 'STANDARD_OPEN_17_5',
+            'holeSymbol': hsym,
             'isCutOff': False,
-            'remarks': "DB1 - 17.5mm Flange B Punch"
+            'remarks': hrem
         })
         step_num += 1
 
